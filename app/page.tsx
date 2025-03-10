@@ -1,14 +1,19 @@
 import { Button } from "@/components/ui/button";
+import { LayoutDashboard } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex flex-col space-y-4 items-center justify-center h-dvh">
-      <h1 className="text-4xl font-bold">
-        Next.js Project
-      </h1>
-      <Button>
-        Click me
-      </Button>
+    <div className="h-dvh flex flex-col items-center justify-center">
+      Welcome! This is the home page.
+      <div className="">
+        <Link href="/dashboard">
+          <Button>
+            <LayoutDashboard />  Go to Dashboard
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 }
+
