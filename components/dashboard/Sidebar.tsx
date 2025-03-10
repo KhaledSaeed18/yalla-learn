@@ -78,7 +78,7 @@ export function DashboardSidebar() {
                   >
                     <SidebarMenuButton
                       onClick={() => open && setIsSettingsOpen(!isSettingsOpen)}
-                      className={`${isSettingsActive ? "text-primary" : ""} w-full justify-between`}
+                      className={`${isSettingsActive ? "text-primary" : ""} w-full justify-between cursor-pointer`}
                       aria-label="Toggle Settings"
                     >
                       <div className="flex items-center">
@@ -131,7 +131,7 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
+                <SidebarMenuButton className="cursor-pointer">
                   <User2 /> Username
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
