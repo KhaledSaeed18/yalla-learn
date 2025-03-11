@@ -8,5 +8,10 @@ export function ThemeAwareToaster() {
 
     const toasterTheme = resolvedTheme || theme || "system"
 
-    return <Toaster theme={toasterTheme as "light" | "dark" | "system"} />
+    return <Toaster
+        theme={toasterTheme as "light" | "dark" | "system"}
+        closeButton={true}
+        position="bottom-right"
+
+    />
 }

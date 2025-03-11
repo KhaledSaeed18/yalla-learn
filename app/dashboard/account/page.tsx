@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -14,6 +13,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { toast } from "sonner"
+import { PasswordInput } from "@/components/auth/password-input"
+import { PasswordRequirements } from "@/components/auth/password-requirements"
+import { COMMON_PASSWORDS } from "@/lib/validations"
 
 // Zod schema for general information form
 const generalFormSchema = z.object({
@@ -25,7 +27,18 @@ const generalFormSchema = z.object({
 const passwordFormSchema = z
     .object({
         currentPassword: z.string().min(1, { message: "Current password is required" }),
-        newPassword: z.string().min(8, { message: "Password must be at least 8 characters" }),
+        newPassword: z
+            .string()
+            .min(8, "Password must be at least 8 characters long")
+            .max(64, "Password cannot exceed 64 characters")
+            .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+            .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+            .regex(/[0-9]/, "Password must contain at least one number")
+            .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character")
+            .refine(
+                (password) => !COMMON_PASSWORDS.includes(password),
+                "This password is too common. Please choose a more unique password."
+            ),
         confirmPassword: z.string().min(8, { message: "Password must be at least 8 characters" }),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
@@ -39,7 +52,7 @@ type PasswordFormValues = z.infer<typeof passwordFormSchema>
 
 export default function AccountPage() {
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
-
+    
     // General form
     const generalForm = useForm<GeneralFormValues>({
         resolver: zodResolver(generalFormSchema),
@@ -66,6 +79,15 @@ export default function AccountPage() {
         toast.success("Profile updated", {
             description: "Your profile information has been updated successfully.",
         })
+        // toast.warning("Profile updated", {
+        //     description: "Your profile information has been updated successfully.",
+        // })
+        // toast.error("Profile updated", {
+        //     description: "Your profile information has been updated successfully.",
+        // })
+        // toast.info("Profile updated", {
+        //     description: "Your profile information has been updated successfully.",
+        // })
     }
 
     // Handle password form submission
@@ -75,6 +97,7 @@ export default function AccountPage() {
         toast.success("Password updated", {
             description: "Your password has been updated successfully.",
         })
+
         passwordForm.reset()
     }
 
@@ -180,11 +203,11 @@ export default function AccountPage() {
                     <Card>
                         <Form {...passwordForm}>
                             <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}>
-                                <CardHeader>
+                                <CardHeader className="mb-2">
                                     <CardTitle>Change Password</CardTitle>
                                     <CardDescription>Update your password here.</CardDescription>
                                 </CardHeader>
-                                <CardContent className="space-y-4">
+                                <CardContent className="space-y-4 mb-4">
                                     <FormField
                                         control={passwordForm.control}
                                         name="currentPassword"
@@ -192,7 +215,10 @@ export default function AccountPage() {
                                             <FormItem className="space-y-2">
                                                 <FormLabel>Current Password</FormLabel>
                                                 <FormControl>
-                                                    <Input type="password" {...field} />
+                                                    <PasswordInput
+                                                        error={!!passwordForm.formState.errors.currentPassword}
+                                                        {...field}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -206,9 +232,13 @@ export default function AccountPage() {
                                             <FormItem className="space-y-2">
                                                 <FormLabel>New Password</FormLabel>
                                                 <FormControl>
-                                                    <Input type="password" {...field} />
+                                                    <PasswordInput
+                                                        error={!!passwordForm.formState.errors.newPassword}
+                                                        {...field}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
+                                                <PasswordRequirements password={field.value} />
                                             </FormItem>
                                         )}
                                     />
@@ -220,7 +250,10 @@ export default function AccountPage() {
                                             <FormItem className="space-y-2">
                                                 <FormLabel>Confirm New Password</FormLabel>
                                                 <FormControl>
-                                                    <Input type="password" {...field} />
+                                                    <PasswordInput
+                                                        error={!!passwordForm.formState.errors.confirmPassword}
+                                                        {...field}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
