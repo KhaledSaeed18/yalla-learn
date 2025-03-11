@@ -12,6 +12,5 @@ export function ThemeAwareToaster() {
         theme={toasterTheme as "light" | "dark" | "system"}
         closeButton={true}
         position="bottom-right"
-
     />
 }

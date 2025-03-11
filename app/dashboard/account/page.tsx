@@ -17,13 +17,11 @@ import { PasswordInput } from "@/components/auth/password-input"
 import { PasswordRequirements } from "@/components/auth/password-requirements"
 import { COMMON_PASSWORDS } from "@/lib/validations"
 
-// Zod schema for general information form
 const generalFormSchema = z.object({
     name: z.string().min(2, { message: "Name must be at least 2 characters" }),
     email: z.string().email({ message: "Please enter a valid email address" }),
 })
 
-// Zod schema for password form
 const passwordFormSchema = z
     .object({
         currentPassword: z.string().min(1, { message: "Current password is required" }),
@@ -46,14 +44,12 @@ const passwordFormSchema = z
         path: ["confirmPassword"],
     })
 
-// Types for our form data
 type GeneralFormValues = z.infer<typeof generalFormSchema>
 type PasswordFormValues = z.infer<typeof passwordFormSchema>
 
 export default function AccountPage() {
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
     
-    // General form
     const generalForm = useForm<GeneralFormValues>({
         resolver: zodResolver(generalFormSchema),
         defaultValues: {
@@ -62,7 +58,6 @@ export default function AccountPage() {
         },
     })
 
-    // Password form
     const passwordForm = useForm<PasswordFormValues>({
         resolver: zodResolver(passwordFormSchema),
         defaultValues: {
@@ -72,9 +67,7 @@ export default function AccountPage() {
         },
     })
 
-    // Handle general form submission
     function onGeneralSubmit(data: GeneralFormValues) {
-        // Here you would typically send the data to your API
         console.log("General form submitted:", data)
         toast.success("Profile updated", {
             description: "Your profile information has been updated successfully.",
@@ -90,9 +83,7 @@ export default function AccountPage() {
         // })
     }
 
-    // Handle password form submission
     function onPasswordSubmit(data: PasswordFormValues) {
-        // Here you would typically send the data to your API
         console.log("Password form submitted:", data)
         toast.success("Password updated", {
             description: "Your password has been updated successfully.",
@@ -101,7 +92,6 @@ export default function AccountPage() {
         passwordForm.reset()
     }
 
-    // Handle avatar change
     function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
         if (e.target.files && e.target.files[0]) {
             setAvatarFile(e.target.files[0])

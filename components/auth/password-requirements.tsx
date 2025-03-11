@@ -49,7 +49,6 @@ export function PasswordRequirements({ password }: PasswordRequirementsProps) {
 
     return (
         <div className="mt-2 space-y-3">
-            {/* Password strength indicator */}
             <div className="space-y-1">
                 <div className="flex justify-between items-center text-xs">
                     <span>Password strength:</span>
