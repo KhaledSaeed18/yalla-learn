@@ -55,7 +55,7 @@ export default function SignInPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Email *</FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="john.doe@example.com" {...field} />
                   </FormControl>
@@ -70,7 +70,7 @@ export default function SignInPage() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center justify-between">
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>Password *</FormLabel>
                     <Link href="/auth/forget-password" className="text-sm text-primary hover:underline">
                       Forgot password?
                     </Link>

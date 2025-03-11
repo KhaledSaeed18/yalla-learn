@@ -93,7 +93,7 @@ export default function VerifyEmailPage() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Email *</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
@@ -113,18 +113,20 @@ export default function VerifyEmailPage() {
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Verification code</FormLabel>
+                <FormLabel>Verification code *</FormLabel>
                 <FormControl>
-                  <InputOTP maxLength={6} {...field}>
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
-                    </InputOTPGroup>
-                  </InputOTP>
+                  <div className="flex justify-center w-full">
+                    <InputOTP maxLength={6} {...field}>
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
