@@ -2,7 +2,7 @@ import { Metadata } from "next"
 
 export const dashboardMetadata: Metadata = {
     title: {
-        template: '%s | Dashboard',
+        template: 'Dashboard | %s',
         default: 'Dashboard',
     },
     description: 'Manage your account and settings',
