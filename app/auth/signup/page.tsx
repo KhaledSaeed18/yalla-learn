@@ -12,10 +12,12 @@ import { AuthCard } from "@/components/auth/auth-card"
 import { PasswordInput } from "@/components/auth/password-input"
 import { PasswordRequirements } from "@/components/auth/password-requirements"
 import { AuthFooter } from "@/components/auth/auth-footer"
+import { useRouter } from "next/navigation"
 
 type SignUpValues = z.infer<typeof signupSchema>
 
 export default function SignUpPage() {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<SignUpValues>({
@@ -32,14 +34,12 @@ export default function SignUpPage() {
     setIsLoading(true)
 
     try {
-      // Here you would implement your signup logic
       console.log(values)
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // Redirect to verification page
-      window.location.href = `/auth/verify-email?email=${encodeURIComponent(values.email)}`
+      router.push(`/auth/verify-email?email=${encodeURIComponent(values.email)}`)
     } catch (error) {
       console.error(error)
     } finally {

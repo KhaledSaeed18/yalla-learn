@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
@@ -18,6 +18,8 @@ type ResetPasswordValues = z.infer<typeof resetPasswordWithConfirmSchema>
 
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams()
+  const router = useRouter()
+
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
 
@@ -38,13 +40,11 @@ export default function ResetPasswordPage() {
     setIsLoading(true)
 
     try {
-      // Here you would implement your reset password logic
       console.log(values)
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // Show success message
       setIsSuccess(true)
     } catch (error) {
       console.error(error)
@@ -56,7 +56,7 @@ export default function ResetPasswordPage() {
   if (isSuccess) {
     return (
       <AuthCard title="Password reset successful" description="Your password has been reset successfully">
-        <Button className="w-full mt-4" onClick={() => (window.location.href = "/auth/signin")}>
+        <Button className="w-full mt-4" onClick={() => (router.push("/auth/signin"))}>
           Back to sign in
         </Button>
       </AuthCard>

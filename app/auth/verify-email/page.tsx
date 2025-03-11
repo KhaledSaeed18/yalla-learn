@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
@@ -12,11 +12,12 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { resendVerificationSchema, verifyEmailSchema } from "@/lib/validations"
 import { AuthCard } from "@/components/auth/auth-card"
 
-
 type VerifyEmailValues = z.infer<typeof verifyEmailSchema>
 
 export default function VerifyEmailPage() {
   const searchParams = useSearchParams()
+  const router = useRouter()
+
   const [isLoading, setIsLoading] = useState(false)
   const [isResending, setIsResending] = useState(false)
   const [countdown, setCountdown] = useState(0)
@@ -42,14 +43,12 @@ export default function VerifyEmailPage() {
     setIsLoading(true)
 
     try {
-      // Here you would implement your verification logic
       console.log(values)
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // Redirect to dashboard or home page
-      window.location.href = "/"
+      router.push("/auth/signin")
     } catch (error) {
       console.error(error)
     } finally {
@@ -69,13 +68,10 @@ export default function VerifyEmailPage() {
         return
       }
 
-      // Here you would implement your resend code logic
       console.log({ email })
 
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // Start countdown
       setCountdown(60)
     } catch (error) {
       console.error(error)

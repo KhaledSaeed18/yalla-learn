@@ -1,5 +1,3 @@
-// Validation schemas for authentication forms
-
 import { z } from "zod"
 
 // Block common disposable email domains
@@ -72,8 +70,10 @@ export const signupSchema = z.object({
         .trim()
         .email("Invalid email format")
         .refine((email) => {
-            const domain = email.split("@")[1]
-            return !BLOCKED_DOMAINS.includes(domain.toLowerCase())
+            const parts = email.split("@");
+            if (parts.length !== 2) return true;
+            const domain = parts[1];
+            return domain && !BLOCKED_DOMAINS.includes(domain.toLowerCase());
         }, "This email domain is not allowed. Please use a different email address"),
 
     password: z

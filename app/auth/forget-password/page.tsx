@@ -29,13 +29,11 @@ export default function ForgetPasswordPage() {
     setIsLoading(true)
 
     try {
-      // Here you would implement your forget password logic
       console.log(values)
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // Show success message
       setIsSubmitted(true)
     } catch (error) {
       console.error(error)

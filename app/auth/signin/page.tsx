@@ -12,11 +12,13 @@ import { signinSchema } from "@/lib/validations"
 import { AuthCard } from "@/components/auth/auth-card"
 import { AuthFooter } from "@/components/auth/auth-footer"
 import { PasswordInput } from "@/components/auth/password-input"
+import { useRouter } from "next/navigation"
 
 type SignInValues = z.infer<typeof signinSchema>
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   const form = useForm<SignInValues>({
     resolver: zodResolver(signinSchema),
@@ -30,14 +32,12 @@ export default function SignInPage() {
     setIsLoading(true)
 
     try {
-      // Here you would implement your signin logic
       console.log(values)
 
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // Redirect to dashboard or home page
-      window.location.href = "/"
+      router.push("/dashboard")
     } catch (error) {
       console.error(error)
     } finally {
