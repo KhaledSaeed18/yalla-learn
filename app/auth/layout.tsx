@@ -1,6 +1,10 @@
 import type React from "react"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import { Metadata } from "next"
+import { authMetadata } from "./metadata"
+
+export const metadata: Metadata = authMetadata
 
 export default function AuthLayout({
   children,
