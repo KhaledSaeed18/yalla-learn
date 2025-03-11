@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { AuthCard } from "@/components/auth/auth-card"
 import { AuthFooter } from "@/components/auth/auth-footer"
 import { forgotPasswordSchema } from "@/lib/validations"
+import Link from "next/link"
 
 type ForgetPasswordValues = z.infer<typeof forgotPasswordSchema>
 
@@ -45,12 +46,34 @@ export default function ForgetPasswordPage() {
 
   if (isSubmitted) {
     return (
-      <AuthCard title="Check your email" description="We've sent a password reset link to your email address">
-        <div className="text-center mt-4">
-          <p className="text-sm text-muted-foreground">If you don't see it, check your spam folder or</p>
-          <Button variant="link" className="mt-1 p-0" onClick={() => setIsSubmitted(false)}>
-            try another email address
-          </Button>
+      <AuthCard title="Check your email" description="We've sent a 6-digit verification code to your email address">
+        <div className="space-y-4 mt-4">
+          <div className="bg-muted p-4 rounded-lg">
+            <h3 className="font-medium text-sm mb-2">What happens next?</h3>
+            <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside">
+              <li>Check your email for a message from us</li>
+              <li>Find the 6-digit verification code in the email</li>
+              <li>Use this code on the <b>password reset page</b></li>
+              <li>Create your new password</li>
+            </ol>
+          </div>
+
+          <div className="mt-4">
+            <Link href="/auth/reset-password">
+              <Button variant="outline" className="w-full">
+                Continue to Password Reset
+              </Button>
+            </Link>
+          </div>
+
+          <p className="text-sm text-muted-foreground text-center">
+            If you don't see it, check your spam folder or
+          </p>
+          <div className="flex justify-center">
+            <Button variant="link" className="p-0" onClick={() => setIsSubmitted(false)}>
+              try another email address
+            </Button>
+          </div>
         </div>
       </AuthCard>
     )
@@ -58,7 +81,7 @@ export default function ForgetPasswordPage() {
 
   return (
     <>
-      <AuthCard title="Forgot password" description="Enter your email address and we'll send you a reset link">
+      <AuthCard title="Forgot password" description="Enter your email address and we'll send you a 6-digit verification code">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
