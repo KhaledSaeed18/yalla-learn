@@ -126,7 +126,7 @@ export function DashboardSidebar() {
       </SidebarContent>
 
       {/* Sidebar Footer */}
-      <SidebarFooter>
+      <SidebarFooter className="border-t">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>

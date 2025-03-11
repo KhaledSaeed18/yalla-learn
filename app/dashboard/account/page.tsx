@@ -1,192 +1,243 @@
 "use client"
 
-import { useState } from 'react'
+import type React from "react"
+
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Switch } from "@/components/ui/switch"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Separator } from "@/components/ui/separator"
-import { Github, Twitter } from 'lucide-react'
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { toast } from "sonner"
+
+// Zod schema for general information form
+const generalFormSchema = z.object({
+    name: z.string().min(2, { message: "Name must be at least 2 characters" }),
+    email: z.string().email({ message: "Please enter a valid email address" }),
+})
+
+// Zod schema for password form
+const passwordFormSchema = z
+    .object({
+        currentPassword: z.string().min(1, { message: "Current password is required" }),
+        newPassword: z.string().min(8, { message: "Password must be at least 8 characters" }),
+        confirmPassword: z.string().min(8, { message: "Password must be at least 8 characters" }),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
+    })
+
+// Types for our form data
+type GeneralFormValues = z.infer<typeof generalFormSchema>
+type PasswordFormValues = z.infer<typeof passwordFormSchema>
 
 export default function AccountPage() {
-    const [name, setName] = useState('John Doe')
-    const [email, setEmail] = useState('john.doe@example.com')
-    const [avatarUrl, setAvatarUrl] = useState('/placeholder.svg?height=100&width=100')
-    const [emailNotifications, setEmailNotifications] = useState(true)
-    const [marketingEmails, setMarketingEmails] = useState(false)
+    const [avatarFile, setAvatarFile] = useState<File | null>(null)
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        // Handle form submission here
-        console.log('Updated account info:', { name, email })
+    // General form
+    const generalForm = useForm<GeneralFormValues>({
+        resolver: zodResolver(generalFormSchema),
+        defaultValues: {
+            name: "John Doe",
+            email: "john.doe@example.com",
+        },
+    })
+
+    // Password form
+    const passwordForm = useForm<PasswordFormValues>({
+        resolver: zodResolver(passwordFormSchema),
+        defaultValues: {
+            currentPassword: "",
+            newPassword: "",
+            confirmPassword: "",
+        },
+    })
+
+    // Handle general form submission
+    function onGeneralSubmit(data: GeneralFormValues) {
+        // Here you would typically send the data to your API
+        console.log("General form submitted:", data)
+        toast.success("Profile updated", {
+            description: "Your profile information has been updated successfully.",
+        })
     }
 
-    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (file) {
-            const reader = new FileReader()
-            reader.onloadend = () => {
-                setAvatarUrl(reader.result as string)
-            }
-            reader.readAsDataURL(file)
+    // Handle password form submission
+    function onPasswordSubmit(data: PasswordFormValues) {
+        // Here you would typically send the data to your API
+        console.log("Password form submitted:", data)
+        toast.success("Password updated", {
+            description: "Your password has been updated successfully.",
+        })
+        passwordForm.reset()
+    }
+
+    // Handle avatar change
+    function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+        if (e.target.files && e.target.files[0]) {
+            setAvatarFile(e.target.files[0])
         }
     }
 
     return (
         <div className="container mx-auto p-4">
             <Tabs defaultValue="general" className="w-full max-w-4xl mx-auto">
-                <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="general">General</TabsTrigger>
-                    <TabsTrigger value="password">Password</TabsTrigger>
-                    <TabsTrigger value="notifications">Notifications</TabsTrigger>
-                    <TabsTrigger value="connections">Connections</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 cursor-pointer">
+                    <TabsTrigger value="general" className="cursor-pointer">
+                        General
+                    </TabsTrigger>
+                    <TabsTrigger value="password" className="cursor-pointer">
+                        Password
+                    </TabsTrigger>
                 </TabsList>
+
                 <TabsContent value="general">
                     <Card>
-                        <form onSubmit={handleSubmit}>
-                            <CardHeader>
-                                <CardTitle>General Information</CardTitle>
-                                <CardDescription>Update your account details here.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="flex items-center space-x-4">
-                                    <Avatar className="w-24 h-24">
-                                        <AvatarImage src={avatarUrl} alt="Profile picture" />
-                                        <AvatarFallback>JD</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <Label htmlFor="avatar" className="cursor-pointer">
-                                            <Button variant="outline" className="mt-2">Change Avatar</Button>
-                                        </Label>
-                                        <Input id="avatar" type="file" className="hidden" onChange={handleAvatarChange} accept="image/*" />
+                        <Form {...generalForm}>
+                            <form onSubmit={generalForm.handleSubmit(onGeneralSubmit)}>
+                                <CardHeader className="mb-2">
+                                    <CardTitle>General Information</CardTitle>
+                                    <CardDescription>Update your account details here.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4 mb-4">
+                                    <div className="flex items-center space-x-4">
+                                        <Avatar className="w-24 h-24">
+                                            <AvatarImage
+                                                src={avatarFile ? URL.createObjectURL(avatarFile) : undefined}
+                                                alt="Profile picture"
+                                            />
+                                            <AvatarFallback>
+                                                {generalForm
+                                                    .watch("name")
+                                                    .split(" ")
+                                                    .map((name) => name[0])
+                                                    .join("")
+                                                    .toUpperCase()
+                                                    .substring(0, 2)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <Label htmlFor="avatar" className="cursor-pointer">
+                                                <Button variant="outline" className="mt-2" type="button">
+                                                    Change Avatar
+                                                </Button>
+                                            </Label>
+                                            <Input
+                                                id="avatar"
+                                                type="file"
+                                                className="hidden"
+                                                accept="image/*"
+                                                onChange={handleAvatarChange}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="name">Name</Label>
-                                    <Input
-                                        id="name"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                        placeholder="Enter your name"
+
+                                    <FormField
+                                        control={generalForm.control}
+                                        name="name"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel>Name</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Enter your name" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="Enter your email"
+
+                                    <FormField
+                                        control={generalForm.control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel>Email</FormLabel>
+                                                <FormControl>
+                                                    <Input type="email" placeholder="Enter your email" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                </div>
-                            </CardContent>
-                            <CardFooter>
-                                <Button type="submit">Save changes</Button>
-                            </CardFooter>
-                        </form>
+                                </CardContent>
+                                <CardFooter>
+                                    <Button type="submit" disabled={!generalForm.formState.isDirty}>
+                                        Save changes
+                                    </Button>
+                                </CardFooter>
+                            </form>
+                        </Form>
                     </Card>
                 </TabsContent>
+
                 <TabsContent value="password">
                     <Card>
-                        <CardHeader>
-                            <CardTitle>
-                                Change Password
-                            </CardTitle>
-                            <CardDescription>
-                                {"Update your password here. After saving, you'll be logged out."}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="current-password">Current Password</Label>
-                                <Input id="current-password" type="password" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="new-password">New Password</Label>
-                                <Input id="new-password" type="password" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="confirm-password">Confirm New Password</Label>
-                                <Input id="confirm-password" type="password" />
-                            </div>
-                        </CardContent>
-                        <CardFooter>
-                            <Button>Update Password</Button>
-                        </CardFooter>
-                    </Card>
-                </TabsContent>
-                <TabsContent value="notifications">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Notification Preferences</CardTitle>
-                            <CardDescription>Manage how you receive notifications.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div className="space-y-0.5">
-                                    <Label htmlFor="email-notifications">Email Notifications</Label>
-                                    <p className="text-sm text-muted-foreground">Receive notifications via email</p>
-                                </div>
-                                <Switch
-                                    id="email-notifications"
-                                    checked={emailNotifications}
-                                    onCheckedChange={setEmailNotifications}
-                                />
-                            </div>
-                            <Separator />
-                            <div className="flex items-center justify-between">
-                                <div className="space-y-0.5">
-                                    <Label htmlFor="marketing-emails">Marketing Emails</Label>
-                                    <p className="text-sm text-muted-foreground">Receive emails about new products and features</p>
-                                </div>
-                                <Switch
-                                    id="marketing-emails"
-                                    checked={marketingEmails}
-                                    onCheckedChange={setMarketingEmails}
-                                />
-                            </div>
-                        </CardContent>
-                        <CardFooter>
-                            <Button>Save Preferences</Button>
-                        </CardFooter>
-                    </Card>
-                </TabsContent>
-                <TabsContent value="connections">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Connected Accounts</CardTitle>
-                            <CardDescription>Manage your connected accounts and services.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-4">
-                                    <Github className="w-6 h-6" />
-                                    <div>
-                                        <p className="font-medium">GitHub</p>
-                                        <p className="text-sm text-muted-foreground">Manage your GitHub integration</p>
-                                    </div>
-                                </div>
-                                <Button variant="outline">Connect</Button>
-                            </div>
-                            <Separator />
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-4">
-                                    <Twitter className="w-6 h-6" />
-                                    <div>
-                                        <p className="font-medium">Twitter</p>
-                                        <p className="text-sm text-muted-foreground">Manage your Twitter integration</p>
-                                    </div>
-                                </div>
-                                <Button variant="outline">Connect</Button>
-                            </div>
-                        </CardContent>
+                        <Form {...passwordForm}>
+                            <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}>
+                                <CardHeader>
+                                    <CardTitle>Change Password</CardTitle>
+                                    <CardDescription>Update your password here.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <FormField
+                                        control={passwordForm.control}
+                                        name="currentPassword"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel>Current Password</FormLabel>
+                                                <FormControl>
+                                                    <Input type="password" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={passwordForm.control}
+                                        name="newPassword"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel>New Password</FormLabel>
+                                                <FormControl>
+                                                    <Input type="password" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={passwordForm.control}
+                                        name="confirmPassword"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel>Confirm New Password</FormLabel>
+                                                <FormControl>
+                                                    <Input type="password" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </CardContent>
+                                <CardFooter>
+                                    <Button type="submit" disabled={!passwordForm.formState.isDirty}>
+                                        Update Password
+                                    </Button>
+                                </CardFooter>
+                            </form>
+                        </Form>
                     </Card>
                 </TabsContent>
             </Tabs>
         </div>
     )
 }
+
