@@ -3,16 +3,38 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, ChevronDown, LayoutDashboard, ChevronUp, User2, PenLine, FileText } from "lucide-react"
+import { Home, ChevronDown, LayoutDashboard, ChevronUp, User2, PenLine, FileText, LogOut } from "lucide-react"
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton, SidebarFooter, useSidebar } from "@/components/ui/sidebar"
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useSelector } from "react-redux"
+import { RootState } from "@/redux/store"
+import { logout } from "@/lib/auth/logout"
+import { toast } from "sonner"
 
 export function DashboardSidebar() {
   const pathname = usePathname()
   const [isBlogOpen, setIsBlogOpen] = React.useState(false)
   const { open } = useSidebar()
+  const { user } = useSelector((state: RootState) => state.auth)
+
+  const handleLogout = async (e: React.MouseEvent) => {
+    try {
+      e.preventDefault();
+      await logout();
+    } catch (error) {
+      toast.error('Error', {
+        description: error instanceof Error ? error.message : 'An unknown error occurred',
+      })
+    }
+  }
+
+  if (!user) {
+    return null
+  }
+
+  const displayName = `${user.firstName} ${user.lastName}`
 
   const isBlogActive = pathname.startsWith("/dashboard/blog")
 
@@ -134,7 +156,7 @@ export function DashboardSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton className="cursor-pointer">
-                  <User2 /> Username
+                  <User2 /> {displayName}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -143,11 +165,16 @@ export function DashboardSidebar() {
                 className="w-[--radix-popper-anchor-width]"
               >
                 <Link href="/dashboard/account" aria-label="Go to Account Settings">
-                  <DropdownMenuItem asChild className="cursor-pointer">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <User2 className="mr-2 size-4" />
                     <span>Account</span>
                   </DropdownMenuItem>
                 </Link>
-                <DropdownMenuItem className="cursor-pointer">
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="mr-2 size-4" />
                   <span>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
