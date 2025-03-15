@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
@@ -13,12 +13,23 @@ import { PasswordInput } from "@/components/auth/password-input"
 import { PasswordRequirements } from "@/components/auth/password-requirements"
 import { AuthFooter } from "@/components/auth/auth-footer"
 import { useRouter } from "next/navigation"
+import { signupServices } from "@/services/auth/signup.services"
+import { ApiError } from "@/lib/api/baseAPI"
+import { toast } from "sonner"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "@/redux/store"
+import { setAuthError, clearError } from "@/redux/slices/authSlice"
 
 type SignUpValues = z.infer<typeof signupSchema>
 
 export default function SignUpPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useDispatch()
+
+  const { error } = useSelector(
+    (state: RootState) => state.auth
+  )
 
   const form = useForm<SignUpValues>({
     resolver: zodResolver(signupSchema),
@@ -30,18 +41,29 @@ export default function SignUpPage() {
     },
   })
 
+  useEffect(() => {
+    if (error) {
+      toast.error('Error', {
+        description: error,
+      })
+      dispatch(clearError())
+    }
+  }, [error, dispatch])
+
   async function onSubmit(values: SignUpValues) {
     setIsLoading(true)
 
     try {
-      console.log(values)
+      const response = await signupServices.signUp(values)
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      toast.success("Account created successfully", {
+        description: "Please verify your email to continue."
+      })
 
       router.push(`/auth/verify-email?email=${encodeURIComponent(values.email)}`)
     } catch (error) {
-      console.error(error)
+      const apiError = error as ApiError
+      dispatch(setAuthError(apiError.message || "Failed to create account"))
     } finally {
       setIsLoading(false)
     }
@@ -121,4 +143,3 @@ export default function SignUpPage() {
     </>
   )
 }
-

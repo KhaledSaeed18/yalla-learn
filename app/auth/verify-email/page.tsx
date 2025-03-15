@@ -11,18 +11,29 @@ import { Input } from "@/components/ui/input"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
 import { resendVerificationSchema, verifyEmailSchema } from "@/lib/validations"
 import { AuthCard } from "@/components/auth/auth-card"
+import { verifyEmailServices } from "@/services/auth/verifyEmail.services"
+import { ApiError } from "@/lib/api/baseAPI"
+import { toast } from "sonner"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "@/redux/store"
+import { setAuthError, clearError } from "@/redux/slices/authSlice"
 
 type VerifyEmailValues = z.infer<typeof verifyEmailSchema>
 
 export default function VerifyEmailPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const dispatch = useDispatch()
 
   const [isLoading, setIsLoading] = useState(false)
   const [isResending, setIsResending] = useState(false)
   const [countdown, setCountdown] = useState(0)
 
   const emailFromQuery = searchParams.get("email") || ""
+
+  const { error } = useSelector(
+    (state: RootState) => state.auth
+  )
 
   const form = useForm<VerifyEmailValues>({
     resolver: zodResolver(verifyEmailSchema),
@@ -39,18 +50,29 @@ export default function VerifyEmailPage() {
     }
   }, [countdown])
 
+  useEffect(() => {
+    if (error) {
+      toast.error('Error', {
+        description: error,
+      })
+      dispatch(clearError())
+    }
+  }, [error, dispatch])
+
   async function onSubmit(values: VerifyEmailValues) {
     setIsLoading(true)
 
     try {
-      console.log(values)
+      await verifyEmailServices.verifyEmail(values)
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      toast.success("Email verified successfully", {
+        description: "You can now sign in to your account."
+      })
 
       router.push("/auth/signin")
     } catch (error) {
-      console.error(error)
+      const apiError = error as ApiError
+      dispatch(setAuthError(apiError.message || "Failed to verify email"))
     } finally {
       setIsLoading(false)
     }
@@ -64,17 +86,22 @@ export default function VerifyEmailPage() {
       const validationResult = resendVerificationSchema.safeParse({ email })
 
       if (!validationResult.success) {
-        console.error("Invalid email for resend")
+        toast.error("Invalid email", {
+          description: "Please enter a valid email address"
+        })
         return
       }
 
-      console.log({ email })
+      await verifyEmailServices.resendVerification({ email })
 
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      toast.success("Verification code sent", {
+        description: "Please check your email for the verification code"
+      })
 
       setCountdown(60)
     } catch (error) {
-      console.error(error)
+      const apiError = error as ApiError
+      dispatch(setAuthError(apiError.message || "Failed to resend verification code"))
     } finally {
       setIsResending(false)
     }
@@ -150,4 +177,3 @@ export default function VerifyEmailPage() {
     </AuthCard>
   )
 }
-
