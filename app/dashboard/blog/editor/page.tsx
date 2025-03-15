@@ -10,11 +10,12 @@ export default function Home() {
     return (
         <main>
             <h1 className="text-3xl font-bold">Blog Editor</h1>
-
             <div className="grid gap-6 mt-4">
                 <TipTapEditor content={content} onChange={setContent} className="w-full" />
                 <div className="flex justify-end gap-4">
-                    <Button>Save</Button>
+                    <Button>
+                        Save
+                    </Button>
                 </div>
             </div>
         </main>

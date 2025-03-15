@@ -228,6 +228,11 @@
   overflow-x: auto;
 }
 
+.prose ul,
+.prose ol {
+  padding-left: 1.5rem;
+}
+
 .prose ul {
   list-style-type: disc;
 }
