@@ -8,6 +8,9 @@ export const authServices = {
      * @returns A promise that resolves to the sign-in response
      */
     signIn: (credentials: SignInRequest) => {
-        return api.post<SignInResponse>('/auth/signin', credentials);
+        return api.post<SignInResponse>(
+            '/auth/signin',
+            credentials
+        );
     },
 };

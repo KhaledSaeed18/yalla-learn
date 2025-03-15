@@ -8,6 +8,9 @@ export const signupServices = {
      * @returns A promise that resolves to the signup response
      */
     signUp: (userData: SignUpRequest) => {
-        return api.post<SignUpResponse>('/auth/signup', userData);
+        return api.post<SignUpResponse>(
+            '/auth/signup',
+            userData
+        );
     },
 };

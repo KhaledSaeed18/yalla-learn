@@ -8,6 +8,9 @@ export const forgotPasswordServices = {
      * @returns A promise that resolves to the forgot password response
      */
     forgotPassword: (emailData: ForgotPasswordRequest) => {
-        return api.post<ForgotPasswordResponse>('/auth/forgot-password', emailData);
+        return api.post<ForgotPasswordResponse>(
+            '/auth/forgot-password',
+            emailData
+        );
     },
 };

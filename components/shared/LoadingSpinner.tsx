@@ -13,7 +13,7 @@ export interface LoadingSpinnerProps extends React.HTMLAttributes<HTMLDivElement
 export default function LoadingSpinner({
     centered = true,
     fullScreen = false,
-    size = "24px",
+    size = "35px",
     spinnerClassName,
     containerClassName,
     iconProps,

@@ -13,7 +13,10 @@ export const verifyEmailServices = {
      * @returns A promise that resolves to the verification response
      */
     verifyEmail: (verificationData: VerifyEmailRequest) => {
-        return api.post<VerifyEmailResponse>('/auth/verify-email', verificationData);
+        return api.post<VerifyEmailResponse>(
+            '/auth/verify-email',
+            verificationData
+        );
     },
 
     /**
@@ -22,6 +25,9 @@ export const verifyEmailServices = {
      * @returns A promise that resolves to the resend verification response
      */
     resendVerification: (emailData: ResendVerificationRequest) => {
-        return api.post<ResendVerificationResponse>('/auth/resend-verification', emailData);
+        return api.post<ResendVerificationResponse>(
+            '/auth/resend-verification',
+            emailData
+        );
     },
 };

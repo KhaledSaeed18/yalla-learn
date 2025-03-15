@@ -8,6 +8,9 @@ export const resetPasswordServices = {
      * @returns A promise that resolves to the reset password response
      */
     resetPassword: (resetData: ResetPasswordRequest) => {
-        return api.post<ResetPasswordResponse>('/auth/reset-password', resetData);
+        return api.post<ResetPasswordResponse>(
+            '/auth/reset-password',
+            resetData
+        );
     },
 };
