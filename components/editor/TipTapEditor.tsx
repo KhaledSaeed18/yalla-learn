@@ -38,10 +38,6 @@ export function TipTapEditor({
     const [linkDialogOpen, setLinkDialogOpen] = useState<boolean>(false)
     const [imageUrl, setImageUrl] = useState<string>("")
     const [imageDialogOpen, setImageDialogOpen] = useState<boolean>(false)
-    const [imageAlt, setImageAlt] = useState<string>("")
-    const [imageCaption, setImageCaption] = useState<string>("")
-    const [imageWidth, setImageWidth] = useState<string>("100%")
-    const [imageAlignment, setImageAlignment] = useState<string>("center")
     const [tableDialogOpen, setTableDialogOpen] = useState<boolean>(false)
     const [tableRows, setTableRows] = useState<number>(3)
     const [tableCols, setTableCols] = useState<number>(3)
@@ -145,28 +141,13 @@ export function TipTapEditor({
             .focus()
             .setImage({
                 src: imageUrl,
-                alt: imageAlt || "Image",
-                title: imageCaption || undefined,
+                alt: "Image",
             })
             .run()
 
-        if (editor.isActive('image')) {
-            const imageNode = editor.view.state.selection.$anchor.node()
-            if (imageNode && imageNode.type.name === 'image') {
-                const attrs = {
-                    style: `width: ${imageWidth}; display: block; margin: ${imageAlignment === 'center' ? '0 auto' : imageAlignment === 'right' ? '0 0 0 auto' : '0 auto 0 0'};`
-                }
-                editor.commands.updateAttributes('image', attrs)
-            }
-        }
-
         setImageUrl("")
-        setImageAlt("")
-        setImageCaption("")
-        setImageWidth("100%")
-        setImageAlignment("center")
         setImageDialogOpen(false)
-    }, [editor, imageUrl, imageAlt, imageCaption, imageWidth, imageAlignment])
+    }, [editor, imageUrl])
 
     const insertTable = useCallback(() => {
         if (!editor) return
@@ -595,73 +576,30 @@ export function TipTapEditor({
                     <DialogHeader>
                         <DialogTitle>Add Image</DialogTitle>
                     </DialogHeader>
-                    <Tabs defaultValue="url" className="w-full">
-                        <TabsList className="grid w-full grid-cols-1">
-                            <TabsTrigger value="url">URL</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="url" className="mt-2">
-                            <div className="flex flex-col gap-4 py-2">
-                                <div className="flex flex-col gap-2">
-                                    <Label htmlFor="image-url">Image URL</Label>
-                                    <Input
-                                        id="image-url"
-                                        placeholder="https://example.com/image.jpg"
-                                        value={imageUrl}
-                                        onChange={(e) => setImageUrl(e.target.value)}
-                                        autoFocus
-                                    />
-                                </div>
-
-                                <div className="flex flex-col gap-2">
-                                    <Label htmlFor="image-alt">Alt Text</Label>
-                                    <Input
-                                        id="image-alt"
-                                        placeholder="Description of the image"
-                                        value={imageAlt}
-                                        onChange={(e) => setImageAlt(e.target.value)}
-                                    />
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        Describe the image for screen readers and SEO
-                                    </p>
-                                </div>
-
-                                <div className="flex flex-col gap-2">
-                                    <Label htmlFor="image-caption">Caption (optional)</Label>
-                                    <Input
-                                        id="image-caption"
-                                        placeholder="Image caption"
-                                        value={imageCaption}
-                                        onChange={(e) => setImageCaption(e.target.value)}
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="flex flex-col gap-2">
-                                        <Label htmlFor="image-width">Width</Label>
-                                        <Input
-                                            id="image-width"
-                                            placeholder="100%"
-                                            value={imageWidth}
-                                            onChange={(e) => setImageWidth(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <Label htmlFor="image-alignment">Alignment</Label>
-                                        <select
-                                            id="image-alignment"
-                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                                            value={imageAlignment}
-                                            onChange={(e) => setImageAlignment(e.target.value)}
-                                        >
-                                            <option value="left">Left</option>
-                                            <option value="center">Center</option>
-                                            <option value="right">Right</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </TabsContent>
-                    </Tabs>
+                    <DialogDescription className="sr-only">
+                        {"Enter the URL of the image you want to insert."}
+                    </DialogDescription>
+                    <div className="flex flex-col gap-4 py-4">
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="image-url">Image URL</Label>
+                            <Input
+                                id="image-url"
+                                placeholder="https://example.com/image.jpg"
+                                value={imageUrl}
+                                onChange={(e) => setImageUrl(e.target.value)}
+                                autoFocus
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        e.preventDefault()
+                                        addImage()
+                                    }
+                                }}
+                            />
+                            <p className="text-sm text-muted-foreground mt-1">
+                                Enter the URL of the image you want to insert.
+                            </p>
+                        </div>
+                    </div>
                     <DialogFooter className="sm:justify-between">
                         <Button type="button" variant="outline" onClick={() => setImageDialogOpen(false)}>
                             Cancel
