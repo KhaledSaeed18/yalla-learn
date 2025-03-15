@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -13,12 +13,23 @@ import { AuthCard } from "@/components/auth/auth-card"
 import { AuthFooter } from "@/components/auth/auth-footer"
 import { PasswordInput } from "@/components/auth/password-input"
 import { useRouter } from "next/navigation"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "@/redux/store"
+import { setAuthData, setAuthError, clearError } from "@/redux/slices/authSlice"
+import { toast } from "sonner"
+import { authServices } from "@/services/auth/signin.services"
+import { ApiError } from "@/lib/api/baseAPI"
 
 type SignInValues = z.infer<typeof signinSchema>
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useDispatch()
   const router = useRouter()
+
+  const { error, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth
+  )
 
   const form = useForm<SignInValues>({
     resolver: zodResolver(signinSchema),
@@ -28,18 +39,37 @@ export default function SignInPage() {
     },
   })
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard")
+    }
+  }, [isAuthenticated, router])
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error)
+      dispatch(clearError())
+    }
+  }, [error, dispatch])
+
   async function onSubmit(values: SignInValues) {
     setIsLoading(true)
 
     try {
-      console.log(values)
+      const response = await authServices.signIn(values)
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
+      dispatch(
+        setAuthData({
+          user: response.data.user,
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+        })
+      )
+      toast.success("Signed in successfully")
       router.push("/dashboard")
     } catch (error) {
-      console.error(error)
+      const apiError = error as ApiError
+      dispatch(setAuthError(apiError.message || "Failed to sign in"))
     } finally {
       setIsLoading(false)
     }
@@ -88,11 +118,9 @@ export default function SignInPage() {
             </Button>
           </form>
         </Form>
-
       </AuthCard>
 
       <AuthFooter text="Don't have an account?" linkText="Sign up" linkHref="/auth/signup" />
     </>
   )
 }
-
