@@ -8,7 +8,7 @@ import { DashboardHeader } from "@/components/dashboard/Header"
 import { useRouter } from "next/navigation"
 import { useSelector } from "react-redux"
 import { RootState } from "@/redux/store"
-import { Loader2 } from "lucide-react"
+import LoadingSpinner from "@/components/shared/LoadingSpinner"
 
 export default function DashboardLayout({
     children,
@@ -26,9 +26,7 @@ export default function DashboardLayout({
     }, [isAuthenticated, router])
 
     if (!isAuthenticated) {
-        return <div className="flex h-screen w-screen items-center justify-center">
-            <Loader2 className="size-10 animate-spin" />
-        </div>
+        return <LoadingSpinner fullScreen />
     }
 
     return (
@@ -37,7 +35,7 @@ export default function DashboardLayout({
                 <DashboardSidebar />
                 <div className="flex flex-col flex-1 overflow-hidden">
                     <DashboardHeader />
-                    <Suspense fallback={<div className="p-3">Loading...</div>}>
+                    <Suspense fallback={<LoadingSpinner fullScreen />}>
                         <main className="flex-1 p-3">
                             {children}
                         </main>

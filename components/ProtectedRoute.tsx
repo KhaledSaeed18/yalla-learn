@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useSelector } from "react-redux"
 import { RootState } from "@/redux/store"
-import { Loader2 } from "lucide-react"
+import LoadingSpinner from "./shared/LoadingSpinner"
 
 export default function ProtectedRoute({
     children
@@ -21,10 +21,7 @@ export default function ProtectedRoute({
     }, [isAuthenticated, router])
 
     if (!isAuthenticated) {
-        return <div className="flex h-screen w-screen items-center justify-center">
-            <Loader2 className="size-10 animate-spin" />
-        </div>
-
+        return <LoadingSpinner fullScreen />
     }
 
     return <>{children}</>
