@@ -27,7 +27,7 @@ export default function SignInPage() {
   const dispatch = useDispatch()
   const router = useRouter()
 
-  const { error, isAuthenticated } = useSelector(
+  const { error } = useSelector(
     (state: RootState) => state.auth
   )
 
@@ -38,12 +38,6 @@ export default function SignInPage() {
       password: "",
     },
   })
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/dashboard")
-    }
-  }, [isAuthenticated, router])
 
   useEffect(() => {
     if (error) {
