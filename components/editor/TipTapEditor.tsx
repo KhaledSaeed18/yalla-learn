@@ -1,5 +1,7 @@
 "use client"
 
+import { useState, useEffect, useCallback } from "react"
+import { cn } from "@/lib/utils"
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import Placeholder from "@tiptap/extension-placeholder"
@@ -8,10 +10,14 @@ import Image from "@tiptap/extension-image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Bold, Italic, List, ListOrdered, Quote, Undo, Redo, LinkIcon, ImageIcon, Code, Heading1, Heading2, Heading3, FileText } from "lucide-react"
-import { useState, useEffect, useCallback } from "react"
-import { cn } from "@/lib/utils"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Bold, Italic, List, ListOrdered, Quote, Undo, Redo, LinkIcon, ImageIcon, Code, Heading1, Heading2, Heading3, FileText, Scissors, TableIcon } from "lucide-react"
+import Table from '@tiptap/extension-table'
+import TableRow from '@tiptap/extension-table-row'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import { Label } from "@/components/ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface TipTapEditorProps {
     content: string
@@ -32,6 +38,13 @@ export function TipTapEditor({
     const [linkDialogOpen, setLinkDialogOpen] = useState<boolean>(false)
     const [imageUrl, setImageUrl] = useState<string>("")
     const [imageDialogOpen, setImageDialogOpen] = useState<boolean>(false)
+    const [imageAlt, setImageAlt] = useState<string>("")
+    const [imageCaption, setImageCaption] = useState<string>("")
+    const [imageWidth, setImageWidth] = useState<string>("100%")
+    const [imageAlignment, setImageAlignment] = useState<string>("center")
+    const [tableDialogOpen, setTableDialogOpen] = useState<boolean>(false)
+    const [tableRows, setTableRows] = useState<number>(3)
+    const [tableCols, setTableCols] = useState<number>(3)
     const [wordCount, setWordCount] = useState<number>(0)
     const [charCount, setCharCount] = useState<number>(0)
 
@@ -53,7 +66,29 @@ export function TipTapEditor({
             }),
             Image.configure({
                 HTMLAttributes: {
-                    class: "rounded-md max-w-full h-auto my-4",
+                    class: "rounded-md h-auto my-4",
+                },
+                allowBase64: true,
+            }),
+            Table.configure({
+                resizable: true,
+                HTMLAttributes: {
+                    class: 'border-collapse table-auto w-full my-4 border rounded-md overflow-hidden',
+                },
+            }),
+            TableRow.configure({
+                HTMLAttributes: {
+                    class: 'border-b',
+                },
+            }),
+            TableHeader.configure({
+                HTMLAttributes: {
+                    class: 'border-b bg-muted font-medium px-3 py-2 text-left',
+                },
+            }),
+            TableCell.configure({
+                HTMLAttributes: {
+                    class: 'border px-3 py-2 text-left',
                 },
             }),
         ],
@@ -71,6 +106,7 @@ export function TipTapEditor({
                 spellcheck: "true",
             },
         },
+        immediatelyRender: false,
     })
 
     useEffect(() => {
@@ -105,11 +141,43 @@ export function TipTapEditor({
     const addImage = useCallback(() => {
         if (!editor || !imageUrl) return
 
-        editor.chain().focus().setImage({ src: imageUrl, alt: "Image" }).run()
+        editor.chain()
+            .focus()
+            .setImage({
+                src: imageUrl,
+                alt: imageAlt || "Image",
+                title: imageCaption || undefined,
+            })
+            .run()
+
+        if (editor.isActive('image')) {
+            const imageNode = editor.view.state.selection.$anchor.node()
+            if (imageNode && imageNode.type.name === 'image') {
+                const attrs = {
+                    style: `width: ${imageWidth}; display: block; margin: ${imageAlignment === 'center' ? '0 auto' : imageAlignment === 'right' ? '0 0 0 auto' : '0 auto 0 0'};`
+                }
+                editor.commands.updateAttributes('image', attrs)
+            }
+        }
 
         setImageUrl("")
+        setImageAlt("")
+        setImageCaption("")
+        setImageWidth("100%")
+        setImageAlignment("center")
         setImageDialogOpen(false)
-    }, [editor, imageUrl])
+    }, [editor, imageUrl, imageAlt, imageCaption, imageWidth, imageAlignment])
+
+    const insertTable = useCallback(() => {
+        if (!editor) return
+
+        editor.chain()
+            .focus()
+            .insertTable({ rows: tableRows, cols: tableCols, withHeaderRow: true })
+            .run()
+
+        setTableDialogOpen(false)
+    }, [editor, tableRows, tableCols])
 
     const removeLink = useCallback(() => {
         if (!editor) return
@@ -290,6 +358,96 @@ export function TipTapEditor({
                         </Tooltip>
                     </div>
 
+                    <div className="flex items-center border-r pr-1 mr-1">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant={editor.isActive("table") ? "secondary" : "ghost"}
+                                    size="icon"
+                                    onClick={() => setTableDialogOpen(true)}
+                                    aria-label="Insert Table"
+                                >
+                                    <TableIcon className="size-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Insert Table</TooltipContent>
+                        </Tooltip>
+
+                        {editor.isActive("table") && (
+                            <>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => editor.chain().focus().deleteTable().run()}
+                                            aria-label="Delete Table"
+                                        >
+                                            <Scissors className="size-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Delete Table</TooltipContent>
+                                </Tooltip>
+
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => editor.chain().focus().addColumnBefore().run()}
+                                            aria-label="Add Column Before"
+                                        >
+                                            <span className="text-xs font-bold">+←</span>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Add Column Before</TooltipContent>
+                                </Tooltip>
+
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => editor.chain().focus().addColumnAfter().run()}
+                                            aria-label="Add Column After"
+                                        >
+                                            <span className="text-xs font-bold">→+</span>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Add Column After</TooltipContent>
+                                </Tooltip>
+
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => editor.chain().focus().addRowBefore().run()}
+                                            aria-label="Add Row Before"
+                                        >
+                                            <span className="text-xs font-bold">+↑</span>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Add Row Before</TooltipContent>
+                                </Tooltip>
+
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => editor.chain().focus().addRowAfter().run()}
+                                            aria-label="Add Row After"
+                                        >
+                                            <span className="text-xs font-bold">↓+</span>
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Add Row After</TooltipContent>
+                                </Tooltip>
+                            </>
+                        )}
+                    </div>
+
                     <div className="flex items-center">
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -324,7 +482,15 @@ export function TipTapEditor({
                 </div>
             </TooltipProvider>
 
-            <div className="relative overflow-auto" style={{ maxHeight }}>
+            <div
+                className="relative overflow-auto"
+                style={{ maxHeight }}
+                onClick={() => {
+                    if (editor && !editor.isFocused) {
+                        editor.commands.focus();
+                    }
+                }}
+            >
                 <EditorContent editor={editor} className="p-4 min-h-[200px]" />
             </div>
 
@@ -341,6 +507,9 @@ export function TipTapEditor({
                     <DialogHeader>
                         <DialogTitle>Add Link</DialogTitle>
                     </DialogHeader>
+                    <DialogDescription className="sr-only">
+                        {"Enter the URL of the link you want to insert."}
+                    </DialogDescription>
                     <div className="flex flex-col gap-4 py-4">
                         <Input
                             id="link-url"
@@ -371,28 +540,128 @@ export function TipTapEditor({
                 </DialogContent>
             </Dialog>
 
+            <Dialog open={tableDialogOpen} onOpenChange={setTableDialogOpen}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Insert Table</DialogTitle>
+                    </DialogHeader>
+                    <DialogDescription className="sr-only">
+                        {"Enter the number of rows and columns for the table you want to insert."}
+                    </DialogDescription>
+                    <div className="flex flex-col gap-4 py-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="flex flex-col gap-2">
+                                <Label htmlFor="table-rows">Rows</Label>
+                                <Input
+                                    id="table-rows"
+                                    type="number"
+                                    min="1"
+                                    max="10"
+                                    value={tableRows}
+                                    onChange={(e) => setTableRows(parseInt(e.target.value) || 2)}
+                                />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <Label htmlFor="table-cols">Columns</Label>
+                                <Input
+                                    id="table-cols"
+                                    type="number"
+                                    min="1"
+                                    max="10"
+                                    value={tableCols}
+                                    onChange={(e) => setTableCols(parseInt(e.target.value) || 2)}
+                                />
+                            </div>
+                        </div>
+                        <div className="border rounded-md p-4 bg-muted/30">
+                            <p className="text-sm text-muted-foreground">
+                                The table will be inserted with a header row. You can edit the table content after insertion.
+                            </p>
+                        </div>
+                    </div>
+                    <DialogFooter className="sm:justify-between">
+                        <Button type="button" variant="outline" onClick={() => setTableDialogOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button type="button" onClick={insertTable}>
+                            Insert Table
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             <Dialog open={imageDialogOpen} onOpenChange={setImageDialogOpen}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Add Image</DialogTitle>
                     </DialogHeader>
-                    <div className="flex flex-col gap-4 py-4">
-                        <Input
-                            id="image-url"
-                            placeholder="https://example.com/image.jpg"
-                            value={imageUrl}
-                            onChange={(e) => setImageUrl(e.target.value)}
-                            className="col-span-3"
-                            autoFocus
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    e.preventDefault()
-                                    addImage()
-                                }
-                            }}
-                        />
-                        <p className="text-sm text-muted-foreground">Enter the URL of the image you want to insert.</p>
-                    </div>
+                    <Tabs defaultValue="url" className="w-full">
+                        <TabsList className="grid w-full grid-cols-1">
+                            <TabsTrigger value="url">URL</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="url" className="mt-2">
+                            <div className="flex flex-col gap-4 py-2">
+                                <div className="flex flex-col gap-2">
+                                    <Label htmlFor="image-url">Image URL</Label>
+                                    <Input
+                                        id="image-url"
+                                        placeholder="https://example.com/image.jpg"
+                                        value={imageUrl}
+                                        onChange={(e) => setImageUrl(e.target.value)}
+                                        autoFocus
+                                    />
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <Label htmlFor="image-alt">Alt Text</Label>
+                                    <Input
+                                        id="image-alt"
+                                        placeholder="Description of the image"
+                                        value={imageAlt}
+                                        onChange={(e) => setImageAlt(e.target.value)}
+                                    />
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        Describe the image for screen readers and SEO
+                                    </p>
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <Label htmlFor="image-caption">Caption (optional)</Label>
+                                    <Input
+                                        id="image-caption"
+                                        placeholder="Image caption"
+                                        value={imageCaption}
+                                        onChange={(e) => setImageCaption(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="flex flex-col gap-2">
+                                        <Label htmlFor="image-width">Width</Label>
+                                        <Input
+                                            id="image-width"
+                                            placeholder="100%"
+                                            value={imageWidth}
+                                            onChange={(e) => setImageWidth(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <Label htmlFor="image-alignment">Alignment</Label>
+                                        <select
+                                            id="image-alignment"
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                                            value={imageAlignment}
+                                            onChange={(e) => setImageAlignment(e.target.value)}
+                                        >
+                                            <option value="left">Left</option>
+                                            <option value="center">Center</option>
+                                            <option value="right">Right</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
                     <DialogFooter className="sm:justify-between">
                         <Button type="button" variant="outline" onClick={() => setImageDialogOpen(false)}>
                             Cancel
