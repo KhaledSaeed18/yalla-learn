@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
-import { ModeToggle } from "../mode-toggle"
+import { ModeToggle } from "../theme/mode-toggle"
 
 export function DashboardHeader() {
   const pathname = usePathname()
