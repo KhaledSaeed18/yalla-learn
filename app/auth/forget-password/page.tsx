@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
@@ -11,12 +11,24 @@ import { AuthCard } from "@/components/auth/auth-card"
 import { AuthFooter } from "@/components/auth/auth-footer"
 import { forgotPasswordSchema } from "@/lib/validations"
 import Link from "next/link"
+import { forgotPasswordServices } from "@/services/auth/forgotPassword.services"
+import { ApiError } from "@/lib/api/baseAPI"
+import { toast } from "sonner"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "@/redux/store"
+import { setAuthError, clearError } from "@/redux/slices/authSlice"
 
 type ForgetPasswordValues = z.infer<typeof forgotPasswordSchema>
 
 export default function ForgetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [submittedEmail, setSubmittedEmail] = useState("")
+  const dispatch = useDispatch()
+
+  const { error } = useSelector(
+    (state: RootState) => state.auth
+  )
 
   const form = useForm<ForgetPasswordValues>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -25,18 +37,30 @@ export default function ForgetPasswordPage() {
     },
   })
 
+  useEffect(() => {
+    if (error) {
+      toast.error('Error', {
+        description: error,
+      })
+      dispatch(clearError())
+    }
+  }, [error, dispatch])
+
   async function onSubmit(values: ForgetPasswordValues) {
     setIsLoading(true)
 
     try {
-      console.log(values)
+      await forgotPasswordServices.forgotPassword(values)
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      toast.success("Reset instructions sent", {
+        description: "Check your email for the verification code"
+      })
 
+      setSubmittedEmail(values.email)
       setIsSubmitted(true)
     } catch (error) {
-      console.error(error)
+      const apiError = error as ApiError
+      dispatch(setAuthError(apiError.message || "Failed to send reset instructions"))
     } finally {
       setIsLoading(false)
     }
@@ -57,7 +81,7 @@ export default function ForgetPasswordPage() {
           </div>
 
           <div className="mt-4">
-            <Link href="/auth/reset-password">
+            <Link href={`/auth/reset-password?email=${encodeURIComponent(submittedEmail)}`}>
               <Button variant="outline" className="w-full">
                 Continue to Password Reset
               </Button>
@@ -97,7 +121,7 @@ export default function ForgetPasswordPage() {
             />
 
             <Button type="submit" className="w-full mt-6" disabled={isLoading}>
-              {isLoading ? "Sending reset link..." : "Send reset link"}
+              {isLoading ? "Sending reset code..." : "Send reset code"}
             </Button>
           </form>
         </Form>
@@ -107,4 +131,3 @@ export default function ForgetPasswordPage() {
     </>
   )
 }
-

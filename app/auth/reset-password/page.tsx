@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -13,18 +13,29 @@ import { resetPasswordWithConfirmSchema } from "@/lib/validations"
 import { AuthCard } from "@/components/auth/auth-card"
 import { PasswordInput } from "@/components/auth/password-input"
 import { PasswordRequirements } from "@/components/auth/password-requirements"
+import { resetPasswordServices } from "@/services/auth/resetPassword.services"
+import { ApiError } from "@/lib/api/baseAPI"
+import { toast } from "sonner"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "@/redux/store"
+import { setAuthError, clearError } from "@/redux/slices/authSlice"
 
 type ResetPasswordValues = z.infer<typeof resetPasswordWithConfirmSchema>
 
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const dispatch = useDispatch()
 
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
 
   const emailFromQuery = searchParams.get("email") || ""
   const codeFromQuery = searchParams.get("code") || ""
+
+  const { error } = useSelector(
+    (state: RootState) => state.auth
+  )
 
   const form = useForm<ResetPasswordValues>({
     resolver: zodResolver(resetPasswordWithConfirmSchema),
@@ -36,18 +47,35 @@ export default function ResetPasswordPage() {
     },
   })
 
+  useEffect(() => {
+    if (error) {
+      toast.error('Error', {
+        description: error,
+      })
+      dispatch(clearError())
+    }
+  }, [error, dispatch])
+
   async function onSubmit(values: ResetPasswordValues) {
     setIsLoading(true)
 
     try {
-      console.log(values)
+      const resetData = {
+        email: values.email,
+        code: values.code,
+        newPassword: values.newPassword,
+      }
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await resetPasswordServices.resetPassword(resetData)
+
+      toast.success("Password reset successful", {
+        description: "You can now sign in with your new password"
+      })
 
       setIsSuccess(true)
     } catch (error) {
-      console.error(error)
+      const apiError = error as ApiError
+      dispatch(setAuthError(apiError.message || "Failed to reset password"))
     } finally {
       setIsLoading(false)
     }
@@ -149,4 +177,3 @@ export default function ResetPasswordPage() {
     </AuthCard>
   )
 }
-
