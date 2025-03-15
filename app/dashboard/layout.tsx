@@ -17,12 +17,12 @@ export default function DashboardLayout({
 }) {
     return (
         <SidebarProvider defaultOpen={true}>
-            <div className="flex h-screen flex-1 overflow-hidden">
+            <div className="flex flex-1 overflow-hidden">
                 <DashboardSidebar />
                 <div className="flex flex-col flex-1 overflow-hidden">
                     <DashboardHeader />
                     <Suspense fallback={<div className="p-3">Loading...</div>}>
-                        <main className="flex-1 overflow-y-auto p-3">
+                        <main className="flex-1 p-3">
                             {children}
                         </main>
                     </Suspense>

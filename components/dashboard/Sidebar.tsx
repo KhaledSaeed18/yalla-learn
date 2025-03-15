@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Settings, ChevronDown, LayoutDashboard, LockKeyhole, FileCog, ChevronUp, User2, PenLine, FileText } from "lucide-react"
+import { Home, ChevronDown, LayoutDashboard, ChevronUp, User2, PenLine, FileText } from "lucide-react"
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton, SidebarFooter, useSidebar } from "@/components/ui/sidebar"
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -11,21 +11,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 export function DashboardSidebar() {
   const pathname = usePathname()
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false)
   const [isBlogOpen, setIsBlogOpen] = React.useState(false)
   const { open } = useSidebar()
 
-  const isSettingsActive = pathname.startsWith("/dashboard/settings")
   const isBlogActive = pathname.startsWith("/dashboard/blog")
 
   React.useEffect(() => {
-    if (isSettingsActive) {
-      setIsSettingsOpen(true)
-    }
     if (isBlogActive) {
       setIsBlogOpen(true)
     }
-  }, [isSettingsActive, isBlogActive])
+  }, [isBlogActive])
 
   const MenuItemWrapper: React.FC<{ children: React.ReactNode; label: string }> = ({ children, label }) => {
     if (!open) {
@@ -121,56 +116,6 @@ export function DashboardSidebar() {
                         >
                           <FileText className="size-5 mr-2" />
                           View All
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </Collapsible>
-
-              <Collapsible open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-                <SidebarMenuItem>
-                  <MenuItemWrapper
-                    label="Settings"
-                  >
-                    <SidebarMenuButton
-                      onClick={() => open && setIsSettingsOpen(!isSettingsOpen)}
-                      className={`${isSettingsActive ? "text-primary" : ""} w-full justify-between cursor-pointer`}
-                      aria-label="Toggle Settings"
-                    >
-                      <div className="flex items-center">
-                        <Settings className="size-5 mr-2" />
-                        {open && <span>Settings</span>}
-                      </div>
-                      {open && (
-                        <ChevronDown className={`size-5 transition-transform ${isSettingsOpen ? "rotate-180" : ""}`} />
-                      )}
-                    </SidebarMenuButton>
-                  </MenuItemWrapper>
-                </SidebarMenuItem>
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    <SidebarMenuSubItem>
-                      <SidebarMenuSubButton asChild>
-                        <Link
-                          aria-label="Go to General Settings"
-                          href="/dashboard/settings/general"
-                          className={pathname === "/dashboard/settings/general" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
-                        >
-                          <FileCog className="size-5 mr-2" />
-                          General
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                      <SidebarMenuSubButton asChild>
-                        <Link
-                          aria-label="Go to Security Settings"
-                          href="/dashboard/settings/security"
-                          className={pathname === "/dashboard/settings/security" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
-                        >
-                          <LockKeyhole className="size-5 mr-2" />
-                          Security
                         </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
