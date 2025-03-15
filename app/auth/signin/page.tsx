@@ -47,7 +47,9 @@ export default function SignInPage() {
 
   useEffect(() => {
     if (error) {
-      toast.error(error)
+      toast.error('Error', {
+        description: error,
+      })
       dispatch(clearError())
     }
   }, [error, dispatch])
