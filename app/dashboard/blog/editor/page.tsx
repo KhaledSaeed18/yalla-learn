@@ -175,75 +175,6 @@ export default function CreateBlogPost() {
                         </div>
 
                         <div className="space-y-6">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Publishing</CardTitle>
-                                    <CardDescription>Configure publishing settings</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <FormField
-                                        control={form.control}
-                                        name="status"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Status</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select status" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem value="DRAFT">Draft</SelectItem>
-                                                        <SelectItem value="PUBLISHED">Published</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="readTime"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Read Time (minutes)</FormLabel>
-                                                <div className="flex items-center space-x-2 mb-2">
-                                                    <div className="flex items-center space-x-2">
-                                                        <Checkbox
-                                                            id="auto-read-time"
-                                                            checked={isAutoReadTime}
-                                                            onCheckedChange={(checked) => setIsAutoReadTime(checked === true)}
-                                                        />
-                                                        <label
-                                                            htmlFor="auto-read-time"
-                                                            className="text-sm font-medium leading-none cursor-pointer"
-                                                        >
-                                                            Auto-calculate
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        placeholder={isAutoReadTime ? "Auto-calculated from content" : "Estimated reading time (optional)"}
-                                                        {...field}
-                                                        disabled={isAutoReadTime}
-                                                        className={isAutoReadTime ? "bg-muted/50" : ""}
-                                                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
-                                                    />
-                                                </FormControl>
-                                                <FormDescription>
-                                                    {isAutoReadTime ? "Automatically calculated based on content length" : "Enter manual estimate"}
-                                                </FormDescription>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </CardContent>
-                            </Card>
 
                             <Card>
                                 <CardHeader>
@@ -336,6 +267,76 @@ export default function CreateBlogPost() {
                                                     </div>
                                                 </FormControl>
                                                 <FormDescription>Enter an image URL or upload an image</FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </CardContent>
+                            </Card>
+
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Publishing</CardTitle>
+                                    <CardDescription>Configure publishing settings</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="status"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Status</FormLabel>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select status" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="DRAFT">Draft</SelectItem>
+                                                        <SelectItem value="PUBLISHED">Published</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="readTime"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Read Time (minutes)</FormLabel>
+                                                <div className="flex items-center space-x-2 mb-2">
+                                                    <div className="flex items-center space-x-2">
+                                                        <Checkbox
+                                                            id="auto-read-time"
+                                                            checked={isAutoReadTime}
+                                                            onCheckedChange={(checked) => setIsAutoReadTime(checked === true)}
+                                                        />
+                                                        <label
+                                                            htmlFor="auto-read-time"
+                                                            className="text-sm font-medium leading-none cursor-pointer"
+                                                        >
+                                                            Auto-calculate
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <FormControl>
+                                                    <Input
+                                                        type="number"
+                                                        min="0"
+                                                        placeholder={isAutoReadTime ? "Auto-calculated from content" : "Estimated reading time (optional)"}
+                                                        {...field}
+                                                        disabled={isAutoReadTime}
+                                                        className={isAutoReadTime ? "bg-muted/50" : ""}
+                                                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                                                    />
+                                                </FormControl>
+                                                <FormDescription>
+                                                    {isAutoReadTime ? "Automatically calculated based on content length" : "Enter manual estimate"}
+                                                </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
