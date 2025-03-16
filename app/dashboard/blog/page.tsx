@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { MoreHorizontal, PenLine, Trash2, FileText } from "lucide-react"
+import { MoreHorizontal, PenLine, Trash2, FileText, Eye, EyeOff } from "lucide-react"
 
 const initialBlogPosts = [
     {
@@ -42,7 +42,9 @@ const initialBlogPosts = [
 export default function BlogListingPage() {
     const [blogPosts, setBlogPosts] = useState(initialBlogPosts)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+    const [statusDialogOpen, setStatusDialogOpen] = useState(false)
     const [postToDelete, setPostToDelete] = useState<string | null>(null)
+    const [postToToggleStatus, setPostToToggleStatus] = useState<{ id: string; newStatus: string } | null>(null)
 
     const handleDeleteClick = (postId: string) => {
         setPostToDelete(postId)
@@ -51,10 +53,31 @@ export default function BlogListingPage() {
 
     const confirmDelete = () => {
         if (postToDelete) {
-            setBlogPosts(blogPosts.filter(post => post.id !== postToDelete))
+            setBlogPosts(blogPosts.filter((post) => post.id !== postToDelete))
             setPostToDelete(null)
         }
         setDeleteDialogOpen(false)
+    }
+
+    const handleStatusToggle = (postId: string) => {
+        const post = blogPosts.find((post) => post.id === postId)
+        if (post) {
+            const newStatus = post.status === "Published" ? "Draft" : "Published"
+            setPostToToggleStatus({ id: postId, newStatus })
+            setStatusDialogOpen(true)
+        }
+    }
+
+    const confirmStatusChange = () => {
+        if (postToToggleStatus) {
+            setBlogPosts(
+                blogPosts.map((post) =>
+                    post.id === postToToggleStatus.id ? { ...post, status: postToToggleStatus.newStatus } : post,
+                ),
+            )
+            setPostToToggleStatus(null)
+        }
+        setStatusDialogOpen(false)
     }
 
     return (
@@ -87,7 +110,7 @@ export default function BlogListingPage() {
                 </div>
             ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {blogPosts.map(post => (
+                    {blogPosts.map((post) => (
                         <Card key={post.id} className="overflow-hidden">
                             <CardHeader className="pb-3">
                                 <div className="flex justify-between items-start">
@@ -100,12 +123,19 @@ export default function BlogListingPage() {
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
-                                            <Link href={`/dashboard/blog/editor?id=${post.id}`}>
-                                                <DropdownMenuItem>
-                                                    <PenLine className="mr-2 h-4 w-4" />
-                                                    Edit
-                                                </DropdownMenuItem>
-                                            </Link>
+                                            <DropdownMenuItem onClick={() => handleStatusToggle(post.id)}>
+                                                {post.status === "Published" ? (
+                                                    <>
+                                                        <EyeOff className="mr-2 h-4 w-4" />
+                                                        Set as Draft
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Eye className="mr-2 h-4 w-4" />
+                                                        Publish
+                                                    </>
+                                                )}
+                                            </DropdownMenuItem>
                                             <DropdownMenuItem
                                                 className="text-destructive focus:text-destructive"
                                                 onClick={() => handleDeleteClick(post.id)}
@@ -118,9 +148,7 @@ export default function BlogListingPage() {
                                 </div>
                                 <CardDescription className="flex justify-between text-sm text-muted-foreground">
                                     <span>{post.date}</span>
-                                    <span className={post.status === "Draft" ? "text-amber-500" : "text-emerald-500"}>
-                                        {post.status}
-                                    </span>
+                                    <span className={post.status === "Draft" ? "text-amber-500" : "text-emerald-500"}>{post.status}</span>
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -128,7 +156,9 @@ export default function BlogListingPage() {
                             </CardContent>
                             <CardFooter>
                                 <Link href={`/dashboard/blog/editor?id=${post.id}`} className="w-full">
-                                    <Button variant="outline" className="w-full">View & Edit</Button>
+                                    <Button variant="outline" className="w-full">
+                                        View & Edit
+                                    </Button>
                                 </Link>
                             </CardFooter>
                         </Card>
@@ -147,11 +177,37 @@ export default function BlogListingPage() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={confirmDelete}
-                            className="bg-destructive text-white hover:bg-destructive/90"
-                        >
+                        <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-white hover:bg-destructive/90">
                             Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Status Change Confirmation Dialog */}
+            <AlertDialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            {postToToggleStatus?.newStatus === "Published" ? "Publish this post?" : "Change to draft status?"}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {postToToggleStatus?.newStatus === "Published"
+                                ? "This will make the post visible to all readers."
+                                : "This will hide the post from readers until you publish it again."}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={confirmStatusChange}
+                            className={
+                                postToToggleStatus?.newStatus === "Published"
+                                    ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                                    : "bg-amber-600 text-white hover:bg-amber-700"
+                            }
+                        >
+                            {postToToggleStatus?.newStatus === "Published" ? "Publish" : "Set as Draft"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -159,3 +215,4 @@ export default function BlogListingPage() {
         </main>
     )
 }
+
