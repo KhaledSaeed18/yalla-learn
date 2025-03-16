@@ -1,6 +1,7 @@
 "use client"
 
-import * as React from "react"
+import type React from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Home, ChevronDown, LayoutDashboard, ChevronUp, User2, PenLine, FileText, LogOut } from "lucide-react"
@@ -20,14 +21,14 @@ const MotionSidebarMenuSubButton = motion.create(SidebarMenuSubButton)
 
 export function DashboardSidebar() {
   const pathname = usePathname()
-  const [isBlogOpen, setIsBlogOpen] = React.useState(false)
+  const [isBlogOpen, setIsBlogOpen] = useState(false)
   const { open } = useSidebar()
   const { user } = useSelector((state: RootState) => state.auth)
-  const [clickedItem, setClickedItem] = React.useState<string | null>(null)
-  const [isBlogActive, setIsBlogActive] = React.useState(false)
+  const [clickedItem, setClickedItem] = useState<string | null>(null)
+  const [isBlogActive, setIsBlogActive] = useState(false)
   const { isAdmin } = useUserRole()
 
-  const handleLogout = async (e: React.MouseEvent) => {
+  const handleLogout = useCallback(async (e: React.MouseEvent) => {
     try {
       e.preventDefault()
       await logout()
@@ -36,11 +37,11 @@ export function DashboardSidebar() {
         description: error instanceof Error ? error.message : "An unknown error occurred",
       })
     }
-  }
+  }, []);
 
   const displayName = user ? `${user.firstName} ${user.lastName}` : ""
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (user) {
       setIsBlogActive(pathname.startsWith("/dashboard/blog"))
     } else {
@@ -48,7 +49,7 @@ export function DashboardSidebar() {
     }
   }, [pathname, user])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isBlogActive) {
       setIsBlogOpen(true)
     } else {
@@ -66,19 +67,235 @@ export function DashboardSidebar() {
     transition: { duration: 0.1 },
   }
 
-  const MenuItemWrapper: React.FC<{ children: React.ReactNode; label: string }> = ({ children, label }) => {
-    if (!open) {
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>{children}</TooltipTrigger>
-            <TooltipContent side="right">{label}</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )
+  const MenuItemWrapper = useMemo(() => {
+    return ({ children, label }: { children: React.ReactNode; label: string }) => {
+      if (!open) {
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>{children}</TooltipTrigger>
+              <TooltipContent side="right">{label}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )
+      }
+      return children
     }
-    return children
-  }
+  }, [open]);
+
+  const homeMenuItem = useMemo(() => (
+    <SidebarMenuItem>
+      <MenuItemWrapper label="Home">
+        <MotionSidebarMenuButton
+          asChild
+          whileHover={hoverAnimation}
+          whileTap={tapAnimation}
+          animate={clickedItem === "home" ? { scale: 0.98 } : { scale: 1 }}
+          onClick={() => setClickedItem("home")}
+          onAnimationComplete={() => setClickedItem(null)}
+        >
+          <Link
+            aria-label="Go to Dashboard Home"
+            href="/dashboard"
+            className={`flex items-center ${pathname === "/dashboard" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}`}
+          >
+            <Home className="size-5 mr-2" />
+            {open && <span>Home</span>}
+          </Link>
+        </MotionSidebarMenuButton>
+      </MenuItemWrapper>
+    </SidebarMenuItem>
+  ), [open, clickedItem, pathname, MenuItemWrapper, hoverAnimation, tapAnimation]);
+
+  const blogMenuToggle = useMemo(() => (
+    <SidebarMenuItem>
+      <MenuItemWrapper label="Blog">
+        <MotionSidebarMenuButton
+          onClick={(e) => {
+            if (
+              e.currentTarget === e.target ||
+              (e.target instanceof Element &&
+                e.currentTarget.contains(e.target) &&
+                !e.currentTarget.querySelector("a")?.contains(e.target))
+            ) {
+              setClickedItem("blog")
+              open && setIsBlogOpen(!isBlogOpen)
+            }
+          }}
+          className={`${isBlogActive ? "text-primary" : ""} w-full justify-between cursor-pointer`}
+          aria-label="Toggle Blog"
+          whileHover={hoverAnimation}
+          whileTap={tapAnimation}
+          animate={clickedItem === "blog" ? { scale: 0.98 } : { scale: 1 }}
+          onAnimationComplete={() => setClickedItem(null)}
+        >
+          <div className="flex items-center">
+            <FileText className="size-5 mr-2" />
+            {open && <span>{isAdmin ? "Blog Management" : "My Blogs"}</span>}
+          </div>
+          {open && (
+            <motion.div
+              initial={false}
+              animate={{ rotate: isBlogOpen ? 180 : 0 }}
+              transition={{ duration: 0.3 }}
+              key="chevron-icon"
+            >
+              <ChevronDown className="size-5" />
+            </motion.div>
+          )}
+        </MotionSidebarMenuButton>
+      </MenuItemWrapper>
+    </SidebarMenuItem>
+  ), [open, clickedItem, isBlogActive, isBlogOpen, isAdmin, MenuItemWrapper, hoverAnimation, tapAnimation]);
+
+  const adminBlogMenuItems = useMemo(() => (
+    <>
+      <SidebarMenuSubItem>
+        <MotionSidebarMenuSubButton
+          asChild
+          whileHover={hoverAnimation}
+          whileTap={tapAnimation}
+        >
+          <Link
+            aria-label="Manage All Posts"
+            href="/dashboard/blog"
+            className={pathname === "/dashboard/blog" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
+          >
+            <FileText className="size-5 mr-2" />
+            All Posts
+          </Link>
+        </MotionSidebarMenuSubButton>
+      </SidebarMenuSubItem>
+      <SidebarMenuSubItem>
+        <MotionSidebarMenuSubButton
+          asChild
+          whileHover={hoverAnimation}
+          whileTap={tapAnimation}
+        >
+          <Link
+            aria-label="Blog Settings"
+            href="/dashboard/blog/settings"
+            className={pathname === "/dashboard/blog/settings" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
+          >
+            <FileText className="size-5 mr-2" />
+            Settings
+          </Link>
+        </MotionSidebarMenuSubButton>
+      </SidebarMenuSubItem>
+    </>
+  ), [pathname, hoverAnimation, tapAnimation]);
+
+  const userBlogMenuItems = useMemo(() => (
+    <>
+      <SidebarMenuSubItem>
+        <MotionSidebarMenuSubButton
+          asChild
+          whileHover={hoverAnimation}
+          whileTap={tapAnimation}
+          animate={clickedItem === "create-blog" ? { scale: 0.98 } : { scale: 1 }}
+          onClick={() => setClickedItem("create-blog")}
+          onAnimationComplete={() => setClickedItem(null)}
+        >
+          <Link
+            aria-label="Create New Blog Post"
+            href="/dashboard/blog/editor"
+            className={
+              pathname.startsWith("/dashboard/blog/editor")
+                ? "text-primary bg-gray-200 dark:bg-black/50"
+                : ""
+            }
+          >
+            <PenLine className="size-5 mr-2" />
+            Create New
+          </Link>
+        </MotionSidebarMenuSubButton>
+      </SidebarMenuSubItem>
+      <SidebarMenuSubItem>
+        <MotionSidebarMenuSubButton
+          asChild
+          whileHover={hoverAnimation}
+          whileTap={tapAnimation}
+          animate={clickedItem === "view-blog" ? { scale: 0.98 } : { scale: 1 }}
+          onClick={() => setClickedItem("view-blog")}
+          onAnimationComplete={() => setClickedItem(null)}
+        >
+          <Link
+            aria-label="View All Blog Posts"
+            href="/dashboard/blog"
+            className={pathname === "/dashboard/blog" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
+          >
+            <FileText className="size-5 mr-2" />
+            My Posts
+          </Link>
+        </MotionSidebarMenuSubButton>
+      </SidebarMenuSubItem>
+    </>
+  ), [pathname, clickedItem, hoverAnimation, tapAnimation]);
+
+  const userMenu = useMemo(() => (
+    <SidebarMenuItem>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <SidebarMenuButton className="cursor-pointer">
+            <User2 /> {displayName}
+            <ChevronUp className="ml-auto" />
+          </SidebarMenuButton>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          side="top"
+          className="w-[--radix-popper-anchor-width]"
+        >
+          <Link href="/dashboard/account" aria-label="Go to Account Settings">
+            <DropdownMenuItem className="cursor-pointer">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center w-full"
+              >
+                <User2 className="mr-2 size-4" />
+                <span>Account</span>
+              </motion.div>
+            </DropdownMenuItem>
+          </Link>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={handleLogout}
+          >
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center w-full"
+            >
+              <LogOut className="mr-2 size-4" />
+              <span>Sign out</span>
+            </motion.div>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </SidebarMenuItem>
+  ), [displayName, handleLogout]);
+
+  const sidebarHeader = useMemo(() => (
+    <SidebarHeader className="border-b h-12 px-4 justify-center items-center">
+      {open ? (
+        <Link href="/" aria-label="Go to Home Page">
+          <motion.span
+            className="text-xl text-center font-bold truncate"
+            whileHover={{ scale: 1.03 }}
+            transition={{ duration: 0.2 }}
+          >
+            My Dashboard
+          </motion.span>
+        </Link>
+      ) : (
+        <Link href="/" aria-label="Go to Home Page">
+          <motion.div whileHover={{ rotate: 5, scale: 1.1 }} transition={{ duration: 0.2 }}>
+            <LayoutDashboard className="size-5" aria-hidden="true" />
+          </motion.div>
+        </Link>
+      )}
+    </SidebarHeader>
+  ), [open]);
 
   if (!user) {
     return null
@@ -87,178 +304,20 @@ export function DashboardSidebar() {
   return (
     <Sidebar collapsible="icon">
       {/* Sidebar Header */}
-      <SidebarHeader className="border-b h-12 px-4 justify-center items-center">
-        {open ? (
-          <Link href="/" aria-label="Go to Home Page">
-            <motion.span
-              className="text-xl text-center font-bold truncate"
-              whileHover={{ scale: 1.03 }}
-              transition={{ duration: 0.2 }}
-            >
-              My Dashboard
-            </motion.span>
-          </Link>
-        ) : (
-          <Link href="/" aria-label="Go to Home Page">
-            <motion.div whileHover={{ rotate: 5, scale: 1.1 }} transition={{ duration: 0.2 }}>
-              <LayoutDashboard className="size-5" aria-hidden="true" />
-            </motion.div>
-          </Link>
-        )}
-      </SidebarHeader>
+      {sidebarHeader}
 
       {/* Sidebar Content */}
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <MenuItemWrapper label="Home">
-                  <MotionSidebarMenuButton
-                    asChild
-                    whileHover={hoverAnimation}
-                    whileTap={tapAnimation}
-                    animate={clickedItem === "home" ? { scale: 0.98 } : { scale: 1 }}
-                    onClick={() => setClickedItem("home")}
-                    onAnimationComplete={() => setClickedItem(null)}
-                  >
-                    <Link
-                      aria-label="Go to Dashboard Home"
-                      href="/dashboard"
-                      className={`flex items-center ${pathname === "/dashboard" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}`}
-                    >
-                      <Home className="size-5 mr-2" />
-                      {open && <span>Home</span>}
-                    </Link>
-                  </MotionSidebarMenuButton>
-                </MenuItemWrapper>
-              </SidebarMenuItem>
-
+              {homeMenuItem}
               {/* Blog Section */}
               <Collapsible open={isBlogOpen} onOpenChange={setIsBlogOpen}>
-                <SidebarMenuItem>
-                  <MenuItemWrapper label="Blog">
-                    <MotionSidebarMenuButton
-                      onClick={(e) => {
-                        if (
-                          e.currentTarget === e.target ||
-                          (e.target instanceof Element &&
-                            e.currentTarget.contains(e.target) &&
-                            !e.currentTarget.querySelector("a")?.contains(e.target))
-                        ) {
-                          setClickedItem("blog")
-                          open && setIsBlogOpen(!isBlogOpen)
-                        }
-                      }}
-                      className={`${isBlogActive ? "text-primary" : ""} w-full justify-between cursor-pointer`}
-                      aria-label="Toggle Blog"
-                      whileHover={hoverAnimation}
-                      whileTap={tapAnimation}
-                      animate={clickedItem === "blog" ? { scale: 0.98 } : { scale: 1 }}
-                      onAnimationComplete={() => setClickedItem(null)}
-                    >
-                      <div className="flex items-center">
-                        <FileText className="size-5 mr-2" />
-                        {open && <span>{isAdmin ? "Blog Management" : "My Blogs"}</span>}
-                      </div>
-                      {open && (
-                        <motion.div
-                          initial={false}
-                          animate={{ rotate: isBlogOpen ? 180 : 0 }}
-                          transition={{ duration: 0.3 }}
-                          key="chevron-icon"
-                        >
-                          <ChevronDown className="size-5" />
-                        </motion.div>
-                      )}
-                    </MotionSidebarMenuButton>
-                  </MenuItemWrapper>
-                </SidebarMenuItem>
+                {blogMenuToggle}
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {isAdmin ? (
-                      // Admin-specific blog menu items
-                      <>
-                        <SidebarMenuSubItem>
-                          <MotionSidebarMenuSubButton
-                            asChild
-                            whileHover={hoverAnimation}
-                            whileTap={tapAnimation}
-                          >
-                            <Link
-                              aria-label="Manage All Posts"
-                              href="/dashboard/blog"
-                              className={pathname === "/dashboard/blog" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
-                            >
-                              <FileText className="size-5 mr-2" />
-                              All Posts
-                            </Link>
-                          </MotionSidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                        <SidebarMenuSubItem>
-                          <MotionSidebarMenuSubButton
-                            asChild
-                            whileHover={hoverAnimation}
-                            whileTap={tapAnimation}
-                          >
-                            <Link
-                              aria-label="Blog Settings"
-                              href="/dashboard/blog/settings"
-                              className={pathname === "/dashboard/blog/settings" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
-                            >
-                              <FileText className="size-5 mr-2" />
-                              Settings
-                            </Link>
-                          </MotionSidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      </>
-                    ) : (
-                      // Regular user blog menu items
-                      <>
-                        <SidebarMenuSubItem>
-                          <MotionSidebarMenuSubButton
-                            asChild
-                            whileHover={hoverAnimation}
-                            whileTap={tapAnimation}
-                            animate={clickedItem === "create-blog" ? { scale: 0.98 } : { scale: 1 }}
-                            onClick={() => setClickedItem("create-blog")}
-                            onAnimationComplete={() => setClickedItem(null)}
-                          >
-                            <Link
-                              aria-label="Create New Blog Post"
-                              href="/dashboard/blog/editor"
-                              className={
-                                pathname.startsWith("/dashboard/blog/editor")
-                                  ? "text-primary bg-gray-200 dark:bg-black/50"
-                                  : ""
-                              }
-                            >
-                              <PenLine className="size-5 mr-2" />
-                              Create New
-                            </Link>
-                          </MotionSidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                        <SidebarMenuSubItem>
-                          <MotionSidebarMenuSubButton
-                            asChild
-                            whileHover={hoverAnimation}
-                            whileTap={tapAnimation}
-                            animate={clickedItem === "view-blog" ? { scale: 0.98 } : { scale: 1 }}
-                            onClick={() => setClickedItem("view-blog")}
-                            onAnimationComplete={() => setClickedItem(null)}
-                          >
-                            <Link
-                              aria-label="View All Blog Posts"
-                              href="/dashboard/blog"
-                              className={pathname === "/dashboard/blog" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
-                            >
-                              <FileText className="size-5 mr-2" />
-                              My Posts
-                            </Link>
-                          </MotionSidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      </>
-                    )}
+                    {isAdmin ? adminBlogMenuItems : userBlogMenuItems}
                   </SidebarMenuSub>
                 </CollapsibleContent>
               </Collapsible>
@@ -270,49 +329,9 @@ export function DashboardSidebar() {
       {/* Sidebar Footer */}
       <SidebarFooter className="border-t">
         <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="cursor-pointer">
-                  <User2 /> {displayName}
-                  <ChevronUp className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-[--radix-popper-anchor-width]"
-              >
-                <Link href="/dashboard/account" aria-label="Go to Account Settings">
-                  <DropdownMenuItem className="cursor-pointer">
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex items-center w-full"
-                    >
-                      <User2 className="mr-2 size-4" />
-                      <span>Account</span>
-                    </motion.div>
-                  </DropdownMenuItem>
-                </Link>
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={handleLogout}
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center w-full"
-                  >
-                    <LogOut className="mr-2 size-4" />
-                    <span>Sign out</span>
-                  </motion.div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
+          {userMenu}
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   )
 }
-
