@@ -15,7 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "sonner"
 import { PasswordInput } from "@/components/auth/password-input"
 import { PasswordRequirements } from "@/components/auth/password-requirements"
-import { COMMON_PASSWORDS } from "@/lib/validations"
+import { COMMON_PASSWORDS } from "@/lib/auth/validations"
 
 const generalFormSchema = z.object({
     name: z.string().min(2, { message: "Name must be at least 2 characters" }),
@@ -49,7 +49,7 @@ type PasswordFormValues = z.infer<typeof passwordFormSchema>
 
 export default function AccountPage() {
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
-    
+
     const generalForm = useForm<GeneralFormValues>({
         resolver: zodResolver(generalFormSchema),
         defaultValues: {
