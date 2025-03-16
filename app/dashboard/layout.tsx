@@ -36,7 +36,7 @@ export default function DashboardLayout({
                 <div className="flex flex-col flex-1">
                     <DashboardHeader />
                     <Suspense fallback={<LoadingSpinner fullScreen />}>
-                        <main className="flex-1 p-3">
+                        <main className="flex-1 p-3 overflow-hidden">
                             {children}
                         </main>
                     </Suspense>
