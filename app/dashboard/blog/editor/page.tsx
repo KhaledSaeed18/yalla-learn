@@ -4,8 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { format } from "date-fns"
-import { CalendarIcon, ImageIcon } from "lucide-react"
+import { ImageIcon } from "lucide-react"
 import { TipTapEditor } from "@/components/editor/TipTapEditor"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,14 +12,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { blogPostSchema, type BlogPostFormValues } from "@/lib/blog/validation"
 
-// Mock data for categories - in a real app, you would fetch this from your API
 const categories = [
     { id: "1", name: "Technology", slug: "technology" },
     { id: "2", name: "Design", slug: "design" },
@@ -49,7 +46,6 @@ export default function CreateBlogPost() {
 
     const { watch, setValue } = form
 
-    // Watch content to update the form value when the editor changes
     const content = watch("content")
 
     function handleEditorChange(newContent: string) {
@@ -60,26 +56,27 @@ export default function CreateBlogPost() {
         const title = e.target.value
         setValue("title", title)
 
-        // Auto-generate slug from title
         if (title) {
             const slug = title
+                .trim()
                 .toLowerCase()
                 .replace(/[^\w\s]/gi, "")
                 .replace(/\s+/g, "-")
+                .replace(/-+$/, "")
             setValue("slug", slug, { shouldValidate: true })
+        } else {
+            // When title is empty, clear the slug as well
+            setValue("slug", "", { shouldValidate: true })
         }
     }
 
     function onSubmit(data: BlogPostFormValues) {
         console.log("Form submitted:", data)
-        // Here you would typically send the data to your API
-        // For example: await createBlogPost(data)
     }
 
     return (
-        <div className="container py-10">
-            <h1 className="text-3xl font-bold mb-6">Create New Blog Post</h1>
-
+        <main>
+            <h1 className="text-3xl font-bold pb-6">Create New Blog Post</h1>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -95,7 +92,7 @@ export default function CreateBlogPost() {
                                         name="title"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Title</FormLabel>
+                                                <FormLabel>Title *</FormLabel>
                                                 <FormControl>
                                                     <Input placeholder="Enter blog title" {...field} onChange={handleTitleChange} />
                                                 </FormControl>
@@ -103,7 +100,6 @@ export default function CreateBlogPost() {
                                             </FormItem>
                                         )}
                                     />
-
                                     <FormField
                                         control={form.control}
                                         name="slug"
@@ -111,10 +107,8 @@ export default function CreateBlogPost() {
                                             <FormItem>
                                                 <FormLabel>Slug</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="enter-slug-here" {...field} />
+                                                    <Input placeholder="Auto-generated from title" {...field} disabled className="bg-muted/50" />
                                                 </FormControl>
-                                                <FormDescription>The URL-friendly version of the title</FormDescription>
-                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />
@@ -142,7 +136,7 @@ export default function CreateBlogPost() {
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Content</CardTitle>
+                                    <CardTitle>Blog post content</CardTitle>
                                     <CardDescription>Write your blog post content</CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -151,12 +145,9 @@ export default function CreateBlogPost() {
                                         name="content"
                                         render={() => (
                                             <FormItem>
+                                                <FormLabel>Content *</FormLabel>
                                                 <FormControl>
-                                                    <TipTapEditor
-                                                        content={content}
-                                                        onChange={handleEditorChange}
-                                                        className="min-h-[400px] border rounded-md p-4"
-                                                    />
+                                                    <TipTapEditor content={content} onChange={handleEditorChange} className="w-full" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -197,42 +188,6 @@ export default function CreateBlogPost() {
 
                                     <FormField
                                         control={form.control}
-                                        name="publishedAt"
-                                        render={({ field }) => (
-                                            <FormItem className="flex flex-col">
-                                                <FormLabel>Publish Date</FormLabel>
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <FormControl>
-                                                            <Button
-                                                                variant={"outline"}
-                                                                className={cn(
-                                                                    "w-full pl-3 text-left font-normal",
-                                                                    !field.value && "text-muted-foreground",
-                                                                )}
-                                                            >
-                                                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                            </Button>
-                                                        </FormControl>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-auto p-0" align="start">
-                                                        <Calendar
-                                                            mode="single"
-                                                            selected={field.value || undefined}
-                                                            onSelect={field.onChange}
-                                                            initialFocus
-                                                        />
-                                                    </PopoverContent>
-                                                </Popover>
-                                                <FormDescription>Leave empty to use the current date when publishing</FormDescription>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
                                         name="readTime"
                                         render={({ field }) => (
                                             <FormItem>
@@ -241,7 +196,7 @@ export default function CreateBlogPost() {
                                                     <Input
                                                         type="number"
                                                         min="0"
-                                                        placeholder="Estimated reading time"
+                                                        placeholder="Estimated reading time (optional)"
                                                         {...field}
                                                         onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                                                     />
@@ -263,7 +218,7 @@ export default function CreateBlogPost() {
                                         name="categories"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Categories</FormLabel>
+                                                <FormLabel>Categories *</FormLabel>
                                                 <FormControl>
                                                     <div className="relative">
                                                         <Popover open={commandOpen} onOpenChange={setCommandOpen}>
@@ -290,7 +245,6 @@ export default function CreateBlogPost() {
                                                                                         const newSelectedCategories = isSelected
                                                                                             ? selectedCategories.filter((id) => id !== category.id)
                                                                                             : [...selectedCategories, category.id]
-
                                                                                         setSelectedCategories(newSelectedCategories)
                                                                                         setValue("categories", newSelectedCategories, {
                                                                                             shouldValidate: true,
@@ -338,7 +292,7 @@ export default function CreateBlogPost() {
                                                 <FormLabel>Thumbnail Image</FormLabel>
                                                 <FormControl>
                                                     <div className="flex items-center gap-2">
-                                                        <Input placeholder="Image URL or upload" {...field} />
+                                                        <Input placeholder="Image URL or upload (optional)" {...field} />
                                                         <Button type="button" size="icon" variant="outline">
                                                             <ImageIcon className="h-4 w-4" />
                                                         </Button>
@@ -352,17 +306,14 @@ export default function CreateBlogPost() {
                                 </CardContent>
                             </Card>
 
-                            <div className="flex justify-end gap-4">
-                                <Button variant="outline" type="button">
-                                    Save as Draft
-                                </Button>
-                                <Button type="submit">Publish</Button>
+                            <div className="flex items-center justify-center">
+                                <Button size='lg' type="submit">{form.watch("status") === "PUBLISHED" ? "Publish" : "Save as Draft"}</Button>
                             </div>
                         </div>
                     </div>
                 </form>
             </Form>
-        </div>
+        </main>
     )
 }
 
