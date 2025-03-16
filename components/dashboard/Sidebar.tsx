@@ -13,6 +13,7 @@ import type { RootState } from "@/redux/store"
 import { logout } from "@/lib/auth/logout"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
+import { useUserRole } from "@/hooks/useUserRole"
 
 const MotionSidebarMenuButton = motion.create(SidebarMenuButton)
 const MotionSidebarMenuSubButton = motion.create(SidebarMenuSubButton)
@@ -24,6 +25,7 @@ export function DashboardSidebar() {
   const { user } = useSelector((state: RootState) => state.auth)
   const [clickedItem, setClickedItem] = React.useState<string | null>(null)
   const [isBlogActive, setIsBlogActive] = React.useState(false)
+  const { isAdmin } = useUserRole()
 
   const handleLogout = async (e: React.MouseEvent) => {
     try {
@@ -157,7 +159,7 @@ export function DashboardSidebar() {
                     >
                       <div className="flex items-center">
                         <FileText className="size-5 mr-2" />
-                        {open && <span>Blog</span>}
+                        {open && <span>{isAdmin ? "Blog Management" : "My Blogs"}</span>}
                       </div>
                       {open && (
                         <motion.div
@@ -174,48 +176,89 @@ export function DashboardSidebar() {
                 </SidebarMenuItem>
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    <SidebarMenuSubItem>
-                      <MotionSidebarMenuSubButton
-                        asChild
-                        whileHover={hoverAnimation}
-                        whileTap={tapAnimation}
-                        animate={clickedItem === "create-blog" ? { scale: 0.98 } : { scale: 1 }}
-                        onClick={() => setClickedItem("create-blog")}
-                        onAnimationComplete={() => setClickedItem(null)}
-                      >
-                        <Link
-                          aria-label="Create New Blog Post"
-                          href="/dashboard/blog/editor"
-                          className={
-                            pathname.startsWith("/dashboard/blog/editor")
-                              ? "text-primary bg-gray-200 dark:bg-black/50"
-                              : ""
-                          }
-                        >
-                          <PenLine className="size-5 mr-2" />
-                          Create New
-                        </Link>
-                      </MotionSidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                      <MotionSidebarMenuSubButton
-                        asChild
-                        whileHover={hoverAnimation}
-                        whileTap={tapAnimation}
-                        animate={clickedItem === "view-blog" ? { scale: 0.98 } : { scale: 1 }}
-                        onClick={() => setClickedItem("view-blog")}
-                        onAnimationComplete={() => setClickedItem(null)}
-                      >
-                        <Link
-                          aria-label="View All Blog Posts"
-                          href="/dashboard/blog"
-                          className={pathname === "/dashboard/blog" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
-                        >
-                          <FileText className="size-5 mr-2" />
-                          View All
-                        </Link>
-                      </MotionSidebarMenuSubButton>
-                    </SidebarMenuSubItem>
+                    {isAdmin ? (
+                      // Admin-specific blog menu items
+                      <>
+                        <SidebarMenuSubItem>
+                          <MotionSidebarMenuSubButton
+                            asChild
+                            whileHover={hoverAnimation}
+                            whileTap={tapAnimation}
+                          >
+                            <Link
+                              aria-label="Manage All Posts"
+                              href="/dashboard/blog"
+                              className={pathname === "/dashboard/blog" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
+                            >
+                              <FileText className="size-5 mr-2" />
+                              All Posts
+                            </Link>
+                          </MotionSidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                          <MotionSidebarMenuSubButton
+                            asChild
+                            whileHover={hoverAnimation}
+                            whileTap={tapAnimation}
+                          >
+                            <Link
+                              aria-label="Blog Settings"
+                              href="/dashboard/blog/settings"
+                              className={pathname === "/dashboard/blog/settings" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
+                            >
+                              <FileText className="size-5 mr-2" />
+                              Settings
+                            </Link>
+                          </MotionSidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      </>
+                    ) : (
+                      // Regular user blog menu items
+                      <>
+                        <SidebarMenuSubItem>
+                          <MotionSidebarMenuSubButton
+                            asChild
+                            whileHover={hoverAnimation}
+                            whileTap={tapAnimation}
+                            animate={clickedItem === "create-blog" ? { scale: 0.98 } : { scale: 1 }}
+                            onClick={() => setClickedItem("create-blog")}
+                            onAnimationComplete={() => setClickedItem(null)}
+                          >
+                            <Link
+                              aria-label="Create New Blog Post"
+                              href="/dashboard/blog/editor"
+                              className={
+                                pathname.startsWith("/dashboard/blog/editor")
+                                  ? "text-primary bg-gray-200 dark:bg-black/50"
+                                  : ""
+                              }
+                            >
+                              <PenLine className="size-5 mr-2" />
+                              Create New
+                            </Link>
+                          </MotionSidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                          <MotionSidebarMenuSubButton
+                            asChild
+                            whileHover={hoverAnimation}
+                            whileTap={tapAnimation}
+                            animate={clickedItem === "view-blog" ? { scale: 0.98 } : { scale: 1 }}
+                            onClick={() => setClickedItem("view-blog")}
+                            onAnimationComplete={() => setClickedItem(null)}
+                          >
+                            <Link
+                              aria-label="View All Blog Posts"
+                              href="/dashboard/blog"
+                              className={pathname === "/dashboard/blog" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
+                            >
+                              <FileText className="size-5 mr-2" />
+                              My Posts
+                            </Link>
+                          </MotionSidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      </>
+                    )}
                   </SidebarMenuSub>
                 </CollapsibleContent>
               </Collapsible>
