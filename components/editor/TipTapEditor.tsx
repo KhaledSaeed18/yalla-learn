@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { cn } from "@/lib/utils"
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
@@ -17,7 +17,6 @@ import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface TipTapEditorProps {
     content: string
@@ -43,6 +42,7 @@ export function TipTapEditor({
     const [tableCols, setTableCols] = useState<number>(3)
     const [wordCount, setWordCount] = useState<number>(0)
     const [charCount, setCharCount] = useState<number>(0)
+    const updateTimeout = useRef<NodeJS.Timeout | null>(null)
 
     const editor = useEditor({
         extensions: [
@@ -91,10 +91,13 @@ export function TipTapEditor({
         content,
         onUpdate: ({ editor }) => {
             const newContent = editor.getHTML()
-            onChange(newContent)
             const text = editor.getText()
             setCharCount(text.length)
             setWordCount(text.trim() ? text.trim().split(/\s+/).length : 0)
+            if (updateTimeout.current) clearTimeout(updateTimeout.current)
+            updateTimeout.current = setTimeout(() => {
+                onChange(newContent)
+            }, 500)
         },
         editorProps: {
             attributes: {

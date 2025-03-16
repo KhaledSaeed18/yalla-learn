@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ImageIcon } from "lucide-react"
@@ -17,6 +17,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { blogPostSchema, type BlogPostFormValues } from "@/lib/blog/validation"
+import { Checkbox } from "@/components/ui/checkbox"
 
 const categories = [
     { id: "1", name: "Technology", slug: "technology" },
@@ -28,6 +29,7 @@ const categories = [
 export default function CreateBlogPost() {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([])
     const [commandOpen, setCommandOpen] = useState(false)
+    const [isAutoReadTime, setIsAutoReadTime] = useState(true)
 
     const form = useForm<BlogPostFormValues>({
         resolver: zodResolver(blogPostSchema),
@@ -38,10 +40,11 @@ export default function CreateBlogPost() {
             excerpt: "",
             thumbnail: "",
             status: "DRAFT",
-            readTime: undefined,
-            publishedAt: null,
+            readTime: 0,
             categories: [],
         },
+        mode: "onSubmit",
+        reValidateMode: "onSubmit"
     })
 
     const { watch, setValue } = form
@@ -49,7 +52,11 @@ export default function CreateBlogPost() {
     const content = watch("content")
 
     function handleEditorChange(newContent: string) {
-        setValue("content", newContent, { shouldValidate: true })
+        form.setValue("content", newContent, {
+            shouldValidate: false,
+            shouldDirty: true,
+            shouldTouch: false
+        })
     }
 
     function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -65,10 +72,20 @@ export default function CreateBlogPost() {
                 .replace(/-+$/, "")
             setValue("slug", slug, { shouldValidate: true })
         } else {
-            // When title is empty, clear the slug as well
             setValue("slug", "", { shouldValidate: true })
         }
     }
+
+    useEffect(() => {
+        if (isAutoReadTime && content) {
+            const wordCount = content.trim().split(/\s+/).length;
+            const estimatedReadTime = Math.max(1, Math.ceil(wordCount / 225));
+            setValue("readTime", estimatedReadTime, {
+                shouldValidate: false,
+                shouldDirty: true
+            });
+        }
+    }, [content, isAutoReadTime, setValue]);
 
     function onSubmit(data: BlogPostFormValues) {
         console.log("Form submitted:", data)
@@ -96,7 +113,7 @@ export default function CreateBlogPost() {
                                                 <FormControl>
                                                     <Input placeholder="Enter blog title" {...field} onChange={handleTitleChange} />
                                                 </FormControl>
-                                                <FormMessage />
+                                                {form.formState.isSubmitted && <FormMessage />}
                                             </FormItem>
                                         )}
                                     />
@@ -192,15 +209,35 @@ export default function CreateBlogPost() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Read Time (minutes)</FormLabel>
+                                                <div className="flex items-center space-x-2 mb-2">
+                                                    <div className="flex items-center space-x-2">
+                                                        <Checkbox
+                                                            id="auto-read-time"
+                                                            checked={isAutoReadTime}
+                                                            onCheckedChange={(checked) => setIsAutoReadTime(checked === true)}
+                                                        />
+                                                        <label
+                                                            htmlFor="auto-read-time"
+                                                            className="text-sm font-medium leading-none cursor-pointer"
+                                                        >
+                                                            Auto-calculate
+                                                        </label>
+                                                    </div>
+                                                </div>
                                                 <FormControl>
                                                     <Input
                                                         type="number"
                                                         min="0"
-                                                        placeholder="Estimated reading time (optional)"
+                                                        placeholder={isAutoReadTime ? "Auto-calculated from content" : "Estimated reading time (optional)"}
                                                         {...field}
+                                                        disabled={isAutoReadTime}
+                                                        className={isAutoReadTime ? "bg-muted/50" : ""}
                                                         onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
                                                     />
                                                 </FormControl>
+                                                <FormDescription>
+                                                    {isAutoReadTime ? "Automatically calculated based on content length" : "Enter manual estimate"}
+                                                </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -316,4 +353,3 @@ export default function CreateBlogPost() {
         </main>
     )
 }
-
