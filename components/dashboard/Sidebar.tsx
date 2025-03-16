@@ -16,7 +16,6 @@ import { motion } from "framer-motion"
 
 const MotionSidebarMenuButton = motion.create(SidebarMenuButton)
 const MotionSidebarMenuSubButton = motion.create(SidebarMenuSubButton)
-const MotionSidebarFooter = motion.create(SidebarFooter)
 
 export function DashboardSidebar() {
   const pathname = usePathname()
@@ -63,18 +62,6 @@ export function DashboardSidebar() {
   const tapAnimation = {
     scale: 0.98,
     transition: { duration: 0.1 },
-  }
-
-  const footerVariants = {
-    expanded: {
-      opacity: 1,
-      height: "auto",
-      transition: { duration: 0.3, ease: "easeInOut" },
-    },
-    collapsed: {
-      opacity: open ? 1 : 0.8,
-      transition: { duration: 0.3, ease: "easeInOut" },
-    },
   }
 
   const MenuItemWrapper: React.FC<{ children: React.ReactNode; label: string }> = ({ children, label }) => {
@@ -151,8 +138,6 @@ export function DashboardSidebar() {
                   <MenuItemWrapper label="Blog">
                     <MotionSidebarMenuButton
                       onClick={(e) => {
-                        // Only toggle blog open state if clicking directly on this button
-                        // not when the event bubbles up from child elements
                         if (
                           e.currentTarget === e.target ||
                           (e.target instanceof Element &&
@@ -239,40 +224,51 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Sidebar Footer with smooth animation */}
-      <MotionSidebarFooter
-        className="border-t"
-        variants={footerVariants}
-        animate={open ? "expanded" : "collapsed"}
-        initial={false}
-      >
+      {/* Sidebar Footer */}
+      <SidebarFooter className="border-t">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <MotionSidebarMenuButton className="cursor-pointer" whileHover={hoverAnimation} whileTap={tapAnimation}>
+                <SidebarMenuButton className="cursor-pointer">
                   <User2 /> {displayName}
-                  <motion.div animate={{ rotate: open ? 0 : 180 }} transition={{ duration: 0.3 }}>
-                    <ChevronUp className="ml-auto" />
-                  </motion.div>
-                </MotionSidebarMenuButton>
+                  <ChevronUp className="ml-auto" />
+                </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" className="w-[--radix-popper-anchor-width]">
+              <DropdownMenuContent
+                side="top"
+                className="w-[--radix-popper-anchor-width]"
+              >
                 <Link href="/dashboard/account" aria-label="Go to Account Settings">
                   <DropdownMenuItem className="cursor-pointer">
-                    <User2 className="mr-2 size-4" />
-                    <span>Account</span>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="flex items-center w-full"
+                    >
+                      <User2 className="mr-2 size-4" />
+                      <span>Account</span>
+                    </motion.div>
                   </DropdownMenuItem>
                 </Link>
-                <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
-                  <LogOut className="mr-2 size-4" />
-                  <span>Sign out</span>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={handleLogout}
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center w-full"
+                  >
+                    <LogOut className="mr-2 size-4" />
+                    <span>Sign out</span>
+                  </motion.div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
-      </MotionSidebarFooter>
+      </SidebarFooter>
     </Sidebar>
   )
 }
