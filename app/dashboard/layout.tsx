@@ -31,9 +31,9 @@ export default function DashboardLayout({
 
     return (
         <SidebarProvider defaultOpen={true}>
-            <div className="flex flex-1 overflow-hidden">
+            <div className="flex flex-1">
                 <DashboardSidebar />
-                <div className="flex flex-col flex-1 overflow-hidden">
+                <div className="flex flex-col flex-1">
                     <DashboardHeader />
                     <Suspense fallback={<LoadingSpinner fullScreen />}>
                         <main className="flex-1 p-3">

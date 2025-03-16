@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { ModeToggle } from "../theme/mode-toggle"
-import { motion } from "framer-motion"
 
 export function DashboardHeader() {
   const pathname = usePathname()
@@ -15,13 +14,7 @@ export function DashboardHeader() {
   return (
     <header className="sticky top-0 z-10 bg-background border-b h-12 flex items-center justify-between px-4">
       <div className="flex items-center">
-        <motion.div
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ duration: 0.2 }}
-        >
           <SidebarTrigger className="mr-2" />
-        </motion.div>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
