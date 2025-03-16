@@ -31,12 +31,12 @@ export default function RoleBasedRoute({
             allowedRoles !== "all" &&
             !allowedRoles.includes(user.role)
         ) {
-            router.push(fallbackPath)
+            router.push("/")
         }
     }, [isAuthenticated, user, router, allowedRoles, fallbackPath])
 
     if (!isAuthenticated || (user && allowedRoles !== "all" && !allowedRoles.includes(user.role))) {
-        return <LoadingSpinner fullScreen />
+        return <LoadingSpinner containerClassName="h-full w-full flex-1" />
     }
 
     return <>{children}</>
