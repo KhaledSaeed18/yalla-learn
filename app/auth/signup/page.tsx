@@ -54,7 +54,7 @@ export default function SignUpPage() {
     setIsLoading(true)
 
     try {
-      const response = await signupServices.signUp(values)
+      await signupServices.signUp(values)
 
       toast.success("Account created successfully", {
         description: "Please verify your email to continue."

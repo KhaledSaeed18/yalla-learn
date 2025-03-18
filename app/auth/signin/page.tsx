@@ -61,7 +61,9 @@ export default function SignInPage() {
           refreshToken: response.data.refreshToken,
         })
       )
-      toast.success("Signed in successfully")
+      toast.success("Welcome back!", {
+        description: "Signed in successfully",
+      })
       router.push("/dashboard")
     } catch (error) {
       const apiError = error as ApiError
