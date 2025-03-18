@@ -1,10 +1,4 @@
 import type React from "react"
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-    title: 'Blog editor | Dashboard',
-    description: 'Create blog posts',
-}
 
 export default function SecuritySettingsLayout({
     children,

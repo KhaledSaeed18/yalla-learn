@@ -72,15 +72,6 @@ export default function AccountPage() {
         toast.success("Profile updated", {
             description: "Your profile information has been updated successfully.",
         })
-        // toast.warning("Profile updated", {
-        //     description: "Your profile information has been updated successfully.",
-        // })
-        // toast.error("Profile updated", {
-        //     description: "Your profile information has been updated successfully.",
-        // })
-        // toast.info("Profile updated", {
-        //     description: "Your profile information has been updated successfully.",
-        // })
     }
 
     function onPasswordSubmit(data: PasswordFormValues) {
