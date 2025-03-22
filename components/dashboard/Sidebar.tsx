@@ -4,7 +4,7 @@ import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, ChevronDown, LayoutDashboard, ChevronUp, User2, PenLine, FileText, LogOut } from "lucide-react"
+import { Home, ChevronDown, LayoutDashboard, ChevronUp, User2, PenLine, FileText, LogOut, SquareStack } from "lucide-react"
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton, SidebarFooter, useSidebar } from "@/components/ui/sidebar"
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -157,12 +157,12 @@ export function DashboardSidebar() {
           whileTap={tapAnimation}
         >
           <Link
-            aria-label="Manage All Posts"
-            href="/dashboard/blog"
-            className={pathname === "/dashboard/blog" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
+            aria-label="Manage Blog Categories"
+            href="/dashboard/blog/categories"
+            className={pathname === "/dashboard/blog/categories" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
           >
-            <FileText className="size-5 mr-2" />
-            All Posts
+            <SquareStack className="size-5 mr-2" />
+            Categories
           </Link>
         </MotionSidebarMenuSubButton>
       </SidebarMenuSubItem>
@@ -173,12 +173,12 @@ export function DashboardSidebar() {
           whileTap={tapAnimation}
         >
           <Link
-            aria-label="Blog Settings"
-            href="/dashboard/blog/settings"
-            className={pathname === "/dashboard/blog/settings" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
+            aria-label="Manage All Posts"
+            href="/dashboard/blog"
+            className={pathname === "/dashboard/blog" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
           >
             <FileText className="size-5 mr-2" />
-            Settings
+            All Posts
           </Link>
         </MotionSidebarMenuSubButton>
       </SidebarMenuSubItem>
