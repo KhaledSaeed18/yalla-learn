@@ -228,52 +228,54 @@ const CategoriesPage = () => {
                             </Button>
                         </div>
                     ) : (
-                        <div className="rounded-md border">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Name</TableHead>
-                                        <TableHead>Slug</TableHead>
-                                        <TableHead className="hidden md:table-cell">Description</TableHead>
-                                        <TableHead className="hidden md:table-cell">Created</TableHead>
-                                        <TableHead className="text-right">Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {categories.map((category) => (
-                                        <TableRow key={category.id}>
-                                            <TableCell className="font-medium">{category.name}</TableCell>
-                                            <TableCell>
-                                                <Badge variant="outline">{category.slug}</Badge>
-                                            </TableCell>
-                                            <TableCell
-                                                className="hidden md:table-cell max-w-xs truncate"
-                                                title={category.description || "—"}
-                                            >
-                                                {category.description || "—"}
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell">{formatDate(category.createdAt)}</TableCell>
-                                            <TableCell className="text-right">
-                                                <div className="flex justify-end gap-2">
-                                                    <Button variant="ghost" size="icon" onClick={() => handleUpdateClick(category)}>
-                                                        <Edit className="h-4 w-4" />
-                                                        <span className="sr-only">Edit</span>
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="text-destructive hover:text-destructive"
-                                                        onClick={() => handleDeleteClick(category)}
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                        <span className="sr-only">Delete</span>
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
+                        <div className="overflow-auto w-full">
+                            <div className="min-w-full rounded-md border">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[15%]">Name</TableHead>
+                                            <TableHead className="w-[12%]">Slug</TableHead>
+                                            <TableHead className="w-[48%]">Description</TableHead>
+                                            <TableHead className="w-[15%]">Created</TableHead>
+                                            <TableHead className="text-right w-[10%]">Actions</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {categories.map((category) => (
+                                            <TableRow key={category.id}>
+                                                <TableCell className="font-medium">{category.name}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant="outline">{category.slug}</Badge>
+                                                </TableCell>
+                                                <TableCell
+                                                    className="max-w-xs truncate"
+                                                    title={category.description || "—"}
+                                                >
+                                                    {category.description || "—"}
+                                                </TableCell>
+                                                <TableCell className="">{formatDate(category.createdAt)}</TableCell>
+                                                <TableCell className="text-right">
+                                                    <div className="flex justify-end gap-2">
+                                                        <Button variant="ghost" size="icon" onClick={() => handleUpdateClick(category)}>
+                                                            <Edit className="h-4 w-4" />
+                                                            <span className="sr-only">Edit</span>
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="text-destructive hover:text-destructive"
+                                                            onClick={() => handleDeleteClick(category)}
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                            <span className="sr-only">Delete</span>
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
                         </div>
                     )}
                 </CardContent>

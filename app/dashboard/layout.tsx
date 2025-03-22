@@ -31,12 +31,12 @@ export default function DashboardLayout({
 
     return (
         <SidebarProvider defaultOpen={true}>
-            <div className="flex flex-1">
+            <div className="flex flex-1 h-screen w-screen overflow-hidden">
                 <DashboardSidebar />
-                <div className="flex flex-col flex-1">
+                <div className="flex flex-col flex-1 min-w-0">
                     <DashboardHeader />
                     <Suspense fallback={<LoadingSpinner fullScreen />}>
-                        <main className="flex-1 p-3 overflow-hidden">
+                        <main className="flex-1 p-3 overflow-y-auto overflow-x-hidden">
                             {children}
                         </main>
                     </Suspense>
