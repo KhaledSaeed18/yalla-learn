@@ -8,7 +8,7 @@ import {
     useCreateBlogCategory,
     useUpdateBlogCategory,
     useDeleteBlogCategory
-} from '@/hooks/blog/seBlogCategories';
+} from '@/hooks/blog/useBlogCategories';
 import { CreateCategoryRequest, UpdateCategoryRequest } from '@/types/blog/blogCategories.types';
 
 export default function DashboardPage() {

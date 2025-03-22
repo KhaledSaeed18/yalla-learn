@@ -1,7 +1,11 @@
 import axios, { AxiosResponse, Method } from 'axios';
 import { Store } from '@reduxjs/toolkit';
+import { logout } from '@/lib/auth/logout';
+import { refreshTokenAction } from '@/redux/slices/authSlice';
 
 let storeReference: Store | null = null;
+let isRefreshing = false;
+let failedQueue: Array<{ resolve: Function; reject: Function }> = [];
 
 export const setStoreReference = (store: Store): void => {
     storeReference = store;
@@ -18,6 +22,19 @@ export const axiosInstance = axios.create({
     timeout: API_TIMEOUT,
 });
 
+// Process queued requests with new token or reject them
+const processQueue = (error: any, token: string | null = null) => {
+    failedQueue.forEach(request => {
+        if (error) {
+            request.reject(error);
+        } else {
+            request.resolve(token);
+        }
+    });
+
+    failedQueue = [];
+};
+
 axiosInstance.interceptors.request.use(
     (config) => {
         if (storeReference?.getState()?.auth?.isAuthenticated) {
@@ -29,6 +46,78 @@ axiosInstance.interceptors.request.use(
         return config;
     },
     (error) => Promise.reject(error)
+);
+
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+
+        if (
+            error.response &&
+            error.response.status === 401 &&
+            error.response.data?.message === "Unauthorized: Token has expired" &&
+            !originalRequest._retry &&
+            storeReference
+        ) {
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject });
+                })
+                    .then(token => {
+                        originalRequest.headers.Authorization = `Bearer ${token}`;
+                        return axios(originalRequest);
+                    })
+                    .catch(err => Promise.reject(err));
+            }
+
+            originalRequest._retry = true;
+            isRefreshing = true;
+
+            try {
+                const result = await storeReference.dispatch(refreshTokenAction() as any);
+
+                if (result.meta.requestStatus === 'fulfilled') {
+                    const newToken = result.payload.accessToken;
+                    console.log('New token:', newToken);
+                    originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+                    processQueue(null, newToken);
+
+                    return axios(originalRequest);
+                } else {
+                    processQueue(result.payload);
+
+                    if (
+                        result.payload === "Refresh token expired" ||
+                        (typeof result.payload === 'string' &&
+                            result.payload.includes("Refresh token expired"))
+                    ) {
+                        await logout(true, true);
+                    }
+
+                    return Promise.reject(result.payload);
+                }
+            } catch (refreshError) {
+                processQueue(refreshError);
+                return Promise.reject(refreshError);
+            } finally {
+                isRefreshing = false;
+            }
+        }
+
+        // Handle refresh token expired error directly from a request
+        if (
+            error.response &&
+            error.response.status === 500 &&
+            error.response.data?.message === "Refresh token expired"
+        ) {
+            // Log out the user and terminate session
+            await logout(true);
+        }
+
+        return Promise.reject(error);
+    }
 );
 
 type ApiClientResponse<T = any> = T;
