@@ -4,7 +4,7 @@ import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, ChevronDown, LayoutDashboard, ChevronUp, User2, PenLine, FileText, LogOut, SquareStack } from "lucide-react"
+import { ChevronDown, LayoutDashboard, ChevronUp, User2, LogOut } from "lucide-react"
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton, SidebarFooter, useSidebar } from "@/components/ui/sidebar"
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -15,18 +15,19 @@ import { logout } from "@/lib/auth/logout"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
 import { useUserRole } from "@/hooks/useUserRole"
+import { sidebarRoutes, type SidebarRoute } from "@/config/sidebarRoutes"
 
 const MotionSidebarMenuButton = motion.create(SidebarMenuButton)
 const MotionSidebarMenuSubButton = motion.create(SidebarMenuSubButton)
 
 export function DashboardSidebar() {
   const pathname = usePathname()
-  const [isBlogOpen, setIsBlogOpen] = useState(false)
   const { open } = useSidebar()
   const { user } = useSelector((state: RootState) => state.auth)
   const [clickedItem, setClickedItem] = useState<string | null>(null)
-  const [isBlogActive, setIsBlogActive] = useState(false)
   const { isAdmin } = useUserRole()
+  const userRole = isAdmin ? "ADMIN" : "USER"
+  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({})
 
   const handleLogout = useCallback(async (e: React.MouseEvent) => {
     try {
@@ -42,20 +43,16 @@ export function DashboardSidebar() {
   const displayName = user ? `${user.firstName} ${user.lastName}` : ""
 
   useEffect(() => {
-    if (user) {
-      setIsBlogActive(pathname.startsWith("/dashboard/blog"))
-    } else {
-      setIsBlogActive(false)
-    }
-  }, [pathname, user])
+    const newOpenMenus: Record<string, boolean> = {}
 
-  useEffect(() => {
-    if (isBlogActive) {
-      setIsBlogOpen(true)
-    } else {
-      setIsBlogOpen(false)
-    }
-  }, [isBlogActive])
+    sidebarRoutes.forEach(route => {
+      if (route.children && route.children.some(child => child.activeWhen(pathname))) {
+        newOpenMenus[route.id] = true
+      }
+    })
+
+    setOpenMenus(prev => ({ ...prev, ...newOpenMenus }))
+  }, [pathname])
 
   const hoverAnimation = {
     scale: 1.02,
@@ -83,154 +80,122 @@ export function DashboardSidebar() {
     }
   }, [open]);
 
-  const homeMenuItem = useMemo(() => (
-    <SidebarMenuItem>
-      <MenuItemWrapper label="Home">
-        <MotionSidebarMenuButton
-          asChild
-          whileHover={hoverAnimation}
-          whileTap={tapAnimation}
-          animate={clickedItem === "home" ? { scale: 0.98 } : { scale: 1 }}
-          onClick={() => setClickedItem("home")}
-          onAnimationComplete={() => setClickedItem(null)}
-        >
-          <Link
-            aria-label="Go to Dashboard Home"
-            href="/dashboard"
-            className={`flex items-center ${pathname === "/dashboard" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}`}
-          >
-            <Home className="size-5 mr-2" />
-            {open && <span>Home</span>}
-          </Link>
-        </MotionSidebarMenuButton>
-      </MenuItemWrapper>
-    </SidebarMenuItem>
-  ), [open, clickedItem, pathname, MenuItemWrapper, hoverAnimation, tapAnimation]);
+  const filteredRoutes = useMemo(() => {
+    return sidebarRoutes.filter(route => route.roles.includes(userRole))
+  }, [userRole])
 
-  const blogMenuToggle = useMemo(() => (
-    <SidebarMenuItem>
-      <MenuItemWrapper label="Blog">
-        <MotionSidebarMenuButton
-          onClick={(e) => {
-            if (
-              e.currentTarget === e.target ||
-              (e.target instanceof Element &&
-                e.currentTarget.contains(e.target) &&
-                !e.currentTarget.querySelector("a")?.contains(e.target))
-            ) {
-              setClickedItem("blog")
-              open && setIsBlogOpen(!isBlogOpen)
-            }
-          }}
-          className={`${isBlogActive ? "text-primary" : ""} w-full justify-between cursor-pointer`}
-          aria-label="Toggle Blog"
-          whileHover={hoverAnimation}
-          whileTap={tapAnimation}
-          animate={clickedItem === "blog" ? { scale: 0.98 } : { scale: 1 }}
-          onAnimationComplete={() => setClickedItem(null)}
-        >
-          <div className="flex items-center">
-            <FileText className="size-5 mr-2" />
-            {open && <span>{isAdmin ? "Blog Management" : "My Blogs"}</span>}
-          </div>
-          {open && (
-            <motion.div
-              initial={false}
-              animate={{ rotate: isBlogOpen ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
-              key="chevron-icon"
+  const renderMenuItem = useCallback((route: SidebarRoute, isSubItem = false) => {
+    const isActive = route.activeWhen(pathname)
+    const hasChildren = route.children && route.children.length > 0
+    const filteredChildren = route.children?.filter(child => child.roles.includes(userRole))
+    const hasFilteredChildren = filteredChildren && filteredChildren.length > 0
+
+    if (hasChildren && !hasFilteredChildren) return null
+
+    const toggleMenu = (e: React.MouseEvent, id: string) => {
+      if (
+        e.currentTarget === e.target ||
+        (e.target instanceof Element &&
+          e.currentTarget.contains(e.target) &&
+          !e.currentTarget.querySelector("a")?.contains(e.target))
+      ) {
+        setClickedItem(id)
+        open && setOpenMenus(prev => ({ ...prev, [id]: !prev[id] }))
+      }
+    }
+
+    const IconComponent = route.icon
+
+    if (hasFilteredChildren) {
+      return (
+        <SidebarMenuItem key={route.id}>
+          <MenuItemWrapper label={route.label}>
+            <MotionSidebarMenuButton
+              onClick={(e) => toggleMenu(e, route.id)}
+              className={`${isActive ? "text-primary" : ""} w-full justify-between cursor-pointer`}
+              aria-label={`Toggle ${route.label}`}
+              whileHover={hoverAnimation}
+              whileTap={tapAnimation}
+              animate={clickedItem === route.id ? { scale: 0.98 } : { scale: 1 }}
+              onAnimationComplete={() => setClickedItem(null)}
             >
-              <ChevronDown className="size-5" />
-            </motion.div>
-          )}
-        </MotionSidebarMenuButton>
-      </MenuItemWrapper>
-    </SidebarMenuItem>
-  ), [open, clickedItem, isBlogActive, isBlogOpen, isAdmin, MenuItemWrapper, hoverAnimation, tapAnimation]);
+              <div className="flex items-center">
+                <IconComponent className="size-5 mr-2" />
+                {open && <span>{route.label}</span>}
+              </div>
+              {open && (
+                <motion.div
+                  initial={false}
+                  animate={{ rotate: openMenus[route.id] ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                  key={`chevron-${route.id}`}
+                >
+                  <ChevronDown className="size-5" />
+                </motion.div>
+              )}
+            </MotionSidebarMenuButton>
+          </MenuItemWrapper>
+          <Collapsible open={!!openMenus[route.id]} onOpenChange={(isOpen) =>
+            setOpenMenus(prev => ({ ...prev, [route.id]: isOpen }))
+          }>
+            <CollapsibleContent>
+              <SidebarMenuSub>
+                {filteredChildren?.map(child => renderMenuItem(child, true))}
+              </SidebarMenuSub>
+            </CollapsibleContent>
+          </Collapsible>
+        </SidebarMenuItem>
+      )
+    }
 
-  const adminBlogMenuItems = useMemo(() => (
-    <>
-      <SidebarMenuSubItem>
-        <MotionSidebarMenuSubButton
-          asChild
-          whileHover={hoverAnimation}
-          whileTap={tapAnimation}
-        >
-          <Link
-            aria-label="Manage Blog Categories"
-            href="/dashboard/blog/categories"
-            className={pathname === "/dashboard/blog/categories" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
+    if (isSubItem) {
+      return (
+        <SidebarMenuSubItem key={route.id}>
+          <MotionSidebarMenuSubButton
+            asChild
+            whileHover={hoverAnimation}
+            whileTap={tapAnimation}
+            animate={clickedItem === route.id ? { scale: 0.98 } : { scale: 1 }}
+            onClick={() => setClickedItem(route.id)}
+            onAnimationComplete={() => setClickedItem(null)}
           >
-            <SquareStack className="size-5 mr-2" />
-            Categories
-          </Link>
-        </MotionSidebarMenuSubButton>
-      </SidebarMenuSubItem>
-      <SidebarMenuSubItem>
-        <MotionSidebarMenuSubButton
-          asChild
-          whileHover={hoverAnimation}
-          whileTap={tapAnimation}
-        >
-          <Link
-            aria-label="Manage All Posts"
-            href="/dashboard/blog"
-            className={pathname === "/dashboard/blog" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
-          >
-            <FileText className="size-5 mr-2" />
-            All Posts
-          </Link>
-        </MotionSidebarMenuSubButton>
-      </SidebarMenuSubItem>
-    </>
-  ), [pathname, hoverAnimation, tapAnimation]);
+            <Link
+              aria-label={route.label}
+              href={route.href || "#"}
+              className={isActive ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
+            >
+              <IconComponent className="size-5 mr-2" />
+              {route.label}
+            </Link>
+          </MotionSidebarMenuSubButton>
+        </SidebarMenuSubItem>
+      )
+    }
 
-  const userBlogMenuItems = useMemo(() => (
-    <>
-      <SidebarMenuSubItem>
-        <MotionSidebarMenuSubButton
-          asChild
-          whileHover={hoverAnimation}
-          whileTap={tapAnimation}
-          animate={clickedItem === "create-blog" ? { scale: 0.98 } : { scale: 1 }}
-          onClick={() => setClickedItem("create-blog")}
-          onAnimationComplete={() => setClickedItem(null)}
-        >
-          <Link
-            aria-label="Create New Blog Post"
-            href="/dashboard/blog/editor"
-            className={
-              pathname.startsWith("/dashboard/blog/editor")
-                ? "text-primary bg-gray-200 dark:bg-black/50"
-                : ""
-            }
+    return (
+      <SidebarMenuItem key={route.id}>
+        <MenuItemWrapper label={route.label}>
+          <MotionSidebarMenuButton
+            asChild
+            whileHover={hoverAnimation}
+            whileTap={tapAnimation}
+            animate={clickedItem === route.id ? { scale: 0.98 } : { scale: 1 }}
+            onClick={() => setClickedItem(route.id)}
+            onAnimationComplete={() => setClickedItem(null)}
           >
-            <PenLine className="size-5 mr-2" />
-            Create New
-          </Link>
-        </MotionSidebarMenuSubButton>
-      </SidebarMenuSubItem>
-      <SidebarMenuSubItem>
-        <MotionSidebarMenuSubButton
-          asChild
-          whileHover={hoverAnimation}
-          whileTap={tapAnimation}
-          animate={clickedItem === "view-blog" ? { scale: 0.98 } : { scale: 1 }}
-          onClick={() => setClickedItem("view-blog")}
-          onAnimationComplete={() => setClickedItem(null)}
-        >
-          <Link
-            aria-label="View All Blog Posts"
-            href="/dashboard/blog"
-            className={pathname === "/dashboard/blog" ? "text-primary bg-gray-200 dark:bg-black/50" : ""}
-          >
-            <FileText className="size-5 mr-2" />
-            My Posts
-          </Link>
-        </MotionSidebarMenuSubButton>
-      </SidebarMenuSubItem>
-    </>
-  ), [pathname, clickedItem, hoverAnimation, tapAnimation]);
+            <Link
+              aria-label={route.label}
+              href={route.href || "#"}
+              className={`flex items-center ${isActive ? "text-primary bg-gray-200 dark:bg-black/50" : ""}`}
+            >
+              <IconComponent className="size-5 mr-2" />
+              {open && <span>{route.label}</span>}
+            </Link>
+          </MotionSidebarMenuButton>
+        </MenuItemWrapper>
+      </SidebarMenuItem>
+    )
+  }, [open, pathname, clickedItem, userRole, openMenus, MenuItemWrapper, hoverAnimation, tapAnimation])
 
   const userMenu = useMemo(() => (
     <SidebarMenuItem>
@@ -311,16 +276,7 @@ export function DashboardSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {homeMenuItem}
-              {/* Blog Section */}
-              <Collapsible open={isBlogOpen} onOpenChange={setIsBlogOpen}>
-                {blogMenuToggle}
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    {isAdmin ? adminBlogMenuItems : userBlogMenuItems}
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </Collapsible>
+              {filteredRoutes.map(route => renderMenuItem(route))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
