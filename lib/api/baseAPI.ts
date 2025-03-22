@@ -51,14 +51,23 @@ const apiClient = async <T = any>(
         return response.data;
     } catch (error: any) {
         if (error.response) {
-            throw {
+            const errorData = {
                 status: error.response.status,
-                message: error.response.data.message || 'An error occurred',
-            } as ApiError;
+                message: error.response.data?.message || 'Server error occurred',
+                errors: error.response.data?.errors || null,
+                code: error.response.data?.code || null,
+            };
+            throw errorData;
+        } else if (error.request) {
+            throw {
+                status: 0,
+                message: 'No response from server. Please check your internet connection.',
+            };
+        } else {
+            throw {
+                message: error.message || 'An error occurred while preparing the request',
+            };
         }
-        throw {
-            message: error.message || 'Network error occurred',
-        } as ApiError;
     }
 };
 
