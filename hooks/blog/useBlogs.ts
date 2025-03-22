@@ -46,6 +46,22 @@ export const useCreateBlogPost = () => {
         mutationFn: (postData: CreateBlogPostRequest) =>
             blogServices.createBlogPost(postData),
         onSuccess: (response) => {
+            queryClient.setQueryData(
+                blogKeys.list(),
+                (oldData: any) => {
+                    if (!oldData) return oldData;
+
+                    return {
+                        ...oldData,
+                        posts: [response.data.blogPost, ...(oldData.posts || [])],
+                        pagination: oldData.pagination ? {
+                            ...oldData.pagination,
+                            total: (oldData.pagination.total || 0) + 1
+                        } : undefined
+                    };
+                }
+            );
+
             queryClient.invalidateQueries({
                 queryKey: blogKeys.lists(),
             });
