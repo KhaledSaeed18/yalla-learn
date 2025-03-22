@@ -16,6 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import RoleBasedRoute from "@/components/RoleBasedRoute"
 import LoadingSpinner from "@/components/shared/LoadingSpinner"
 import { useGetBlogCategories, useCreateBlogCategory, useUpdateBlogCategory, useDeleteBlogCategory } from "@/hooks/blog/useBlogCategories"
@@ -157,7 +158,7 @@ const CategoriesPage = () => {
         setDeleteDialogOpen(true)
     }
 
-        const formatDate = (dateString: string) => {
+    const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
@@ -165,6 +166,31 @@ const CategoriesPage = () => {
             hour: "2-digit",
             minute: "2-digit",
         })
+    }
+
+    const TableRowsSkeleton = () => {
+        return Array(5).fill(0).map((_, index) => (
+            <TableRow key={`skeleton-row-${index}`}>
+                <TableCell>
+                    <Skeleton className="h-5 w-24" />
+                </TableCell>
+                <TableCell>
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                </TableCell>
+                <TableCell>
+                    <Skeleton className="h-4 w-full" />
+                </TableCell>
+                <TableCell>
+                    <Skeleton className="h-4 w-32" />
+                </TableCell>
+                <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                    </div>
+                </TableCell>
+            </TableRow>
+        ))
     }
 
     if (isError) {
@@ -208,9 +234,23 @@ const CategoriesPage = () => {
                     </CardHeader>
                     <CardContent>
                         {isLoading ? (
-                            <div className="py-12">
-                                <LoadingSpinner containerClassName="h-40" />
-                                <p className="text-center text-muted-foreground mt-4">Loading categories...</p>
+                            <div className="overflow-auto w-full">
+                                <div className="min-w-full rounded-md border">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead className="w-[15%]">Name</TableHead>
+                                                <TableHead className="w-[12%]">Slug</TableHead>
+                                                <TableHead className="w-[48%]">Description</TableHead>
+                                                <TableHead className="w-[15%]">Created</TableHead>
+                                                <TableHead className="text-right w-[10%]">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            <TableRowsSkeleton />
+                                        </TableBody>
+                                    </Table>
+                                </div>
                             </div>
                         ) : categories.length === 0 ? (
                             <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-lg">
