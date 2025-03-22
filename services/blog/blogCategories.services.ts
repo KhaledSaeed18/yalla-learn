@@ -1,14 +1,5 @@
 import { api } from '@/lib/api/baseAPI';
-import {
-    BlogCategory,
-    GetCategoriesResponse,
-    GetCategoryResponse,
-    CreateCategoryRequest,
-    CreateCategoryResponse,
-    UpdateCategoryRequest,
-    UpdateCategoryResponse,
-    DeleteCategoryResponse
-} from '@/types/blog/blogCategories.types';
+import { GetCategoriesResponse, GetCategoryResponse, CreateCategoryRequest, CreateCategoryResponse, UpdateCategoryRequest, UpdateCategoryResponse, DeleteCategoryResponse } from '@/types/blog/blogCategories.types';
 
 export const blogCategoryServices = {
     /**
@@ -16,7 +7,9 @@ export const blogCategoryServices = {
      * @returns A promise that resolves to the categories response
      */
     getCategories: () => {
-        return api.get<GetCategoriesResponse>('/blog/get-categories');
+        return api.get<GetCategoriesResponse>(
+            '/blog/get-categories'
+        );
     },
 
     /**
@@ -25,7 +18,9 @@ export const blogCategoryServices = {
      * @returns A promise that resolves to the category response
      */
     getCategoryById: (id: string) => {
-        return api.get<GetCategoryResponse>(`/blog/get-category/${id}`);
+        return api.get<GetCategoryResponse>(
+            `/blog/get-category/${id}`
+        );
     },
 
     /**
@@ -34,7 +29,10 @@ export const blogCategoryServices = {
      * @returns A promise that resolves to the created category response
      */
     createCategory: (categoryData: CreateCategoryRequest) => {
-        return api.post<CreateCategoryResponse>('/blog/create-category', categoryData);
+        return api.post<CreateCategoryResponse>(
+            '/blog/create-category',
+            categoryData
+        );
     },
 
     /**
@@ -44,7 +42,10 @@ export const blogCategoryServices = {
      * @returns A promise that resolves to the updated category response
      */
     updateCategory: (id: string, categoryData: UpdateCategoryRequest) => {
-        return api.put<UpdateCategoryResponse>(`/blog/update-category/${id}`, categoryData);
+        return api.put<UpdateCategoryResponse>(
+            `/blog/update-category/${id}`,
+            categoryData
+        );
     },
 
     /**
@@ -53,6 +54,8 @@ export const blogCategoryServices = {
      * @returns A promise that resolves to the delete response
      */
     deleteCategory: (id: string) => {
-        return api.delete<DeleteCategoryResponse>(`/blog/delete-category/${id}`);
+        return api.delete<DeleteCategoryResponse>(
+            `/blog/delete-category/${id}`
+        );
     }
 };
