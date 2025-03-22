@@ -129,7 +129,7 @@ const CategoriesPage = () => {
         setCreateDialogOpen(false)
         createForm.reset()
 
-        toast("Category created", {
+        toast.success("Category created", {
             description: `${data.name} has been successfully created.`,
         })
     }
@@ -154,7 +154,7 @@ const CategoriesPage = () => {
         setUpdateDialogOpen(false)
         setSelectedCategory(null)
 
-        toast("Category updated", {
+        toast.success("Category updated", {
             description: `${data.name} has been successfully updated.`,
         })
     }
@@ -167,7 +167,7 @@ const CategoriesPage = () => {
         setCategories(filteredCategories)
         setDeleteDialogOpen(false)
 
-        toast("Category deleted", {
+        toast.success("Category deleted", {
             description: `${selectedCategory.name} has been successfully deleted.`,
         })
 
@@ -328,6 +328,7 @@ const CategoriesPage = () => {
                                         <FormControl>
                                             <Textarea
                                                 {...field}
+                                                value={field.value ?? ''}
                                                 placeholder="Describe what this category is about..."
                                                 className="resize-none"
                                             />
@@ -398,6 +399,7 @@ const CategoriesPage = () => {
                                         <FormControl>
                                             <Textarea
                                                 {...field}
+                                                value={field.value ?? ''}
                                                 placeholder="Describe what this category is about..."
                                                 className="resize-none"
                                             />
@@ -432,7 +434,7 @@ const CategoriesPage = () => {
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={onDeleteConfirm}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className="bg-destructive text-white hover:bg-destructive/90"
                         >
                             Delete
                         </AlertDialogAction>
