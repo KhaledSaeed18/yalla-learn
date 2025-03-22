@@ -1,20 +1,21 @@
 'use client'
 
+import { useState } from 'react'
 import RoleBasedRoute from '@/components/RoleBasedRoute'
 import { useUserRole } from '@/hooks/useUserRole'
 import { blogCategoryServices } from '@/services/blog/blogCategories.services'
-import { useState } from 'react'
+import { BlogCategory } from '@/types/blog/blogCategories.types'
 
 export default function DashboardPage() {
     const { isAdmin } = useUserRole()
     const [loading, setLoading] = useState(false)
+    const [blogCategories, setBlogCategories] = useState([] as BlogCategory[])
 
     const handleGetCategories = async () => {
         try {
             setLoading(true)
             const response = await blogCategoryServices.getCategories()
-            console.log('Blog categories:', response)
-            alert(`Fetched ${response.data.categories.length} blog categories`)
+            setBlogCategories(response.data.categories)
         } catch (error) {
             console.error('Error fetching blog categories:', error)
         } finally {
@@ -37,6 +38,20 @@ export default function DashboardPage() {
                         >
                             {loading ? 'Loading...' : 'Get Blog Categories'}
                         </button>
+                        {
+                            blogCategories.length > 0 && (
+                                <div className="mt-4">
+                                    <h2 className="text-lg font-bold">Blog Categories</h2>
+                                    <ul className="mt-2">
+                                        {blogCategories.map((category) => (
+                                            <li key={category.id} className="text-gray-600">
+                                                {category.name}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )
+                        }
                     </div>
                 </> : <>
                     <div className="">

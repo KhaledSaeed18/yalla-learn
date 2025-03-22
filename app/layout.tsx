@@ -4,6 +4,7 @@ import "./globals.css";
 import ReduxProvider from "@/redux/Provider";
 import { ThemeAwareToaster } from "@/components/theme/theme-aware-toaster";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import QueryProvider from '@/providers/QueryProvider';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,17 +33,19 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ReduxProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <main>
-              {children}
-            </main>
-            <ThemeAwareToaster />
-          </ThemeProvider>
+          <QueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <main>
+                {children}
+              </main>
+              <ThemeAwareToaster />
+            </ThemeProvider>
+          </QueryProvider>
         </ReduxProvider>
       </body>
     </html>
