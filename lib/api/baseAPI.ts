@@ -18,6 +18,19 @@ export const axiosInstance = axios.create({
     timeout: API_TIMEOUT,
 });
 
+axiosInstance.interceptors.request.use(
+    (config) => {
+        if (storeReference?.getState()?.auth?.isAuthenticated) {
+            const token = storeReference.getState().auth.accessToken;
+            if (token && config.headers) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
 type ApiClientResponse<T = any> = T;
 type ApiParams = Record<string, any>;
 
