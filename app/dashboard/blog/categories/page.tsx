@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -17,8 +16,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
-import { toast } from "sonner"
 import RoleBasedRoute from "@/components/RoleBasedRoute"
+import LoadingSpinner from "@/components/shared/LoadingSpinner"
+import { useGetBlogCategories, useCreateBlogCategory, useUpdateBlogCategory, useDeleteBlogCategory } from "@/hooks/blog/useBlogCategories"
+import { BlogCategory, CreateCategoryRequest } from "@/types/blog/blogCategories.types"
 
 const categorySchema = z.object({
     name: z
@@ -39,48 +40,23 @@ const categorySchema = z.object({
 
 type CategoryFormValues = z.infer<typeof categorySchema>
 
-interface Category {
-    id: string
-    name: string
-    slug: string
-    description: string | null
-    createdAt: string
-    updatedAt: string
-}
-
-const mockCategories: Category[] = [
-    {
-        id: "cm8e8z7k80002vkhcs549m6sr",
-        name: "Technology",
-        slug: "technology",
-        description: "Articles about the latest tech trends, software development, and digital innovations.",
-        createdAt: "2025-03-18T08:44:34.952Z",
-        updatedAt: "2025-03-18T08:44:34.952Z",
-    },
-    {
-        id: "cm8e8z7k80003vkhcs549m6sr",
-        name: "Business",
-        slug: "business",
-        description: "Content related to entrepreneurship, management, and business strategies.",
-        createdAt: "2025-03-18T09:15:22.123Z",
-        updatedAt: "2025-03-18T09:15:22.123Z",
-    },
-    {
-        id: "cm8e8z7k80004vkhcs549m6sr",
-        name: "Design",
-        slug: "design",
-        description: "Exploring UI/UX, graphic design, and creative processes.",
-        createdAt: "2025-03-18T10:30:45.789Z",
-        updatedAt: "2025-03-18T10:30:45.789Z",
-    },
-]
-
 const CategoriesPage = () => {
-    const [categories, setCategories] = useState<Category[]>(mockCategories)
     const [createDialogOpen, setCreateDialogOpen] = useState(false)
     const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
+    const [selectedCategory, setSelectedCategory] = useState<BlogCategory | null>(null)
+
+    const {
+        data: categories = [],
+        isLoading,
+        isError,
+        error,
+        refetch
+    } = useGetBlogCategories()
+
+    const createCategory = useCreateBlogCategory()
+    const updateCategory = useUpdateBlogCategory()
+    const deleteCategory = useDeleteBlogCategory()
 
     const createForm = useForm<CategoryFormValues>({
         resolver: zodResolver(categorySchema),
@@ -118,65 +94,55 @@ const CategoriesPage = () => {
     }
 
     const onCreateSubmit = (data: CategoryFormValues) => {
-        const newCategory: Category = {
-            id: `cm${Date.now()}`,
+        const newCategory: CreateCategoryRequest = {
             name: data.name,
             slug: data.slug,
             description: data.description || null,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
         }
 
-        setCategories([...categories, newCategory])
-        setCreateDialogOpen(false)
-        createForm.reset()
-
-        toast.success("Category created", {
-            description: `${data.name} has been successfully created.`,
+        createCategory.mutate(newCategory, {
+            onSuccess: () => {
+                setCreateDialogOpen(false)
+                createForm.reset()
+            }
         })
     }
 
     const onUpdateSubmit = (data: CategoryFormValues) => {
         if (!selectedCategory) return
 
-        const updatedCategories = categories.map((category) => {
-            if (category.id === selectedCategory.id) {
-                return {
-                    ...category,
-                    name: data.name,
-                    slug: data.slug,
-                    description: data.description || null,
-                    updatedAt: new Date().toISOString(),
+        const updatedCategory = {
+            name: data.name,
+            slug: data.slug,
+            description: data.description || null,
+        }
+
+        updateCategory.mutate(
+            {
+                id: selectedCategory.id,
+                categoryData: updatedCategory
+            },
+            {
+                onSuccess: () => {
+                    setUpdateDialogOpen(false)
+                    setSelectedCategory(null)
                 }
             }
-            return category
-        })
-
-        setCategories(updatedCategories)
-        setUpdateDialogOpen(false)
-        setSelectedCategory(null)
-
-        toast.success("Category updated", {
-            description: `${data.name} has been successfully updated.`,
-        })
+        )
     }
 
     const onDeleteConfirm = () => {
         if (!selectedCategory) return
 
-        const filteredCategories = categories.filter((category) => category.id !== selectedCategory.id)
-
-        setCategories(filteredCategories)
-        setDeleteDialogOpen(false)
-
-        toast.success("Category deleted", {
-            description: `${selectedCategory.name} has been successfully deleted.`,
+        deleteCategory.mutate(selectedCategory.id, {
+            onSuccess: () => {
+                setDeleteDialogOpen(false)
+                setSelectedCategory(null)
+            }
         })
-
-        setSelectedCategory(null)
     }
 
-    const handleUpdateClick = (category: Category) => {
+    const handleUpdateClick = (category: BlogCategory) => {
         setSelectedCategory(category)
         updateForm.reset({
             name: category.name,
@@ -186,17 +152,42 @@ const CategoriesPage = () => {
         setUpdateDialogOpen(true)
     }
 
-    const handleDeleteClick = (category: Category) => {
+    const handleDeleteClick = (category: BlogCategory) => {
         setSelectedCategory(category)
         setDeleteDialogOpen(true)
     }
 
-    const formatDate = (dateString: string) => {
+        const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
             day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
         })
+    }
+
+    if (isError) {
+        return (
+            <RoleBasedRoute allowedRoles={["ADMIN"]}>
+                <main>
+                    <div className="flex justify-between items-center pb-6">
+                        <h1 className="text-3xl font-bold">Blog Categories</h1>
+                    </div>
+                    <Card>
+                        <CardContent className="p-6">
+                            <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-md">
+                                <h2 className="text-lg font-semibold">Error loading categories</h2>
+                                <p>{(error as any)?.message || "Failed to load categories. Please try again."}</p>
+                                <Button onClick={() => refetch()} className="mt-2">
+                                    Try Again
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </main>
+            </RoleBasedRoute>
+        )
     }
 
     return (
@@ -216,7 +207,12 @@ const CategoriesPage = () => {
                         <CardDescription>Manage your blog categories. Create, edit, or delete categories as needed.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {categories.length === 0 ? (
+                        {isLoading ? (
+                            <div className="py-12">
+                                <LoadingSpinner containerClassName="h-40" />
+                                <p className="text-center text-muted-foreground mt-4">Loading categories...</p>
+                            </div>
+                        ) : categories.length === 0 ? (
                             <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-lg">
                                 <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
                                     <Folder className="h-10 w-10 text-muted-foreground" />
@@ -269,7 +265,12 @@ const CategoriesPage = () => {
                                                     <TableCell className="">{formatDate(category.createdAt)}</TableCell>
                                                     <TableCell className="text-right">
                                                         <div className="flex justify-end gap-2">
-                                                            <Button variant="ghost" size="icon" onClick={() => handleUpdateClick(category)}>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => handleUpdateClick(category)}
+                                                                disabled={updateCategory.isPending}
+                                                            >
                                                                 <Edit className="h-4 w-4" />
                                                                 <span className="sr-only">Edit</span>
                                                             </Button>
@@ -278,6 +279,7 @@ const CategoriesPage = () => {
                                                                 size="icon"
                                                                 className="text-destructive hover:text-destructive"
                                                                 onClick={() => handleDeleteClick(category)}
+                                                                disabled={deleteCategory.isPending}
                                                             >
                                                                 <Trash2 className="h-4 w-4" />
                                                                 <span className="sr-only">Delete</span>
@@ -357,10 +359,25 @@ const CategoriesPage = () => {
                                     )}
                                 />
                                 <DialogFooter>
-                                    <Button type="button" variant="outline" onClick={() => setCreateDialogOpen(false)}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => setCreateDialogOpen(false)}
+                                        disabled={createCategory.isPending}
+                                    >
                                         Cancel
                                     </Button>
-                                    <Button type="submit">Create Category</Button>
+                                    <Button
+                                        type="submit"
+                                        disabled={createCategory.isPending}
+                                    >
+                                        {createCategory.isPending ? (
+                                            <>
+                                                <LoadingSpinner size={16} spinnerClassName="mr-2" />
+                                                Creating...
+                                            </>
+                                        ) : "Create Category"}
+                                    </Button>
                                 </DialogFooter>
                             </form>
                         </Form>
@@ -428,10 +445,25 @@ const CategoriesPage = () => {
                                     )}
                                 />
                                 <DialogFooter>
-                                    <Button type="button" variant="outline" onClick={() => setUpdateDialogOpen(false)}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => setUpdateDialogOpen(false)}
+                                        disabled={updateCategory.isPending}
+                                    >
                                         Cancel
                                     </Button>
-                                    <Button type="submit">Update Category</Button>
+                                    <Button
+                                        type="submit"
+                                        disabled={updateCategory.isPending}
+                                    >
+                                        {updateCategory.isPending ? (
+                                            <>
+                                                <LoadingSpinner size={16} spinnerClassName="mr-2" />
+                                                Updating...
+                                            </>
+                                        ) : "Update Category"}
+                                    </Button>
                                 </DialogFooter>
                             </form>
                         </Form>
@@ -449,12 +481,18 @@ const CategoriesPage = () => {
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel disabled={deleteCategory.isPending}>Cancel</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={onDeleteConfirm}
                                 className="bg-destructive text-white hover:bg-destructive/90"
+                                disabled={deleteCategory.isPending}
                             >
-                                Delete
+                                {deleteCategory.isPending ? (
+                                    <>
+                                        <LoadingSpinner size={16} spinnerClassName="mr-2" />
+                                        Deleting...
+                                    </>
+                                ) : "Delete"}
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
@@ -465,4 +503,3 @@ const CategoriesPage = () => {
 }
 
 export default CategoriesPage
-
