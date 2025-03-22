@@ -18,6 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
+import RoleBasedRoute from "@/components/RoleBasedRoute"
 
 const categorySchema = z.object({
     name: z
@@ -199,265 +200,267 @@ const CategoriesPage = () => {
     }
 
     return (
-        <main>
-            <div className="flex justify-between items-center pb-6">
-                <h1 className="text-3xl font-bold">Blog Categories</h1>
-                <Button onClick={() => setCreateDialogOpen(true)}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Category
-                </Button>
-            </div>
+        <RoleBasedRoute allowedRoles={["ADMIN"]}>
+            <main>
+                <div className="flex justify-between items-center pb-6">
+                    <h1 className="text-3xl font-bold">Blog Categories</h1>
+                    <Button onClick={() => setCreateDialogOpen(true)}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Category
+                    </Button>
+                </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>All Categories</CardTitle>
-                    <CardDescription>Manage your blog categories. Create, edit, or delete categories as needed.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {categories.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-lg">
-                            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
-                                <Folder className="h-10 w-10 text-muted-foreground" />
+                <Card>
+                    <CardHeader>
+                        <CardTitle>All Categories</CardTitle>
+                        <CardDescription>Manage your blog categories. Create, edit, or delete categories as needed.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {categories.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-lg">
+                                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+                                    <Folder className="h-10 w-10 text-muted-foreground" />
+                                </div>
+                                <h2 className="mt-6 text-xl font-semibold">No categories yet</h2>
+                                <p className="mt-2 text-sm text-muted-foreground max-w-sm">
+                                    Create categories to organize blog posts.
+                                </p>
+                                <Button onClick={() => setCreateDialogOpen(true)} className="mt-6">
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Create category
+                                </Button>
                             </div>
-                            <h2 className="mt-6 text-xl font-semibold">No categories yet</h2>
-                            <p className="mt-2 text-sm text-muted-foreground max-w-sm">
-                                Create categories to organize blog posts.
-                            </p>
-                            <Button onClick={() => setCreateDialogOpen(true)} className="mt-6">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Create category
-                            </Button>
-                        </div>
-                    ) : (
-                        <div className="overflow-auto w-full">
-                            <div className="min-w-full rounded-md border">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="w-[15%]">Name</TableHead>
-                                            <TableHead className="w-[12%]">Slug</TableHead>
-                                            <TableHead className="w-[48%]">Description</TableHead>
-                                            <TableHead className="w-[15%]">Created</TableHead>
-                                            <TableHead className="text-right w-[10%]">Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {categories.map((category) => (
-                                            <TableRow key={category.id}>
-                                                <TableCell className="font-medium">{category.name}</TableCell>
-                                                <TableCell>
-                                                    <Badge variant="outline">{category.slug}</Badge>
-                                                </TableCell>
-                                                <TableCell className="max-w-xs">
-                                                    {category.description ? (
-                                                        <TooltipProvider>
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <div className="truncate">{category.description}</div>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>
-                                                                    <p className="break-words">{category.description}</p>
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        </TooltipProvider>
-                                                    ) : (
-                                                        "—"
-                                                    )}
-                                                </TableCell>
-                                                <TableCell className="">{formatDate(category.createdAt)}</TableCell>
-                                                <TableCell className="text-right">
-                                                    <div className="flex justify-end gap-2">
-                                                        <Button variant="ghost" size="icon" onClick={() => handleUpdateClick(category)}>
-                                                            <Edit className="h-4 w-4" />
-                                                            <span className="sr-only">Edit</span>
-                                                        </Button>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="text-destructive hover:text-destructive"
-                                                            onClick={() => handleDeleteClick(category)}
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                            <span className="sr-only">Delete</span>
-                                                        </Button>
-                                                    </div>
-                                                </TableCell>
+                        ) : (
+                            <div className="overflow-auto w-full">
+                                <div className="min-w-full rounded-md border">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead className="w-[15%]">Name</TableHead>
+                                                <TableHead className="w-[12%]">Slug</TableHead>
+                                                <TableHead className="w-[48%]">Description</TableHead>
+                                                <TableHead className="w-[15%]">Created</TableHead>
+                                                <TableHead className="text-right w-[10%]">Actions</TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {categories.map((category) => (
+                                                <TableRow key={category.id}>
+                                                    <TableCell className="font-medium">{category.name}</TableCell>
+                                                    <TableCell>
+                                                        <Badge variant="outline">{category.slug}</Badge>
+                                                    </TableCell>
+                                                    <TableCell className="max-w-xs">
+                                                        {category.description ? (
+                                                            <TooltipProvider>
+                                                                <Tooltip>
+                                                                    <TooltipTrigger asChild>
+                                                                        <div className="truncate">{category.description}</div>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent>
+                                                                        <p className="break-words">{category.description}</p>
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            </TooltipProvider>
+                                                        ) : (
+                                                            "—"
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell className="">{formatDate(category.createdAt)}</TableCell>
+                                                    <TableCell className="text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button variant="ghost" size="icon" onClick={() => handleUpdateClick(category)}>
+                                                                <Edit className="h-4 w-4" />
+                                                                <span className="sr-only">Edit</span>
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="text-destructive hover:text-destructive"
+                                                                onClick={() => handleDeleteClick(category)}
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                                <span className="sr-only">Delete</span>
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                             </div>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+                        )}
+                    </CardContent>
+                </Card>
 
-            {/* Create Category Dialog */}
-            <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-                <DialogContent className="sm:max-w-[500px]">
-                    <DialogHeader>
-                        <DialogTitle>Create New Category</DialogTitle>
-                        <DialogDescription>Add a new category to organize your blog posts.</DialogDescription>
-                    </DialogHeader>
-                    <Form {...createForm}>
-                        <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                            <FormField
-                                control={createForm.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Name</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                onChange={(e) => handleNameChange(e, createForm)}
-                                                placeholder="e.g. Technology"
-                                            />
-                                        </FormControl>
-                                        <FormDescription>The display name of your category.</FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={createForm.control}
-                                name="slug"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Slug</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} disabled placeholder="e.g. technology" />
-                                        </FormControl>
-                                        <FormDescription>
-                                            The auto generated URL-friendly version of the name.
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={createForm.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Description</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                {...field}
-                                                value={field.value ?? ''}
-                                                placeholder="Describe what this category is about..."
-                                                className="resize-none"
-                                            />
-                                        </FormControl>
-                                        <FormDescription>Optional. Helps explain what this category contains.</FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <DialogFooter>
-                                <Button type="button" variant="outline" onClick={() => setCreateDialogOpen(false)}>
-                                    Cancel
-                                </Button>
-                                <Button type="submit">Create Category</Button>
-                            </DialogFooter>
-                        </form>
-                    </Form>
-                </DialogContent>
-            </Dialog>
+                {/* Create Category Dialog */}
+                <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+                    <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                            <DialogTitle>Create New Category</DialogTitle>
+                            <DialogDescription>Add a new category to organize your blog posts.</DialogDescription>
+                        </DialogHeader>
+                        <Form {...createForm}>
+                            <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+                                <FormField
+                                    control={createForm.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Name</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    onChange={(e) => handleNameChange(e, createForm)}
+                                                    placeholder="e.g. Technology"
+                                                />
+                                            </FormControl>
+                                            <FormDescription>The display name of your category.</FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={createForm.control}
+                                    name="slug"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Slug</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled placeholder="e.g. technology" />
+                                            </FormControl>
+                                            <FormDescription>
+                                                The auto generated URL-friendly version of the name.
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={createForm.control}
+                                    name="description"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Description</FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    {...field}
+                                                    value={field.value ?? ''}
+                                                    placeholder="Describe what this category is about..."
+                                                    className="resize-none"
+                                                />
+                                            </FormControl>
+                                            <FormDescription>Optional. Helps explain what this category contains.</FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <DialogFooter>
+                                    <Button type="button" variant="outline" onClick={() => setCreateDialogOpen(false)}>
+                                        Cancel
+                                    </Button>
+                                    <Button type="submit">Create Category</Button>
+                                </DialogFooter>
+                            </form>
+                        </Form>
+                    </DialogContent>
+                </Dialog>
 
-            {/* Update Category Dialog */}
-            <Dialog open={updateDialogOpen} onOpenChange={setUpdateDialogOpen}>
-                <DialogContent className="sm:max-w-[500px]">
-                    <DialogHeader>
-                        <DialogTitle>Edit Category</DialogTitle>
-                        <DialogDescription>Update the details of this category.</DialogDescription>
-                    </DialogHeader>
-                    <Form {...updateForm}>
-                        <form onSubmit={updateForm.handleSubmit(onUpdateSubmit)} className="space-y-4">
-                            <FormField
-                                control={updateForm.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Name</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                onChange={(e) => handleNameChange(e, updateForm)}
-                                                placeholder="e.g. Technology"
-                                            />
-                                        </FormControl>
-                                        <FormDescription>The display name of your category.</FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={updateForm.control}
-                                name="slug"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Slug</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} disabled placeholder="e.g. technology" />
-                                        </FormControl>
-                                        <FormDescription>The auto generated URL-friendly version of the name.</FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={updateForm.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Description</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                {...field}
-                                                value={field.value ?? ''}
-                                                placeholder="Describe what this category is about..."
-                                                className="resize-none"
-                                            />
-                                        </FormControl>
-                                        <FormDescription>Optional. Helps explain what this category contains.</FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <DialogFooter>
-                                <Button type="button" variant="outline" onClick={() => setUpdateDialogOpen(false)}>
-                                    Cancel
-                                </Button>
-                                <Button type="submit">Update Category</Button>
-                            </DialogFooter>
-                        </form>
-                    </Form>
-                </DialogContent>
-            </Dialog>
+                {/* Update Category Dialog */}
+                <Dialog open={updateDialogOpen} onOpenChange={setUpdateDialogOpen}>
+                    <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                            <DialogTitle>Edit Category</DialogTitle>
+                            <DialogDescription>Update the details of this category.</DialogDescription>
+                        </DialogHeader>
+                        <Form {...updateForm}>
+                            <form onSubmit={updateForm.handleSubmit(onUpdateSubmit)} className="space-y-4">
+                                <FormField
+                                    control={updateForm.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Name</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    onChange={(e) => handleNameChange(e, updateForm)}
+                                                    placeholder="e.g. Technology"
+                                                />
+                                            </FormControl>
+                                            <FormDescription>The display name of your category.</FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={updateForm.control}
+                                    name="slug"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Slug</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled placeholder="e.g. technology" />
+                                            </FormControl>
+                                            <FormDescription>The auto generated URL-friendly version of the name.</FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={updateForm.control}
+                                    name="description"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Description</FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    {...field}
+                                                    value={field.value ?? ''}
+                                                    placeholder="Describe what this category is about..."
+                                                    className="resize-none"
+                                                />
+                                            </FormControl>
+                                            <FormDescription>Optional. Helps explain what this category contains.</FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <DialogFooter>
+                                    <Button type="button" variant="outline" onClick={() => setUpdateDialogOpen(false)}>
+                                        Cancel
+                                    </Button>
+                                    <Button type="submit">Update Category</Button>
+                                </DialogFooter>
+                            </form>
+                        </Form>
+                    </DialogContent>
+                </Dialog>
 
-            {/* Delete Category Dialog */}
-            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This will permanently delete the category "{selectedCategory?.name}". This action cannot be undone and may
-                            affect blog posts associated with this category.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={onDeleteConfirm}
-                            className="bg-destructive text-white hover:bg-destructive/90"
-                        >
-                            Delete
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </main>
+                {/* Delete Category Dialog */}
+                <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This will permanently delete the category "{selectedCategory?.name}". This action cannot be undone and may
+                                affect blog posts associated with this category.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={onDeleteConfirm}
+                                className="bg-destructive text-white hover:bg-destructive/90"
+                            >
+                                Delete
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </main>
+        </RoleBasedRoute>
     )
 }
 

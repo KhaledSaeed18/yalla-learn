@@ -31,7 +31,7 @@ export default function RoleBasedRoute({
             allowedRoles !== "all" &&
             !allowedRoles.includes(user.role)
         ) {
-            router.push("/")
+            router.push("/dashboard")
         }
     }, [isAuthenticated, user, router, allowedRoles, fallbackPath])
 
