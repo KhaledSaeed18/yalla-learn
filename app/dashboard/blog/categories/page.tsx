@@ -246,7 +246,10 @@ const CategoriesPage = () => {
                                             <TableCell>
                                                 <Badge variant="outline">{category.slug}</Badge>
                                             </TableCell>
-                                            <TableCell className="hidden md:table-cell max-w-xs truncate">
+                                            <TableCell
+                                                className="hidden md:table-cell max-w-xs truncate"
+                                                title={category.description || "—"}
+                                            >
                                                 {category.description || "—"}
                                             </TableCell>
                                             <TableCell className="hidden md:table-cell">{formatDate(category.createdAt)}</TableCell>
