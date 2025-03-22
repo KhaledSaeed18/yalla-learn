@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
 
@@ -247,11 +248,21 @@ const CategoriesPage = () => {
                                                 <TableCell>
                                                     <Badge variant="outline">{category.slug}</Badge>
                                                 </TableCell>
-                                                <TableCell
-                                                    className="max-w-xs truncate"
-                                                    title={category.description || "—"}
-                                                >
-                                                    {category.description || "—"}
+                                                <TableCell className="max-w-xs">
+                                                    {category.description ? (
+                                                        <TooltipProvider>
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <div className="truncate">{category.description}</div>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    <p className="break-words">{category.description}</p>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
+                                                    ) : (
+                                                        "—"
+                                                    )}
                                                 </TableCell>
                                                 <TableCell className="">{formatDate(category.createdAt)}</TableCell>
                                                 <TableCell className="text-right">
@@ -315,10 +326,10 @@ const CategoriesPage = () => {
                                     <FormItem>
                                         <FormLabel>Slug</FormLabel>
                                         <FormControl>
-                                            <Input {...field} placeholder="e.g. technology" />
+                                            <Input {...field} disabled placeholder="e.g. technology" />
                                         </FormControl>
                                         <FormDescription>
-                                            The URL-friendly version of the name. Auto-generated but can be edited.
+                                            The auto generated URL-friendly version of the name.
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
@@ -388,9 +399,9 @@ const CategoriesPage = () => {
                                     <FormItem>
                                         <FormLabel>Slug</FormLabel>
                                         <FormControl>
-                                            <Input {...field} placeholder="e.g. technology" />
+                                            <Input {...field} disabled placeholder="e.g. technology" />
                                         </FormControl>
-                                        <FormDescription>The URL-friendly version of the name.</FormDescription>
+                                        <FormDescription>The auto generated URL-friendly version of the name.</FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
