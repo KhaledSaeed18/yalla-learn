@@ -54,7 +54,7 @@ export const sidebarRoutes: SidebarRoute[] = [
                 href: "/dashboard/blog/editor",
                 icon: PenLine,
                 requiresAuth: true,
-                roles: ["USER"],
+                roles: ["USER", "ADMIN"],
                 activeWhen: (pathname) => pathname.startsWith("/dashboard/blog/editor"),
             },
             {

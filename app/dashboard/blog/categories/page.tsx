@@ -21,23 +21,7 @@ import RoleBasedRoute from "@/components/RoleBasedRoute"
 import LoadingSpinner from "@/components/shared/LoadingSpinner"
 import { useGetBlogCategories, useCreateBlogCategory, useUpdateBlogCategory, useDeleteBlogCategory } from "@/hooks/blog/useBlogCategories"
 import { BlogCategory, CreateCategoryRequest } from "@/types/blog/blogCategories.types"
-
-const categorySchema = z.object({
-    name: z
-        .string()
-        .trim()
-        .min(2, "Category name is required and must be at least 2 characters")
-        .max(50, "Category name cannot exceed 50 characters"),
-
-    slug: z
-        .string()
-        .trim()
-        .min(2, "Slug is required and must be at least 2 characters")
-        .max(100, "Slug cannot exceed 100 characters")
-        .regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens"),
-
-    description: z.string().trim().max(500, "Description cannot exceed 500 characters").optional().nullable(),
-})
+import { categorySchema } from "@/lib/blog/validation"
 
 type CategoryFormValues = z.infer<typeof categorySchema>
 
