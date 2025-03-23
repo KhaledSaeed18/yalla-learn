@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -20,11 +21,18 @@ import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function BlogListingPage() {
+    const router = useRouter()
+    const searchParams = useSearchParams()
+
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
     const [postToDelete, setPostToDelete] = useState<string | null>(null)
     const [postToToggleStatus, setPostToToggleStatus] = useState<{ id: string; newStatus: PostStatus } | null>(null)
-    const [currentPage, setCurrentPage] = useState(1)
+
+    const [currentPage, setCurrentPage] = useState(() => {
+        const page = searchParams.get("page")
+        return page ? parseInt(page) : 1
+    })
     const postsPerPage = 9
 
     // Filter states
@@ -32,10 +40,20 @@ export default function BlogListingPage() {
         page: currentPage,
         limit: postsPerPage,
     })
-    const [filterStatus, setFilterStatus] = useState<PostStatus | "">("")
-    const [selectedCategoryId, setSelectedCategoryId] = useState("")
-    const [sortBy, setSortBy] = useState<"title" | "createdAt" | "publishedAt" | "updatedAt">("createdAt")
-    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
+    const [filterStatus, setFilterStatus] = useState<PostStatus | "">(() => {
+        const status = searchParams.get("status")
+        return status as PostStatus || ""
+    })
+    const [selectedCategoryId, setSelectedCategoryId] = useState(() =>
+        searchParams.get("categoryId") || ""
+    )
+    const [sortBy, setSortBy] = useState<"title" | "createdAt" | "publishedAt" | "updatedAt">(() => {
+        const sort = searchParams.get("sortBy")
+        return (sort as any) || "createdAt"
+    })
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">(() =>
+        (searchParams.get("sortOrder") as "asc" | "desc") || "desc"
+    )
     const [showFilters, setShowFilters] = useState(false)
 
     const { data: categories, isLoading: categoriesLoading } = useGetBlogCategories()
@@ -63,12 +81,32 @@ export default function BlogListingPage() {
     const updateBlogPost = useUpdateBlogPost()
     const deleteBlogPost = useDeleteBlogPost()
 
+    const updateUrlWithFilters = () => {
+        const params = new URLSearchParams()
+
+        if (currentPage > 1) params.set("page", currentPage.toString())
+        if (filterStatus) params.set("status", filterStatus)
+        if (selectedCategoryId) params.set("categoryId", selectedCategoryId)
+        if (sortBy !== "createdAt") params.set("sortBy", sortBy)
+        if (sortOrder !== "desc") params.set("sortOrder", sortOrder)
+
+        const queryString = params.toString()
+        const url = queryString ? `?${queryString}` : window.location.pathname
+
+        router.replace(url, { scroll: false })
+    }
+
+    useEffect(() => {
+        updateUrlWithFilters()
+    }, [currentPage, filterStatus, selectedCategoryId, sortBy, sortOrder])
+
     const clearFilters = () => {
         setFilterStatus("")
         setSelectedCategoryId("")
         setSortBy("createdAt")
         setSortOrder("desc")
         setShowFilters(false)
+        setCurrentPage(1)
     }
 
     const handleDeleteClick = (postId: string) => {
