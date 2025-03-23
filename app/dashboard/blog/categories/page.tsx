@@ -161,10 +161,10 @@ const CategoriesPage = () => {
                 <TableCell>
                     <Skeleton className="h-6 w-16 rounded-full" />
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                     <Skeleton className="h-4 w-full" />
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                     <Skeleton className="h-4 w-32" />
                 </TableCell>
                 <TableCell className="text-right">
@@ -225,8 +225,8 @@ const CategoriesPage = () => {
                                             <TableRow>
                                                 <TableHead className="w-[15%]">Name</TableHead>
                                                 <TableHead className="w-[12%]">Slug</TableHead>
-                                                <TableHead className="w-[48%]">Description</TableHead>
-                                                <TableHead className="w-[15%]">Created</TableHead>
+                                                <TableHead className="w-[48%] hidden md:table-cell">Description</TableHead>
+                                                <TableHead className="w-[15%] hidden md:table-cell">Created</TableHead>
                                                 <TableHead className="text-right w-[10%]">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
@@ -258,8 +258,8 @@ const CategoriesPage = () => {
                                             <TableRow>
                                                 <TableHead className="w-[15%]">Name</TableHead>
                                                 <TableHead className="w-[12%]">Slug</TableHead>
-                                                <TableHead className="w-[48%]">Description</TableHead>
-                                                <TableHead className="w-[15%]">Created</TableHead>
+                                                <TableHead className="w-[48%] hidden md:table-cell">Description</TableHead>
+                                                <TableHead className="w-[15%] hidden md:table-cell">Created</TableHead>
                                                 <TableHead className="text-right w-[10%]">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
@@ -270,7 +270,7 @@ const CategoriesPage = () => {
                                                     <TableCell>
                                                         <Badge variant="outline">{category.slug}</Badge>
                                                     </TableCell>
-                                                    <TableCell className="max-w-xs">
+                                                    <TableCell className="max-w-xs hidden md:table-cell">
                                                         {category.description ? (
                                                             <TooltipProvider>
                                                                 <Tooltip>
@@ -286,7 +286,7 @@ const CategoriesPage = () => {
                                                             "—"
                                                         )}
                                                     </TableCell>
-                                                    <TableCell className="">{formatDate(category.createdAt)}</TableCell>
+                                                    <TableCell className="hidden md:table-cell">{formatDate(category.createdAt)}</TableCell>
                                                     <TableCell className="text-right">
                                                         <div className="flex justify-end gap-2">
                                                             <Button
