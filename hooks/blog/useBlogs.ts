@@ -121,7 +121,7 @@ export const useUpdateBlogPost = () => {
             );
 
             queryClient.invalidateQueries({
-                queryKey: blogKeys.lists(),
+                queryKey: blogKeys.userBlogs(),
             });
 
             toast.success('Blog post updated successfully');
