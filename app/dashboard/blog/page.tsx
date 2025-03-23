@@ -1,17 +1,23 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { MoreHorizontal, PenLine, Trash2, FileText, Eye, EyeOff, ArrowLeft, ArrowRight } from "lucide-react"
+import { MoreHorizontal, PenLine, Trash2, FileText, Eye, EyeOff, ArrowLeft, ArrowRight, X, SlidersHorizontal } from "lucide-react"
 import { useGetUserBlogPosts, useUpdateBlogPost, useDeleteBlogPost } from "@/hooks/blog/useBlogs"
-import type { BlogPost, PostStatus } from "@/types/blog/blog.types"
+import type { BlogPost, BlogPostsQueryParams, PostStatus } from "@/types/blog/blog.types"
 import { Skeleton } from "@/components/ui/skeleton"
 import LoadingSpinner from "@/components/shared/LoadingSpinner"
 import { Badge } from "@/components/ui/badge"
+import { useGetBlogCategories } from "@/hooks/blog/useBlogCategories"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
+import { Label } from "@/components/ui/label"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function BlogListingPage() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -21,20 +27,49 @@ export default function BlogListingPage() {
     const [currentPage, setCurrentPage] = useState(1)
     const postsPerPage = 9
 
-    const {
-        data: blogData,
-        isLoading,
-        isError,
-        error,
-        refetch,
-        isFetching,
-    } = useGetUserBlogPosts({
+    // Filter states
+    const [filterParams, setFilterParams] = useState<BlogPostsQueryParams>({
         page: currentPage,
         limit: postsPerPage,
     })
+    const [filterStatus, setFilterStatus] = useState<PostStatus | "">("")
+    const [selectedCategoryId, setSelectedCategoryId] = useState("")
+    const [sortBy, setSortBy] = useState<"title" | "createdAt" | "publishedAt" | "updatedAt">("createdAt")
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
+    const [showFilters, setShowFilters] = useState(false)
+
+    const { data: categories, isLoading: categoriesLoading } = useGetBlogCategories()
+
+    useEffect(() => {
+        const updatedParams: BlogPostsQueryParams = {
+            page: currentPage,
+            limit: postsPerPage,
+        }
+
+        if (filterStatus) updatedParams.status = filterStatus
+        if (selectedCategoryId) updatedParams.categoryId = selectedCategoryId
+        updatedParams.sortBy = sortBy
+        updatedParams.sortOrder = sortOrder
+
+        setFilterParams(updatedParams)
+    }, [currentPage, postsPerPage, filterStatus, selectedCategoryId, sortBy, sortOrder])
+
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [filterStatus, selectedCategoryId, sortBy, sortOrder])
+
+    const { data: blogData, isLoading, isError, error, refetch, isFetching } = useGetUserBlogPosts(filterParams)
 
     const updateBlogPost = useUpdateBlogPost()
     const deleteBlogPost = useDeleteBlogPost()
+
+    const clearFilters = () => {
+        setFilterStatus("")
+        setSelectedCategoryId("")
+        setSortBy("createdAt")
+        setSortOrder("desc")
+        setShowFilters(false)
+    }
 
     const handleDeleteClick = (postId: string) => {
         setPostToDelete(postId)
@@ -164,6 +199,116 @@ export default function BlogListingPage() {
         )
     }
 
+    const FilterUI = () => (
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="flex gap-2">
+                <Popover open={showFilters} onOpenChange={setShowFilters}>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" className="gap-2">
+                            <SlidersHorizontal className="h-4 w-4" />
+                            <span className="hidden sm:inline">Filters</span>
+                            {(filterStatus || selectedCategoryId || sortBy !== "createdAt" || sortOrder !== "desc") && (
+                                <Badge variant="secondary" className="ml-1 hidden sm:flex h-5 px-1">
+                                    {
+                                        [
+                                            filterStatus && "1",
+                                            selectedCategoryId && "1",
+                                            (sortBy !== "createdAt" || sortOrder !== "desc") && "1",
+                                        ].filter(Boolean).length
+                                    }
+                                </Badge>
+                            )}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[280px] sm:w-[350px]" align="end">
+                        <div className="grid gap-4">
+                            <div className="flex items-center justify-between">
+                                <h4 className="font-medium">Filter Posts</h4>
+                                <Button variant="ghost" size="sm" onClick={clearFilters} className="h-8">
+                                    Reset
+                                </Button>
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="status">Status</Label>
+                                <Select value={filterStatus} onValueChange={(value) => setFilterStatus(value as PostStatus | "")}>
+                                    <SelectTrigger id="status">
+                                        <SelectValue placeholder="All statuses" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All statuses</SelectItem>
+                                        <SelectItem value="PUBLISHED">Published</SelectItem>
+                                        <SelectItem value="DRAFT">Draft</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="category">Category</Label>
+                                <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
+                                    <SelectTrigger id="category">
+                                        <SelectValue placeholder="All categories" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {categoriesLoading ? (
+                                            <SelectItem value="loading" disabled>
+                                                Loading categories...
+                                            </SelectItem>
+                                        ) : (
+                                            <ScrollArea className="h-[180px]">
+                                                {categories?.map((category) => (
+                                                    <SelectItem key={category.id} value={category.id}>
+                                                        {category.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </ScrollArea>
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <Separator />
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="sortBy">Sort By</Label>
+                                <div className="flex gap-2">
+                                    <Select value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
+                                        <SelectTrigger id="sortBy" className="flex-1">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="title">Title</SelectItem>
+                                            <SelectItem value="createdAt">Created Date</SelectItem>
+                                            <SelectItem value="updatedAt">Updated Date</SelectItem>
+                                            <SelectItem value="publishedAt">Published Date</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+
+                                    <Select value={sortOrder} onValueChange={(value) => setSortOrder(value as "asc" | "desc")}>
+                                        <SelectTrigger id="sortOrder">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="asc">Ascending</SelectItem>
+                                            <SelectItem value="desc">Descending</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        </div>
+                    </PopoverContent>
+                </Popover>
+
+                <Link href="/dashboard/blog/editor">
+                    <Button>
+                        <PenLine className="mr-2 h-4 w-4" />
+                        New Post
+                    </Button>
+                </Link>
+            </div>
+        </div>
+    )
+
     const BlogPostsSkeleton = () => {
         return Array(9)
             .fill(0)
@@ -187,6 +332,58 @@ export default function BlogListingPage() {
                     </CardFooter>
                 </Card>
             ))
+    }
+
+    const ActiveFiltersDisplay = () => {
+        const hasFilters =
+            filterStatus || selectedCategoryId || sortBy !== "createdAt" || sortOrder !== "desc"
+
+        if (!hasFilters) return null
+
+        return (
+            <div className="flex flex-wrap gap-2 mb-4">
+                {filterStatus && (
+                    <Badge variant="secondary" className="flex items-center gap-1 py-1">
+                        Status: {filterStatus === "PUBLISHED" ? "Published" : "Draft"}
+                        <Button variant="ghost" size="icon" className="h-4 w-4 ml-1 p-0" onClick={() => setFilterStatus("")}>
+                            <X className="h-3 w-3" />
+                        </Button>
+                    </Badge>
+                )}
+
+                {selectedCategoryId && (
+                    <Badge variant="secondary" className="flex items-center gap-1 py-1">
+                        Category: {categories?.find((c) => c.id === selectedCategoryId)?.name || "Selected"}
+                        <Button variant="ghost" size="icon" className="h-4 w-4 ml-1 p-0" onClick={() => setSelectedCategoryId("")}>
+                            <X className="h-3 w-3" />
+                        </Button>
+                    </Badge>
+                )}
+
+                {(sortBy !== "createdAt" || sortOrder !== "desc") && (
+                    <Badge variant="secondary" className="flex items-center gap-1 py-1">
+                        Sort: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)} ({sortOrder === "asc" ? "A-Z" : "Z-A"})
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-4 w-4 ml-1 p-0"
+                            onClick={() => {
+                                setSortBy("createdAt")
+                                setSortOrder("desc")
+                            }}
+                        >
+                            <X className="h-3 w-3" />
+                        </Button>
+                    </Badge>
+                )}
+
+                {hasFilters && (
+                    <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 text-xs">
+                        Clear all
+                    </Button>
+                )}
+            </div>
+        )
     }
 
     if (isError) {
@@ -220,13 +417,10 @@ export default function BlogListingPage() {
         <main className="mb-6">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold">Blog Posts</h1>
-                <Link href="/dashboard/blog/editor">
-                    <Button>
-                        <PenLine className="mr-2 h-4 w-4" />
-                        New Post
-                    </Button>
-                </Link>
+                <FilterUI />
             </div>
+
+            <ActiveFiltersDisplay />
 
             {isLoading ? (
                 <>
@@ -397,3 +591,4 @@ export default function BlogListingPage() {
         </main>
     )
 }
+
