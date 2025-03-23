@@ -177,6 +177,7 @@ export function TipTapEditor({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     variant={editor.isActive("bold") ? "secondary" : "ghost"}
                                     size="icon"
                                     onClick={() => editor.chain().focus().toggleBold().run()}
@@ -191,6 +192,7 @@ export function TipTapEditor({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     variant={editor.isActive("italic") ? "secondary" : "ghost"}
                                     size="icon"
                                     onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -207,6 +209,7 @@ export function TipTapEditor({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     variant={editor.isActive("heading", { level: 1 }) ? "secondary" : "ghost"}
                                     size="icon"
                                     onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -221,6 +224,7 @@ export function TipTapEditor({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     variant={editor.isActive("heading", { level: 2 }) ? "secondary" : "ghost"}
                                     size="icon"
                                     onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
@@ -235,6 +239,7 @@ export function TipTapEditor({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     variant={editor.isActive("heading", { level: 3 }) ? "secondary" : "ghost"}
                                     size="icon"
                                     onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
@@ -251,6 +256,7 @@ export function TipTapEditor({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     variant={editor.isActive("bulletList") ? "secondary" : "ghost"}
                                     size="icon"
                                     onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -265,6 +271,7 @@ export function TipTapEditor({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     variant={editor.isActive("orderedList") ? "secondary" : "ghost"}
                                     size="icon"
                                     onClick={() => editor.chain().focus().toggleOrderedList().run()}
@@ -281,6 +288,7 @@ export function TipTapEditor({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     variant={editor.isActive("blockquote") ? "secondary" : "ghost"}
                                     size="icon"
                                     onClick={() => editor.chain().focus().toggleBlockquote().run()}
@@ -295,6 +303,7 @@ export function TipTapEditor({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     variant={editor.isActive("codeBlock") ? "secondary" : "ghost"}
                                     size="icon"
                                     onClick={() => editor.chain().focus().toggleCodeBlock().run()}
@@ -311,6 +320,7 @@ export function TipTapEditor({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     variant={editor.isActive("link") ? "secondary" : "ghost"}
                                     size="icon"
                                     onClick={() => {
@@ -330,7 +340,13 @@ export function TipTapEditor({
 
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" onClick={() => setImageDialogOpen(true)} aria-label="Add Image">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setImageDialogOpen(true)}
+                                    aria-label="Add Image"
+                                >
                                     <ImageIcon className="size-4" />
                                 </Button>
                             </TooltipTrigger>
@@ -342,6 +358,7 @@ export function TipTapEditor({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     variant={editor.isActive("table") ? "secondary" : "ghost"}
                                     size="icon"
                                     onClick={() => setTableDialogOpen(true)}
@@ -358,6 +375,7 @@ export function TipTapEditor({
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <Button
+                                            type="button"
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => editor.chain().focus().deleteTable().run()}
@@ -372,6 +390,7 @@ export function TipTapEditor({
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <Button
+                                            type="button"
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => editor.chain().focus().addColumnBefore().run()}
@@ -386,6 +405,7 @@ export function TipTapEditor({
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <Button
+                                            type="button"
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => editor.chain().focus().addColumnAfter().run()}
@@ -400,6 +420,7 @@ export function TipTapEditor({
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <Button
+                                            type="button"
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => editor.chain().focus().addRowBefore().run()}
@@ -414,6 +435,7 @@ export function TipTapEditor({
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <Button
+                                            type="button"
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => editor.chain().focus().addRowAfter().run()}
@@ -432,6 +454,7 @@ export function TipTapEditor({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => editor.chain().focus().undo().run()}
@@ -447,6 +470,7 @@ export function TipTapEditor({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => editor.chain().focus().redo().run()}
