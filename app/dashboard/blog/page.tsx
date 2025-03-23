@@ -7,44 +7,27 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { MoreHorizontal, PenLine, Trash2, FileText, Eye, EyeOff } from "lucide-react"
-
-const initialBlogPosts = [
-    {
-        id: "1",
-        title: "Getting Started with Next.js",
-        excerpt: "Learn how to build modern web applications with Next.js and React.",
-        date: "March 10, 2025",
-        status: "Published",
-    },
-    {
-        id: "2",
-        title: "Mastering TypeScript",
-        excerpt: "Discover the power of TypeScript and how it can improve your development workflow.",
-        date: "March 8, 2025",
-        status: "Published",
-    },
-    {
-        id: "3",
-        title: "UI Component Libraries",
-        excerpt: "A comparison of popular UI component libraries for React applications.",
-        date: "March 5, 2025",
-        status: "Draft",
-    },
-    {
-        id: "4",
-        title: "State Management in 2025",
-        excerpt: "Modern approaches to state management in React applications.",
-        date: "March 1, 2025",
-        status: "Published",
-    },
-]
+import { useGetUserBlogPosts, useUpdateBlogPost, useDeleteBlogPost } from "@/hooks/blog/useBlogs"
+import { BlogPost, PostStatus } from "@/types/blog/blog.types"
+import { Skeleton } from "@/components/ui/skeleton"
+import LoadingSpinner from "@/components/shared/LoadingSpinner"
 
 export default function BlogListingPage() {
-    const [blogPosts, setBlogPosts] = useState(initialBlogPosts)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
     const [postToDelete, setPostToDelete] = useState<string | null>(null)
-    const [postToToggleStatus, setPostToToggleStatus] = useState<{ id: string; newStatus: string } | null>(null)
+    const [postToToggleStatus, setPostToToggleStatus] = useState<{ id: string; newStatus: PostStatus } | null>(null)
+
+    const { 
+        data: blogData,
+        isLoading,
+        isError,
+        error,
+        refetch
+    } = useGetUserBlogPosts()
+
+    const updateBlogPost = useUpdateBlogPost()
+    const deleteBlogPost = useDeleteBlogPost()
 
     const handleDeleteClick = (postId: string) => {
         setPostToDelete(postId)
@@ -53,31 +36,96 @@ export default function BlogListingPage() {
 
     const confirmDelete = () => {
         if (postToDelete) {
-            setBlogPosts(blogPosts.filter((post) => post.id !== postToDelete))
-            setPostToDelete(null)
+            deleteBlogPost.mutate(postToDelete, {
+                onSuccess: () => {
+                    setPostToDelete(null)
+                    setDeleteDialogOpen(false)
+                }
+            })
         }
-        setDeleteDialogOpen(false)
     }
 
-    const handleStatusToggle = (postId: string) => {
-        const post = blogPosts.find((post) => post.id === postId)
-        if (post) {
-            const newStatus = post.status === "Published" ? "Draft" : "Published"
-            setPostToToggleStatus({ id: postId, newStatus })
-            setStatusDialogOpen(true)
-        }
+    const handleStatusToggle = (post: BlogPost) => {
+        const newStatus: PostStatus = post.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED"
+        setPostToToggleStatus({ id: post.id, newStatus })
+        setStatusDialogOpen(true)
     }
 
     const confirmStatusChange = () => {
         if (postToToggleStatus) {
-            setBlogPosts(
-                blogPosts.map((post) =>
-                    post.id === postToToggleStatus.id ? { ...post, status: postToToggleStatus.newStatus } : post,
-                ),
-            )
-            setPostToToggleStatus(null)
+            updateBlogPost.mutate({
+                id: postToToggleStatus.id,
+                postData: { status: postToToggleStatus.newStatus }
+            }, {
+                onSuccess: () => {
+                    setPostToToggleStatus(null)
+                    setStatusDialogOpen(false)
+                }
+            })
         }
-        setStatusDialogOpen(false)
+    }
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+        })
+    }
+
+    const getBlogPosts = () => {
+        return blogData?.posts || []
+    }
+
+    // Skeleton loading component
+    const BlogPostsSkeleton = () => {
+        return Array(3).fill(0).map((_, index) => (
+            <Card key={`skeleton-${index}`} className="overflow-hidden">
+                <CardHeader className="pb-3">
+                    <div className="flex justify-between items-start">
+                        <Skeleton className="h-6 w-[70%]" />
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                    </div>
+                    <CardDescription className="flex justify-between text-sm text-muted-foreground">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-4 w-20" />
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-10 w-full" />
+                </CardContent>
+                <CardFooter>
+                    <Skeleton className="h-9 w-full rounded-md" />
+                </CardFooter>
+            </Card>
+        ))
+    }
+
+    if (isError) {
+        return (
+            <main>
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-3xl font-bold">Blog Posts</h1>
+                    <Link href="/dashboard/blog/editor">
+                        <Button>
+                            <PenLine className="mr-2 h-4 w-4" />
+                            New Post
+                        </Button>
+                    </Link>
+                </div>
+                <Card>
+                    <CardContent className="p-6">
+                        <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-md">
+                            <h2 className="text-lg font-semibold">Error loading blog posts</h2>
+                            <p>{(error as any)?.message || "Failed to load blog posts. Please try again."}</p>
+                            <Button onClick={() => refetch()} className="mt-2">
+                                Try Again
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </main>
+        )
     }
 
     return (
@@ -92,7 +140,11 @@ export default function BlogListingPage() {
                 </Link>
             </div>
 
-            {blogPosts.length === 0 ? (
+            {isLoading ? (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <BlogPostsSkeleton />
+                </div>
+            ) : getBlogPosts().length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-lg">
                     <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
                         <FileText className="h-10 w-10 text-muted-foreground" />
@@ -110,7 +162,7 @@ export default function BlogListingPage() {
                 </div>
             ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {blogPosts.map((post) => (
+                    {getBlogPosts().map((post) => (
                         <Card key={post.id} className="overflow-hidden">
                             <CardHeader className="pb-3">
                                 <div className="flex justify-between items-start">
@@ -123,8 +175,11 @@ export default function BlogListingPage() {
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => handleStatusToggle(post.id)}>
-                                                {post.status === "Published" ? (
+                                            <DropdownMenuItem 
+                                                onClick={() => handleStatusToggle(post)}
+                                                disabled={updateBlogPost.isPending}
+                                            >
+                                                {post.status === "PUBLISHED" ? (
                                                     <>
                                                         <EyeOff className="mr-2 h-4 w-4" />
                                                         Set as Draft
@@ -139,6 +194,7 @@ export default function BlogListingPage() {
                                             <DropdownMenuItem
                                                 className="text-destructive focus:text-destructive"
                                                 onClick={() => handleDeleteClick(post.id)}
+                                                disabled={deleteBlogPost.isPending}
                                             >
                                                 <Trash2 className="mr-2 h-4 w-4" />
                                                 Delete
@@ -147,12 +203,14 @@ export default function BlogListingPage() {
                                     </DropdownMenu>
                                 </div>
                                 <CardDescription className="flex justify-between text-sm text-muted-foreground">
-                                    <span>{post.date}</span>
-                                    <span className={post.status === "Draft" ? "text-amber-500" : "text-emerald-500"}>{post.status}</span>
+                                    <span>{formatDate(post.createdAt)}</span>
+                                    <span className={post.status === "DRAFT" ? "text-amber-500" : "text-emerald-500"}>
+                                        {post.status === "DRAFT" ? "Draft" : "Published"}
+                                    </span>
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-sm">{post.excerpt}</p>
+                                <p className="text-sm">{post.excerpt || "No excerpt available"}</p>
                             </CardContent>
                             <CardFooter>
                                 <Link href={`/dashboard/blog/editor?id=${post.id}`} className="w-full">
@@ -176,9 +234,18 @@ export default function BlogListingPage() {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-white hover:bg-destructive/90">
-                            Delete
+                        <AlertDialogCancel disabled={deleteBlogPost.isPending}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction 
+                            onClick={confirmDelete} 
+                            className="bg-destructive text-white hover:bg-destructive/90"
+                            disabled={deleteBlogPost.isPending}
+                        >
+                            {deleteBlogPost.isPending ? (
+                                <>
+                                    <LoadingSpinner size={16} spinnerClassName="mr-2" />
+                                    Deleting...
+                                </>
+                            ) : "Delete"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -189,25 +256,33 @@ export default function BlogListingPage() {
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            {postToToggleStatus?.newStatus === "Published" ? "Publish this post?" : "Change to draft status?"}
+                            {postToToggleStatus?.newStatus === "PUBLISHED" ? "Publish this post?" : "Change to draft status?"}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            {postToToggleStatus?.newStatus === "Published"
+                            {postToToggleStatus?.newStatus === "PUBLISHED"
                                 ? "This will make the post visible to all readers."
                                 : "This will hide the post from readers until you publish it again."}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel disabled={updateBlogPost.isPending}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={confirmStatusChange}
+                            disabled={updateBlogPost.isPending}
                             className={
-                                postToToggleStatus?.newStatus === "Published"
+                                postToToggleStatus?.newStatus === "PUBLISHED"
                                     ? "bg-emerald-600 text-white hover:bg-emerald-700"
                                     : "bg-amber-600 text-white hover:bg-amber-700"
                             }
                         >
-                            {postToToggleStatus?.newStatus === "Published" ? "Publish" : "Set as Draft"}
+                            {updateBlogPost.isPending ? (
+                                <>
+                                    <LoadingSpinner size={16} spinnerClassName="mr-2" />
+                                    {postToToggleStatus?.newStatus === "PUBLISHED" ? "Publishing..." : "Setting as Draft..."}
+                                </>
+                            ) : (
+                                postToToggleStatus?.newStatus === "PUBLISHED" ? "Publish" : "Set as Draft"
+                            )}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -215,4 +290,3 @@ export default function BlogListingPage() {
         </main>
     )
 }
-

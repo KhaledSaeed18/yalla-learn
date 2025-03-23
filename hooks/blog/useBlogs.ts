@@ -97,10 +97,27 @@ export const useUpdateBlogPost = () => {
     return useMutation({
         mutationFn: ({ id, postData }: { id: string; postData: UpdateBlogPostRequest }) =>
             blogServices.updateBlogPost(id, postData),
-        onSuccess: (response, { id }) => {
+        onSuccess: (response, { id, postData }) => {
             queryClient.setQueryData(
                 blogKeys.detail(id),
-                response.data.blogPost
+                (oldData: BlogPost | undefined) => {
+                    if (!oldData) return oldData;
+                    return { ...oldData, ...postData };
+                }
+            );
+
+            queryClient.setQueryData(
+                blogKeys.userBlogsList(),
+                (oldData: any) => {
+                    if (!oldData) return oldData;
+
+                    return {
+                        ...oldData,
+                        posts: oldData.posts.map((post: BlogPost) =>
+                            post.id === id ? { ...post, ...postData } : post
+                        )
+                    };
+                }
             );
 
             queryClient.invalidateQueries({
