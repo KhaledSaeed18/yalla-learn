@@ -132,8 +132,8 @@ export default function BlogListingPage() {
                             {i + 1}
                         </Button>
                     )).slice(
-                        Math.max(0, Math.min(currentPage - 3, totalPages - 5)),
-                        Math.max(5, Math.min(currentPage + 2, totalPages)),
+                        Math.max(0, Math.min(currentPage - 3, totalPages - 4)),
+                        Math.max(4, Math.min(currentPage + 2, totalPages)),
                     )}
 
                     {totalPages > 5 && currentPage < totalPages - 2 && (
