@@ -1,6 +1,6 @@
 import type React from "react"
 
-export default function SecuritySettingsLayout({
+export default function BlogCategoriesLayout({
     children,
 }: {
     children: React.ReactNode
