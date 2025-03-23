@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import { MoreHorizontal, PenLine, Trash2, FileText, Eye, EyeOff } from "lucide-react"
+import { MoreHorizontal, PenLine, Trash2, FileText, Eye, EyeOff, ArrowLeft, ArrowRight } from "lucide-react"
 import { useGetUserBlogPosts, useUpdateBlogPost, useDeleteBlogPost } from "@/hooks/blog/useBlogs"
-import { BlogPost, PostStatus } from "@/types/blog/blog.types"
+import type { BlogPost, PostStatus } from "@/types/blog/blog.types"
 import { Skeleton } from "@/components/ui/skeleton"
 import LoadingSpinner from "@/components/shared/LoadingSpinner"
 import { Badge } from "@/components/ui/badge"
@@ -18,14 +18,20 @@ export default function BlogListingPage() {
     const [statusDialogOpen, setStatusDialogOpen] = useState(false)
     const [postToDelete, setPostToDelete] = useState<string | null>(null)
     const [postToToggleStatus, setPostToToggleStatus] = useState<{ id: string; newStatus: PostStatus } | null>(null)
+    const [currentPage, setCurrentPage] = useState(1)
+    const postsPerPage = 9
 
     const {
         data: blogData,
         isLoading,
         isError,
         error,
-        refetch
-    } = useGetUserBlogPosts()
+        refetch,
+        isFetching,
+    } = useGetUserBlogPosts({
+        page: currentPage,
+        limit: postsPerPage,
+    })
 
     const updateBlogPost = useUpdateBlogPost()
     const deleteBlogPost = useDeleteBlogPost()
@@ -41,7 +47,7 @@ export default function BlogListingPage() {
                 onSuccess: () => {
                     setPostToDelete(null)
                     setDeleteDialogOpen(false)
-                }
+                },
             })
         }
     }
@@ -54,15 +60,18 @@ export default function BlogListingPage() {
 
     const confirmStatusChange = () => {
         if (postToToggleStatus) {
-            updateBlogPost.mutate({
-                id: postToToggleStatus.id,
-                postData: { status: postToToggleStatus.newStatus }
-            }, {
-                onSuccess: () => {
-                    setPostToToggleStatus(null)
-                    setStatusDialogOpen(false)
-                }
-            })
+            updateBlogPost.mutate(
+                {
+                    id: postToToggleStatus.id,
+                    postData: { status: postToToggleStatus.newStatus },
+                },
+                {
+                    onSuccess: () => {
+                        setPostToToggleStatus(null)
+                        setStatusDialogOpen(false)
+                    },
+                },
+            )
         }
     }
 
@@ -72,7 +81,7 @@ export default function BlogListingPage() {
             month: "short",
             day: "numeric",
             hour: "2-digit",
-            minute: "2-digit"
+            minute: "2-digit",
         })
     }
 
@@ -80,28 +89,104 @@ export default function BlogListingPage() {
         return blogData?.posts || []
     }
 
-    // Skeleton loading component
-    const BlogPostsSkeleton = () => {
-        return Array(3).fill(0).map((_, index) => (
-            <Card key={`skeleton-${index}`} className="overflow-hidden">
-                <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                        <Skeleton className="h-6 w-[70%]" />
-                        <Skeleton className="h-8 w-8 rounded-md" />
+    function Pagination() {
+        const totalPages = blogData?.pagination?.totalPages || 1
+
+        if (totalPages <= 1) return null
+
+        if (isFetching) {
+            return (
+                <div className="flex justify-center items-center mt-8 gap-2">
+                    <Skeleton className="h-10 w-24" />
+                    <div className="flex items-center gap-1 px-2">
+                        {Array.from({ length: 3 }, (_, i) => (
+                            <Skeleton key={i} className="w-10 h-10 rounded-md" />
+                        ))}
                     </div>
-                    <CardDescription className="flex justify-between text-sm text-muted-foreground">
-                        <Skeleton className="h-4 w-24" />
-                        <Skeleton className="h-4 w-20" />
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Skeleton className="h-10 w-full" />
-                </CardContent>
-                <CardFooter>
-                    <Skeleton className="h-9 w-full rounded-md" />
-                </CardFooter>
-            </Card>
-        ))
+                    <Skeleton className="h-10 w-24" />
+                </div>
+            )
+        }
+
+        return (
+            <div className="flex justify-center items-center mt-8 gap-2">
+                <Button
+                    variant="outline"
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1 || isFetching}
+                    className="size-9"
+                >
+                    <ArrowLeft />
+                </Button>
+
+                <div className="flex items-center gap-1 px-1">
+                    {Array.from({ length: totalPages }, (_, i) => (
+                        <Button
+                            key={i + 1}
+                            variant={currentPage === i + 1 ? "default" : "outline"}
+                            size="sm"
+                            className="size-9"
+                            onClick={() => setCurrentPage(i + 1)}
+                            disabled={isFetching}
+                        >
+                            {i + 1}
+                        </Button>
+                    )).slice(
+                        Math.max(0, Math.min(currentPage - 3, totalPages - 5)),
+                        Math.max(5, Math.min(currentPage + 2, totalPages)),
+                    )}
+
+                    {totalPages > 5 && currentPage < totalPages - 2 && (
+                        <>
+                            <span className="mx-1">...</span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="size-9"
+                                onClick={() => setCurrentPage(totalPages)}
+                                disabled={isFetching}
+                            >
+                                {totalPages}
+                            </Button>
+                        </>
+                    )}
+                </div>
+
+                <Button
+                    variant="outline"
+                    className="size-9"
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages || isFetching}
+                >
+                    <ArrowRight />
+                </Button>
+            </div>
+        )
+    }
+
+    const BlogPostsSkeleton = () => {
+        return Array(9)
+            .fill(0)
+            .map((_, index) => (
+                <Card key={`skeleton-${index}`} className="overflow-hidden">
+                    <CardHeader className="pb-3">
+                        <div className="flex justify-between items-start">
+                            <Skeleton className="h-6 w-[70%]" />
+                            <Skeleton className="h-8 w-8 rounded-md" />
+                        </div>
+                        <CardDescription className="flex justify-between text-sm text-muted-foreground">
+                            <Skeleton className="h-4 w-24" />
+                            <Skeleton className="h-4 w-20" />
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="h-10 w-full" />
+                    </CardContent>
+                    <CardFooter>
+                        <Skeleton className="h-9 w-full rounded-md" />
+                    </CardFooter>
+                </Card>
+            ))
     }
 
     if (isError) {
@@ -132,7 +217,7 @@ export default function BlogListingPage() {
     }
 
     return (
-        <main>
+        <main className="mb-6">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold">Blog Posts</h1>
                 <Link href="/dashboard/blog/editor">
@@ -144,9 +229,14 @@ export default function BlogListingPage() {
             </div>
 
             {isLoading ? (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    <BlogPostsSkeleton />
-                </div>
+                <>
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <BlogPostsSkeleton />
+                    </div>
+                    <div className="mt-8">
+                        <Pagination />
+                    </div>
+                </>
             ) : getBlogPosts().length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-12 text-center border-2 border-dashed rounded-lg">
                     <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
@@ -164,68 +254,77 @@ export default function BlogListingPage() {
                     </Link>
                 </div>
             ) : (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {getBlogPosts().map((post) => (
-                        <Card key={post.id} className="overflow-hidden">
-                            <CardHeader className="pb-1">
-                                <div className="flex justify-between items-start">
-                                    <CardTitle className="text-xl">{post.title}</CardTitle>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                                <MoreHorizontal className="h-4 w-4" />
-                                                <span className="sr-only">Open menu</span>
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem
-                                                onClick={() => handleStatusToggle(post)}
-                                                disabled={updateBlogPost.isPending}
-                                            >
-                                                {post.status === "PUBLISHED" ? (
-                                                    <>
-                                                        <EyeOff className="mr-2 h-4 w-4" />
-                                                        Set as Draft
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Eye className="mr-2 h-4 w-4" />
-                                                        Publish
-                                                    </>
-                                                )}
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                className="text-destructive focus:text-destructive"
-                                                onClick={() => handleDeleteClick(post.id)}
-                                                disabled={deleteBlogPost.isPending}
-                                            >
-                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                Delete
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                                <CardDescription className="flex justify-between text-sm text-muted-foreground">
-                                    <span>{formatDate(post.createdAt)}</span>
-                                    <span className={post.status === "DRAFT" ? "text-amber-500" : "text-emerald-500"}>
-                                        {post.status === "DRAFT" ? "Draft" : "Published"}
-                                    </span>
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-2">
-                                <Badge variant="outline" className="text-sm">{post.slug || "No Slug available"}</Badge>
-                                <p className="text-sm">{post.excerpt || "No excerpt available"}</p>
-                            </CardContent>
-                            <CardFooter>
-                                <Link href={`/dashboard/blog/editor?id=${post.id}`} className="w-full">
-                                    <Button variant="outline" className="w-full">
-                                        View & Edit
-                                    </Button>
-                                </Link>
-                            </CardFooter>
-                        </Card>
-                    ))}
-                </div>
+                <>
+                    <div className={`grid gap-6 md:grid-cols-2 lg:grid-cols-3 ${isFetching ? "opacity-70" : ""}`}>
+                        {getBlogPosts().map((post) => (
+                            <Card key={post.id} className="overflow-hidden">
+                                <CardHeader className="pb-1">
+                                    <div className="flex justify-between items-start">
+                                        <CardTitle className="text-xl">{post.title}</CardTitle>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                    <span className="sr-only">Open menu</span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem onClick={() => handleStatusToggle(post)} disabled={updateBlogPost.isPending}>
+                                                    {post.status === "PUBLISHED" ? (
+                                                        <>
+                                                            <EyeOff className="mr-2 h-4 w-4" />
+                                                            Set as Draft
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Eye className="mr-2 h-4 w-4" />
+                                                            Publish
+                                                        </>
+                                                    )}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    className="text-destructive focus:text-destructive"
+                                                    onClick={() => handleDeleteClick(post.id)}
+                                                    disabled={deleteBlogPost.isPending}
+                                                >
+                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                    Delete
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                    <CardDescription className="flex justify-between text-sm text-muted-foreground">
+                                        <span>{formatDate(post.createdAt)}</span>
+                                        <span className={post.status === "DRAFT" ? "text-amber-500" : "text-emerald-500"}>
+                                            {post.status === "DRAFT" ? "Draft" : "Published"}
+                                        </span>
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-2">
+                                    <Badge variant="outline" className="text-sm">
+                                        {post.slug || "No Slug available"}
+                                    </Badge>
+                                    <p className="text-sm">{post.excerpt || "No excerpt available"}</p>
+                                </CardContent>
+                                <CardFooter>
+                                    <Link href={`/dashboard/blog/editor?id=${post.id}`} className="w-full">
+                                        <Button variant="outline" className="w-full">
+                                            View & Edit
+                                        </Button>
+                                    </Link>
+                                </CardFooter>
+                            </Card>
+                        ))}
+                    </div>
+
+                    {isFetching && (
+                        <div className="fixed bottom-4 right-4 bg-background border rounded-full shadow-lg p-3 z-50">
+                            <LoadingSpinner size={24} />
+                        </div>
+                    )}
+
+                    <Pagination />
+                </>
             )}
 
             {/* Delete Confirmation Dialog */}
@@ -249,7 +348,9 @@ export default function BlogListingPage() {
                                     <LoadingSpinner size={16} spinnerClassName="mr-2" />
                                     Deleting...
                                 </>
-                            ) : "Delete"}
+                            ) : (
+                                "Delete"
+                            )}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -284,8 +385,10 @@ export default function BlogListingPage() {
                                     <LoadingSpinner size={16} spinnerClassName="mr-2" />
                                     {postToToggleStatus?.newStatus === "PUBLISHED" ? "Publishing..." : "Setting as Draft..."}
                                 </>
+                            ) : postToToggleStatus?.newStatus === "PUBLISHED" ? (
+                                "Publish"
                             ) : (
-                                postToToggleStatus?.newStatus === "PUBLISHED" ? "Publish" : "Set as Draft"
+                                "Set as Draft"
                             )}
                         </AlertDialogAction>
                     </AlertDialogFooter>
@@ -294,3 +397,4 @@ export default function BlogListingPage() {
         </main>
     )
 }
+
