@@ -82,6 +82,10 @@ export default function BlogListingPage() {
                 onSuccess: () => {
                     setPostToDelete(null)
                     setDeleteDialogOpen(false)
+
+                    if (getBlogPosts().length === 1 && currentPage > 1) {
+                        setCurrentPage(prev => prev - 1);
+                    }
                 },
             })
         }
@@ -415,7 +419,7 @@ export default function BlogListingPage() {
 
     return (
         <main className="mb-6">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-3">
                 <h1 className="text-3xl font-bold">Blog Posts</h1>
                 <FilterUI />
             </div>
