@@ -182,7 +182,12 @@ export default function CreateBlogPost() {
                                             <FormItem>
                                                 <FormLabel>Content *</FormLabel>
                                                 <FormControl>
-                                                    <TipTapEditor content={content} onChange={handleEditorChange} className="w-full" />
+                                                    <TipTapEditor
+                                                        content={content}
+                                                        onChange={handleEditorChange}
+                                                        className="w-full"
+                                                        maxHeight="700px" 
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
