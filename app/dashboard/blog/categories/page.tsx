@@ -251,9 +251,9 @@ const CategoriesPage = () => {
                                 </Button>
                             </div>
                         ) : (
-                            <div className="overflow-auto w-full">
+                            <div className="overflow-x-auto w-full">
                                 <div className="min-w-full rounded-md border">
-                                    <Table>
+                                    <Table className="w-full table-auto">
                                         <TableHeader>
                                             <TableRow>
                                                 <TableHead className="w-[15%]">Name</TableHead>
