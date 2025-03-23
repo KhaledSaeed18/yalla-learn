@@ -15,6 +15,18 @@ export const blogServices = {
     },
 
     /**
+     * Get blog posts belonging to the authenticated user
+     * @param params - Query parameters for filtering, pagination, and sorting
+     * @returns A promise that resolves to the user's blog posts response
+     */
+    getUserBlogPosts: (params?: BlogPostsQueryParams) => {
+        return api.get<GetBlogPostsResponse>(
+            '/blog/get-user-blogs',
+            params
+        );
+    },
+
+    /**
      * Get a single blog post by ID or slug
      * @param idOrSlug - The blog post ID or slug
      * @returns A promise that resolves to the blog post response

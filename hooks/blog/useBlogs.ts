@@ -10,6 +10,8 @@ export const blogKeys = {
     list: (params?: BlogPostsQueryParams) => [...blogKeys.lists(), { params }] as const,
     details: () => [...blogKeys.all, 'detail'] as const,
     detail: (idOrSlug: string) => [...blogKeys.details(), idOrSlug] as const,
+    userBlogs: () => [...blogKeys.all, 'userBlogs'] as const,
+    userBlogsList: (params?: BlogPostsQueryParams) => [...blogKeys.userBlogs(), { params }] as const,
 };
 
 // Get all blog posts hook with optional filtering, pagination, and sorting
@@ -18,6 +20,20 @@ export const useGetBlogPosts = (params?: BlogPostsQueryParams) => {
         queryKey: blogKeys.list(params),
         queryFn: async () => {
             const response = await blogServices.getBlogPosts(params);
+            return {
+                posts: response.data.posts,
+                pagination: response.data.pagination
+            };
+        },
+    });
+};
+
+// Get blog posts belonging to the authenticated user
+export const useGetUserBlogPosts = (params?: BlogPostsQueryParams) => {
+    return useQuery({
+        queryKey: blogKeys.userBlogsList(params),
+        queryFn: async () => {
+            const response = await blogServices.getUserBlogPosts(params);
             return {
                 posts: response.data.posts,
                 pagination: response.data.pagination
