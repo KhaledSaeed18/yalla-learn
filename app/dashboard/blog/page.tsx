@@ -19,7 +19,7 @@ export default function BlogListingPage() {
     const [postToDelete, setPostToDelete] = useState<string | null>(null)
     const [postToToggleStatus, setPostToToggleStatus] = useState<{ id: string; newStatus: PostStatus } | null>(null)
 
-    const { 
+    const {
         data: blogData,
         isLoading,
         isError,
@@ -70,7 +70,9 @@ export default function BlogListingPage() {
         return new Date(dateString).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
-            day: "numeric"
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
         })
     }
 
@@ -176,7 +178,7 @@ export default function BlogListingPage() {
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
-                                            <DropdownMenuItem 
+                                            <DropdownMenuItem
                                                 onClick={() => handleStatusToggle(post)}
                                                 disabled={updateBlogPost.isPending}
                                             >
@@ -237,8 +239,8 @@ export default function BlogListingPage() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={deleteBlogPost.isPending}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction 
-                            onClick={confirmDelete} 
+                        <AlertDialogAction
+                            onClick={confirmDelete}
                             className="bg-destructive text-white hover:bg-destructive/90"
                             disabled={deleteBlogPost.isPending}
                         >
