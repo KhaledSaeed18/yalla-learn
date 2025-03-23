@@ -4,7 +4,8 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ImageIcon } from "lucide-react"
+import { ImageIcon, Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { TipTapEditor } from "@/components/editor/TipTapEditor"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,18 +19,19 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { blogPostSchema, type BlogPostFormValues } from "@/lib/blog/validation"
 import { Checkbox } from "@/components/ui/checkbox"
-
-const categories = [
-    { id: "1", name: "Technology", slug: "technology" },
-    { id: "2", name: "Design", slug: "design" },
-    { id: "3", name: "Business", slug: "business" },
-    { id: "4", name: "Marketing", slug: "marketing" },
-]
+import { useGetBlogCategories } from "@/hooks/blog/useBlogCategories"
+import { useCreateBlogPost } from "@/hooks/blog/useBlogs"
+import { toast } from "sonner"
 
 export default function CreateBlogPost() {
+    const router = useRouter()
     const [selectedCategories, setSelectedCategories] = useState<string[]>([])
     const [commandOpen, setCommandOpen] = useState(false)
     const [isAutoReadTime, setIsAutoReadTime] = useState(true)
+
+    const { data: categories, isLoading: isLoadingCategories, error: categoriesError } = useGetBlogCategories()
+
+    const createBlogPost = useCreateBlogPost()
 
     const form = useForm<BlogPostFormValues>({
         resolver: zodResolver(blogPostSchema),
@@ -50,6 +52,12 @@ export default function CreateBlogPost() {
     const { watch, setValue } = form
 
     const content = watch("content")
+
+    useEffect(() => {
+        if (categoriesError) {
+            toast.error("Failed to load categories. Please try refreshing the page.")
+        }
+    }, [categoriesError])
 
     function handleEditorChange(newContent: string) {
         form.setValue("content", newContent, {
@@ -88,7 +96,17 @@ export default function CreateBlogPost() {
     }, [content, isAutoReadTime, setValue]);
 
     function onSubmit(data: BlogPostFormValues) {
-        console.log("Form submitted:", data)
+        const postData = {
+            ...data,
+            categoryIds: data.categories,
+            readTime: data.readTime || 1,
+        };
+
+        createBlogPost.mutate(postData, {
+            onSuccess: () => {
+                router.push('/dashboard/blog');
+            }
+        });
     }
 
     return (
@@ -189,57 +207,63 @@ export default function CreateBlogPost() {
                                                 <FormLabel>Categories *</FormLabel>
                                                 <FormControl>
                                                     <div className="relative">
-                                                        <Popover open={commandOpen} onOpenChange={setCommandOpen}>
-                                                            <PopoverTrigger asChild>
-                                                                <Button variant="outline" role="combobox" className="w-full justify-between">
-                                                                    Select categories
-                                                                    <span className="ml-2 rounded-full bg-primary text-primary-foreground w-5 h-5 text-xs flex items-center justify-center">
-                                                                        {selectedCategories.length}
-                                                                    </span>
-                                                                </Button>
-                                                            </PopoverTrigger>
-                                                            <PopoverContent className="w-full p-0">
-                                                                <Command>
-                                                                    <CommandInput placeholder="Search categories..." />
-                                                                    <CommandList>
-                                                                        <CommandEmpty>No category found.</CommandEmpty>
-                                                                        <CommandGroup>
-                                                                            {categories.map((category) => (
-                                                                                <CommandItem
-                                                                                    key={category.id}
-                                                                                    value={category.name}
-                                                                                    onSelect={() => {
-                                                                                        const isSelected = selectedCategories.includes(category.id)
-                                                                                        const newSelectedCategories = isSelected
-                                                                                            ? selectedCategories.filter((id) => id !== category.id)
-                                                                                            : [...selectedCategories, category.id]
-                                                                                        setSelectedCategories(newSelectedCategories)
-                                                                                        setValue("categories", newSelectedCategories, {
-                                                                                            shouldValidate: true,
-                                                                                        })
-                                                                                    }}
-                                                                                >
-                                                                                    {category.name}
-                                                                                    <span
-                                                                                        className={cn(
-                                                                                            "ml-auto",
-                                                                                            selectedCategories.includes(category.id) ? "opacity-100" : "opacity-0",
-                                                                                        )}
+                                                        {isLoadingCategories ? (
+                                                            <div className="flex items-center justify-center py-4">
+                                                                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                                                            </div>
+                                                        ) : (
+                                                            <Popover open={commandOpen} onOpenChange={setCommandOpen}>
+                                                                <PopoverTrigger asChild>
+                                                                    <Button variant="outline" role="combobox" className="w-full justify-between">
+                                                                        Select categories
+                                                                        <span className="ml-2 rounded-full bg-primary text-primary-foreground w-5 h-5 text-xs flex items-center justify-center">
+                                                                            {selectedCategories.length}
+                                                                        </span>
+                                                                    </Button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-full p-0">
+                                                                    <Command>
+                                                                        <CommandInput placeholder="Search categories..." />
+                                                                        <CommandList>
+                                                                            <CommandEmpty>No category found.</CommandEmpty>
+                                                                            <CommandGroup>
+                                                                                {categories?.map((category) => (
+                                                                                    <CommandItem
+                                                                                        key={category.id}
+                                                                                        value={category.name}
+                                                                                        onSelect={() => {
+                                                                                            const isSelected = selectedCategories.includes(category.id)
+                                                                                            const newSelectedCategories = isSelected
+                                                                                                ? selectedCategories.filter((id) => id !== category.id)
+                                                                                                : [...selectedCategories, category.id]
+                                                                                            setSelectedCategories(newSelectedCategories)
+                                                                                            setValue("categories", newSelectedCategories, {
+                                                                                                shouldValidate: true,
+                                                                                            })
+                                                                                        }}
                                                                                     >
-                                                                                        ✓
-                                                                                    </span>
-                                                                                </CommandItem>
-                                                                            ))}
-                                                                        </CommandGroup>
-                                                                    </CommandList>
-                                                                </Command>
-                                                            </PopoverContent>
-                                                        </Popover>
+                                                                                        {category.name}
+                                                                                        <span
+                                                                                            className={cn(
+                                                                                                "ml-auto",
+                                                                                                selectedCategories.includes(category.id) ? "opacity-100" : "opacity-0",
+                                                                                            )}
+                                                                                        >
+                                                                                            ✓
+                                                                                        </span>
+                                                                                    </CommandItem>
+                                                                                ))}
+                                                                            </CommandGroup>
+                                                                        </CommandList>
+                                                                    </Command>
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                        )}
                                                     </div>
                                                 </FormControl>
                                                 <div className="flex flex-wrap gap-2 mt-2">
                                                     {selectedCategories.map((id) => {
-                                                        const category = categories.find((c) => c.id === id)
+                                                        const category = categories?.find((c) => c.id === id)
                                                         return category ? (
                                                             <Badge key={id} variant="secondary">
                                                                 {category.name}
@@ -345,7 +369,20 @@ export default function CreateBlogPost() {
                             </Card>
 
                             <div className="flex items-center justify-center">
-                                <Button size='lg' type="submit">{form.watch("status") === "PUBLISHED" ? "Publish" : "Save as Draft"}</Button>
+                                <Button
+                                    size='lg'
+                                    type="submit"
+                                    disabled={createBlogPost.isPending}
+                                >
+                                    {createBlogPost.isPending ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            {form.watch("status") === "PUBLISHED" ? "Publishing..." : "Saving..."}
+                                        </>
+                                    ) : (
+                                        form.watch("status") === "PUBLISHED" ? "Publish" : "Save as Draft"
+                                    )}
+                                </Button>
                             </div>
                         </div>
                     </div>
