@@ -11,6 +11,7 @@ import { useGetUserBlogPosts, useUpdateBlogPost, useDeleteBlogPost } from "@/hoo
 import { BlogPost, PostStatus } from "@/types/blog/blog.types"
 import { Skeleton } from "@/components/ui/skeleton"
 import LoadingSpinner from "@/components/shared/LoadingSpinner"
+import { Badge } from "@/components/ui/badge"
 
 export default function BlogListingPage() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -164,7 +165,7 @@ export default function BlogListingPage() {
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {getBlogPosts().map((post) => (
                         <Card key={post.id} className="overflow-hidden">
-                            <CardHeader className="pb-3">
+                            <CardHeader className="pb-1">
                                 <div className="flex justify-between items-start">
                                     <CardTitle className="text-xl">{post.title}</CardTitle>
                                     <DropdownMenu>
@@ -209,7 +210,8 @@ export default function BlogListingPage() {
                                     </span>
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="space-y-2">
+                                <Badge variant="outline" className="text-sm">{post.slug || "No Slug available"}</Badge>
                                 <p className="text-sm">{post.excerpt || "No excerpt available"}</p>
                             </CardContent>
                             <CardFooter>
