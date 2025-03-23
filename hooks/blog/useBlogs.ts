@@ -106,22 +106,15 @@ export const useUpdateBlogPost = () => {
                 }
             );
 
-            queryClient.setQueryData(
-                blogKeys.userBlogsList(),
-                (oldData: any) => {
-                    if (!oldData) return oldData;
-
-                    return {
-                        ...oldData,
-                        posts: oldData.posts.map((post: BlogPost) =>
+            queryClient.getQueriesData({ queryKey: blogKeys.userBlogs() }).forEach(([queryKey, queryData]) => {
+                if (queryData && typeof queryData === 'object' && 'posts' in queryData) {
+                    queryClient.setQueryData(queryKey, {
+                        ...queryData,
+                        posts: (queryData.posts as BlogPost[]).map((post: BlogPost) =>
                             post.id === id ? { ...post, ...postData } : post
                         )
-                    };
+                    });
                 }
-            );
-
-            queryClient.invalidateQueries({
-                queryKey: blogKeys.userBlogs(),
             });
 
             toast.success('Blog post updated successfully');
@@ -132,14 +125,29 @@ export const useUpdateBlogPost = () => {
     });
 };
 
+// Delete blog post hook
 export const useDeleteBlogPost = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: (id: string) => blogServices.deleteBlogPost(id),
         onSuccess: (_, id) => {
-            queryClient.invalidateQueries({
-                queryKey: blogKeys.lists(),
+            queryClient.getQueriesData({ queryKey: blogKeys.userBlogs() }).forEach(([queryKey, queryData]) => {
+                if (queryData && typeof queryData === 'object' && 'posts' in queryData) {
+                    const typedData = queryData as {
+                        posts: BlogPost[];
+                        pagination?: { total: number }
+                    };
+
+                    queryClient.setQueryData(queryKey, {
+                        ...queryData,
+                        posts: typedData.posts.filter((post: BlogPost) => post.id !== id),
+                        pagination: typedData.pagination ? {
+                            ...typedData.pagination,
+                            total: Math.max(0, typedData.pagination.total - 1)
+                        } : undefined
+                    });
+                }
             });
 
             queryClient.removeQueries({
