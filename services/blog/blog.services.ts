@@ -1,5 +1,15 @@
 import { api } from '@/lib/api/baseAPI';
-import { GetBlogPostsResponse, GetBlogPostResponse, CreateBlogPostRequest, CreateBlogPostResponse, UpdateBlogPostRequest, UpdateBlogPostResponse, DeleteBlogPostResponse, BlogPostsQueryParams } from '@/types/blog/blog.types';
+import {
+    GetBlogPostsResponse,
+    GetBlogPostResponse,
+    CreateBlogPostRequest,
+    CreateBlogPostResponse,
+    UpdateBlogPostRequest,
+    UpdateBlogPostResponse,
+    DeleteBlogPostResponse,
+    BlogPostsQueryParams,
+    GetBlogStatisticsResponse
+} from '@/types/blog/blog.types';
 
 export const blogServices = {
     /**
@@ -81,6 +91,16 @@ export const blogServices = {
     adminDeleteBlogPost: (id: string) => {
         return api.delete<DeleteBlogPostResponse>(
             `/blog/admin/delete-post/${id}`
+        );
+    },
+
+    /**
+    * Get admin blog statistics
+    * @returns A promise that resolves to the blog statistics response
+    */
+    getAdminBlogStatistics: () => {
+        return api.get<GetBlogStatisticsResponse>(
+            '/blog/admin/statistics'
         );
     }
 };

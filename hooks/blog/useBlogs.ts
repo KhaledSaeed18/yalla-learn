@@ -12,6 +12,7 @@ export const blogKeys = {
     detail: (idOrSlug: string) => [...blogKeys.details(), idOrSlug] as const,
     userBlogs: () => [...blogKeys.all, 'userBlogs'] as const,
     userBlogsList: (params?: BlogPostsQueryParams) => [...blogKeys.userBlogs(), { params }] as const,
+    statistics: () => [...blogKeys.all, 'statistics'] as const,
 };
 
 // Get all blog posts hook with optional filtering, pagination, and sorting
@@ -231,6 +232,17 @@ export const useAdminDeleteBlogPost = () => {
         },
         onError: (error: any) => {
             toast.error(error.message || 'Admin failed to delete blog post');
+        },
+    });
+};
+
+// Get admin blog statistics hook
+export const useGetAdminBlogStatistics = () => {
+    return useQuery({
+        queryKey: blogKeys.statistics(),
+        queryFn: async () => {
+            const response = await blogServices.getAdminBlogStatistics();
+            return response.data.statistics;
         },
     });
 };

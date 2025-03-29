@@ -113,3 +113,56 @@ export interface BlogPostError {
     message: string;
     status?: number;
 }
+
+export interface BlogAuthorStatistics {
+    id: string;
+    name: string;
+    postCount: number;
+}
+
+export interface CategoryDistribution {
+    id: string;
+    name: string;
+    postCount: number;
+}
+
+export interface RecentPostStatistics {
+    id: string;
+    title: string;
+    slug: string;
+    status: PostStatus;
+    createdAt: string;
+    updatedAt: string;
+    user: {
+        firstName: string;
+        lastName: string;
+    };
+}
+
+export interface BlogStatistics {
+    totalPosts: number;
+    postsByStatus: {
+        published: number;
+        draft: number;
+    };
+    topAuthors: BlogAuthorStatistics[];
+    categoriesDistribution: CategoryDistribution[];
+    recentActivity: {
+        lastWeekPosts: number;
+        lastMonthPosts: number;
+        recentPosts: RecentPostStatistics[];
+    };
+    metadata: {
+        postsWithoutCategories: number;
+        averagePostsPerUser: number;
+    };
+}
+
+export interface GetBlogStatisticsResponse {
+    status: string;
+    statusCode: number;
+    message: string;
+    data: {
+        statistics: BlogStatistics;
+    };
+}
