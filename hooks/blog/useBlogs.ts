@@ -98,6 +98,10 @@ export const useCreateBlogPost = () => {
             });
 
             queryClient.invalidateQueries({
+                queryKey: blogKeys.statistics(),
+            });
+
+            queryClient.invalidateQueries({
                 queryKey: blogKeys.lists(),
             });
 
@@ -136,6 +140,10 @@ export const useUpdateBlogPost = () => {
                 }
             });
 
+            queryClient.invalidateQueries({
+                queryKey: blogKeys.statistics(),
+            });
+
             toast.success('Blog post updated successfully');
         },
         onError: (error: any) => {
@@ -171,6 +179,10 @@ export const useDeleteBlogPost = () => {
 
             queryClient.removeQueries({
                 queryKey: blogKeys.detail(id),
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: blogKeys.statistics(),
             });
 
             toast.success('Blog post deleted successfully');
@@ -226,6 +238,10 @@ export const useAdminDeleteBlogPost = () => {
 
             queryClient.removeQueries({
                 queryKey: blogKeys.detail(id),
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: blogKeys.statistics(),
             });
 
             toast.success('Blog post deleted successfully by admin');
