@@ -80,8 +80,11 @@ const BlogsAdminPage = () => {
     }
 
     const TableRowsSkeleton = () => {
-        return Array(5).fill(0).map((_, index) => (
+        return Array(10).fill(0).map((_, index) => (
             <TableRow key={`skeleton-row-${index}`}>
+                <TableCell>
+                    <Skeleton className="h-5 w-8" />
+                </TableCell>
                 <TableCell>
                     <Skeleton className="h-5 w-full max-w-[180px]" />
                 </TableCell>
@@ -220,12 +223,13 @@ const BlogsAdminPage = () => {
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
+                                                <TableHead className="w-[5%]">#</TableHead>
                                                 <TableHead className="w-[25%]">Title</TableHead>
                                                 <TableHead className="w-[15%] hidden md:table-cell">Author</TableHead>
                                                 <TableHead className="w-[10%]">Status</TableHead>
                                                 <TableHead className="w-[15%] hidden md:table-cell">Created</TableHead>
                                                 <TableHead className="w-[15%] hidden md:table-cell">Published</TableHead>
-                                                <TableHead className="text-right w-[20%]">Actions</TableHead>
+                                                <TableHead className="text-right w-[15%]">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -254,17 +258,21 @@ const BlogsAdminPage = () => {
                                     <Table className="w-full table-auto">
                                         <TableHeader>
                                             <TableRow>
+                                                <TableHead className="w-[5%]">#</TableHead>
                                                 <TableHead className="w-[25%]">Title</TableHead>
                                                 <TableHead className="w-[15%] hidden md:table-cell">Author</TableHead>
                                                 <TableHead className="w-[10%]">Status</TableHead>
                                                 <TableHead className="w-[15%] hidden md:table-cell">Created</TableHead>
                                                 <TableHead className="w-[15%] hidden md:table-cell">Published</TableHead>
-                                                <TableHead className="text-right w-[20%]">Actions</TableHead>
+                                                <TableHead className="text-right w-[15%]">Actions</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {blogData.posts.map((post) => (
+                                            {blogData.posts.map((post, index) => (
                                                 <TableRow key={post.id}>
+                                                    <TableCell className="font-medium">
+                                                        {(currentPage - 1) * postsPerPage + index + 1}
+                                                    </TableCell>
                                                     <TableCell className="font-medium">
                                                         <TooltipProvider>
                                                             <Tooltip>
