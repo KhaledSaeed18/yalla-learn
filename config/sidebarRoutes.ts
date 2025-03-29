@@ -1,4 +1,4 @@
-import { Home, FileText, PenLine, SquareStack, StickyNote } from "lucide-react";
+import { Home, FileText, PenLine, SquareStack, StickyNote, ChartNoAxesCombined } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type SidebarRoute = {
@@ -30,6 +30,15 @@ export const sidebarRoutes: SidebarRoute[] = [
         roles: ["USER", "ADMIN"],
         activeWhen: (pathname) => pathname.startsWith("/dashboard/blog"),
         children: [
+            {
+                id: "statistics",
+                label: "Statistics",
+                href: "/dashboard/blog/statistics",
+                icon: ChartNoAxesCombined,
+                requiresAuth: true,
+                roles: ["ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/blog/statistics",
+            },
             {
                 id: "categories",
                 label: "Categories",
