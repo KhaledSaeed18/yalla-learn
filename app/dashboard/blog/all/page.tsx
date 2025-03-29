@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { FileText, Eye, EyeOff, Trash2, Plus } from "lucide-react"
+import { FileText, Eye, EyeOff, Trash2, Plus, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -19,9 +19,12 @@ const BlogsAdminPage = () => {
     const router = useRouter()
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null)
+    const [currentPage, setCurrentPage] = useState(1)
+    const postsPerPage = 10
+
     const [queryParams, setQueryParams] = useState<BlogPostsQueryParams>({
-        page: 1,
-        limit: 10,
+        page: currentPage,
+        limit: postsPerPage,
         sortBy: 'createdAt',
         sortOrder: 'desc'
     })
@@ -36,6 +39,14 @@ const BlogsAdminPage = () => {
 
     const deletePost = useAdminDeleteBlogPost()
 
+    const handlePageChange = (newPage: number) => {
+        setCurrentPage(newPage)
+        setQueryParams(prev => ({
+            ...prev,
+            page: newPage
+        }))
+    }
+
     const handleDeleteClick = (post: BlogPost) => {
         setSelectedPost(post)
         setDeleteDialogOpen(true)
@@ -48,6 +59,10 @@ const BlogsAdminPage = () => {
             onSuccess: () => {
                 setDeleteDialogOpen(false)
                 setSelectedPost(null)
+
+                if (blogData?.posts.length === 1 && currentPage > 1) {
+                    handlePageChange(currentPage - 1)
+                }
             }
         })
     }
@@ -63,8 +78,6 @@ const BlogsAdminPage = () => {
     const handleViewPost = (post: BlogPost) => {
         window.open(`/blog/${post.slug}`, '_blank')
     }
-
-    // Removed handleEditPost function
 
     const TableRowsSkeleton = () => {
         return Array(5).fill(0).map((_, index) => (
@@ -94,6 +107,69 @@ const BlogsAdminPage = () => {
                 </TableCell>
             </TableRow>
         ))
+    }
+
+    const Pagination = () => {
+        const totalItems = blogData?.pagination?.total || 0
+        const totalPages = Math.ceil(totalItems / postsPerPage)
+
+        if (totalPages <= 1) return null
+
+        return (
+            <div className="flex items-center justify-center space-x-2 py-4">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(1)}
+                    disabled={currentPage === 1 || isLoading}
+                    title="First page"
+                >
+                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft className="h-4 w-4 -ml-4" />
+                    <span className="sr-only">First page</span>
+                </Button>
+
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1 || isLoading}
+                    title="Previous page"
+                >
+                    <ChevronLeft className="h-4 w-4" />
+                    <span className="sr-only">Previous page</span>
+                </Button>
+
+                <div className="flex items-center justify-center">
+                    <span className="text-sm font-medium">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                </div>
+
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage >= totalPages || isLoading}
+                    title="Next page"
+                >
+                    <ChevronRight className="h-4 w-4" />
+                    <span className="sr-only">Next page</span>
+                </Button>
+
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(totalPages)}
+                    disabled={currentPage >= totalPages || isLoading}
+                    title="Last page"
+                >
+                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-4 w-4 -ml-4" />
+                    <span className="sr-only">Last page</span>
+                </Button>
+            </div>
+        )
     }
 
     if (isError) {
@@ -246,6 +322,7 @@ const BlogsAdminPage = () => {
                                             ))}
                                         </TableBody>
                                     </Table>
+                                    <Pagination />
                                 </div>
                             </div>
                         )}
