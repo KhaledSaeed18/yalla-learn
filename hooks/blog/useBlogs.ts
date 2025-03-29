@@ -161,3 +161,58 @@ export const useDeleteBlogPost = () => {
         },
     });
 };
+
+// Admin delete blog post hook - allows admin to delete any blog post
+export const useAdminDeleteBlogPost = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => blogServices.adminDeleteBlogPost(id),
+        onSuccess: (_, id) => {
+            queryClient.getQueriesData({ queryKey: blogKeys.lists() }).forEach(([queryKey, queryData]) => {
+                if (queryData && typeof queryData === 'object' && 'posts' in queryData) {
+                    const typedData = queryData as {
+                        posts: BlogPost[];
+                        pagination?: { total: number }
+                    };
+
+                    queryClient.setQueryData(queryKey, {
+                        ...queryData,
+                        posts: typedData.posts.filter((post: BlogPost) => post.id !== id),
+                        pagination: typedData.pagination ? {
+                            ...typedData.pagination,
+                            total: Math.max(0, typedData.pagination.total - 1)
+                        } : undefined
+                    });
+                }
+            });
+
+            queryClient.getQueriesData({ queryKey: blogKeys.userBlogs() }).forEach(([queryKey, queryData]) => {
+                if (queryData && typeof queryData === 'object' && 'posts' in queryData) {
+                    const typedData = queryData as {
+                        posts: BlogPost[];
+                        pagination?: { total: number }
+                    };
+
+                    queryClient.setQueryData(queryKey, {
+                        ...queryData,
+                        posts: typedData.posts.filter((post: BlogPost) => post.id !== id),
+                        pagination: typedData.pagination ? {
+                            ...typedData.pagination,
+                            total: Math.max(0, typedData.pagination.total - 1)
+                        } : undefined
+                    });
+                }
+            });
+
+            queryClient.removeQueries({
+                queryKey: blogKeys.detail(id),
+            });
+
+            toast.success('Blog post deleted successfully by admin');
+        },
+        onError: (error: any) => {
+            toast.error(error.message || 'Admin failed to delete blog post');
+        },
+    });
+};

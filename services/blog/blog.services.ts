@@ -71,5 +71,16 @@ export const blogServices = {
         return api.delete<DeleteBlogPostResponse>(
             `/blog/delete-post/${id}`
         );
+    },
+
+    /**
+    * Admin endpoint to delete any blog post
+    * @param id - The blog post ID to delete
+    * @returns A promise that resolves to the delete response
+    */
+    adminDeleteBlogPost: (id: string) => {
+        return api.delete<DeleteBlogPostResponse>(
+            `/admin/delete-post/${id}`
+        );
     }
 };
