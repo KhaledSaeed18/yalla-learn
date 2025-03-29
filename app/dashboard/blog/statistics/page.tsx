@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { BarChart, CalendarDays, FileText, FilePenLine, FileCheck, Tag, Clock, ArrowUpRight, Download } from "lucide-react"
+import { BarChart as BarChartIcon, CalendarDays, FileText, FilePenLine, FileCheck, Tag, Clock, ArrowUpRight, Download } from "lucide-react"
 import { format } from "date-fns"
 import Link from "next/link"
 import { jsPDF } from "jspdf"
@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, XAxis, YAxis, Bar } from "recharts"
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, XAxis, YAxis, Bar, BarChart } from "recharts"
 
 // Mock data based on the provided API response
 const blogStatistics = {
@@ -157,12 +157,6 @@ export default function BlogStatistics() {
             ["Recent Activity (30 days)", stats.recentActivity.lastMonthPosts.toString()],
         ]
 
-        autoTable(doc, {
-            startY: 50,
-            head: [["Metric", "Value"]],
-            body: overviewData,
-        })
-
         let yPos = 50;
 
         autoTable(doc, {
@@ -230,6 +224,54 @@ export default function BlogStatistics() {
         const currentDateTime = format(new Date(), "yyyy-MM-dd_HH-mm-ss")
         doc.save(`blog-statistics-report-${currentDateTime}.pdf`)
     }
+
+    const renderPostStatusChart = () => (
+        <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+                <Pie
+                    data={postStatusData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                >
+                    {postStatusData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                </Pie>
+                <Tooltip formatter={(value) => [`${value} posts`, "Count"]} />
+                <Legend />
+            </PieChart>
+        </ResponsiveContainer>
+    )
+
+    const renderActivityChart = () => (
+        <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={weeklyActivityData}>
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" name="Posts" fill="#3b82f6" />
+            </BarChart>
+        </ResponsiveContainer>
+    )
+
+    const renderGrowthChart = () => (
+        <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={contentGrowthData}>
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="published" name="Published" fill="#22c55e" />
+                <Bar dataKey="draft" name="Draft" fill="#f59e0b" />
+            </BarChart>
+        </ResponsiveContainer>
+    )
 
     return (
         <div className="space-y-6">
@@ -301,9 +343,9 @@ export default function BlogStatistics() {
                     <Tabs defaultValue="posts" className="w-full">
                         <div className="flex items-center justify-between">
                             <TabsList>
-                                <TabsTrigger value="posts">Post Status</TabsTrigger>
-                                <TabsTrigger value="activity">Activity</TabsTrigger>
-                                <TabsTrigger value="growth">Content Growth</TabsTrigger>
+                                <TabsTrigger className="cursor-pointer" value="posts">Post Status</TabsTrigger>
+                                <TabsTrigger className="cursor-pointer" value="activity">Activity</TabsTrigger>
+                                <TabsTrigger className="cursor-pointer" value="growth">Content Growth</TabsTrigger>
                             </TabsList>
                             <div className="space-x-2">
                                 <Button
@@ -330,26 +372,7 @@ export default function BlogStatistics() {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="h-[300px] w-full">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <PieChart>
-                                                <Pie
-                                                    data={postStatusData}
-                                                    cx="50%"
-                                                    cy="50%"
-                                                    labelLine={false}
-                                                    outerRadius={100}
-                                                    fill="#8884d8"
-                                                    dataKey="value"
-                                                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                                                >
-                                                    {postStatusData.map((entry, index) => (
-                                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                                    ))}
-                                                </Pie>
-                                                <Tooltip formatter={(value) => [`${value} posts`, "Count"]} />
-                                                <Legend />
-                                            </PieChart>
-                                        </ResponsiveContainer>
+                                        {renderPostStatusChart()}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -362,15 +385,7 @@ export default function BlogStatistics() {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="h-[300px] w-full">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <BarChart data={weeklyActivityData}>
-                                                <XAxis dataKey="name" />
-                                                <YAxis />
-                                                <Tooltip />
-                                                <Legend />
-                                                <Bar dataKey="value" name="Posts" fill="#3b82f6" />
-                                            </BarChart>
-                                        </ResponsiveContainer>
+                                        {renderActivityChart()}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -383,16 +398,7 @@ export default function BlogStatistics() {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="h-[300px] w-full">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <BarChart data={contentGrowthData}>
-                                                <XAxis dataKey="name" />
-                                                <YAxis />
-                                                <Tooltip />
-                                                <Legend />
-                                                <Bar dataKey="published" name="Published" fill="#22c55e" />
-                                                <Bar dataKey="draft" name="Draft" fill="#f59e0b" />
-                                            </BarChart>
-                                        </ResponsiveContainer>
+                                        {renderGrowthChart()}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -532,4 +538,3 @@ export default function BlogStatistics() {
         </div>
     )
 }
-
