@@ -42,11 +42,11 @@ export const sidebarRoutes: SidebarRoute[] = [
             {
                 id: "all-posts",
                 label: "All Posts",
-                href: "/dashboard/blog",
+                href: "/dashboard/blog/all",
                 icon: FileText,
                 requiresAuth: true,
                 roles: ["ADMIN"],
-                activeWhen: (pathname) => pathname === "/dashboard/blog",
+                activeWhen: (pathname) => pathname === "/dashboard/blog/all",
             },
             {
                 id: "create-post",
@@ -63,7 +63,7 @@ export const sidebarRoutes: SidebarRoute[] = [
                 href: "/dashboard/blog",
                 icon: StickyNote,
                 requiresAuth: true,
-                roles: ["USER"],
+                roles: ["USER", "ADMIN"],
                 activeWhen: (pathname) => pathname === "/dashboard/blog",
             },
         ],

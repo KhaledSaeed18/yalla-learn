@@ -80,7 +80,7 @@ export const blogServices = {
     */
     adminDeleteBlogPost: (id: string) => {
         return api.delete<DeleteBlogPostResponse>(
-            `/admin/delete-post/${id}`
+            `/blog/admin/delete-post/${id}`
         );
     }
 };
