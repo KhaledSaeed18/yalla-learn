@@ -1,11 +1,10 @@
 "use client"
 
-import type React from "react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ImageIcon, Loader2 } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { TipTapEditor } from "@/components/editor/TipTapEditor"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,18 +19,24 @@ import { cn } from "@/lib/utils"
 import { blogPostSchema, type BlogPostFormValues } from "@/lib/blog/validation"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useGetBlogCategories } from "@/hooks/blog/useBlogCategories"
-import { useCreateBlogPost } from "@/hooks/blog/useBlogs"
+import { useCreateBlogPost, useGetBlogPost, useUpdateBlogPost } from "@/hooks/blog/useBlogs"
 import { toast } from "sonner"
 
-export default function CreateBlogPost() {
+export default function BlogEditor() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const postId = searchParams.get("id")
+    const isEditMode = !!postId
+
     const [selectedCategories, setSelectedCategories] = useState<string[]>([])
     const [commandOpen, setCommandOpen] = useState(false)
     const [isAutoReadTime, setIsAutoReadTime] = useState(true)
+    const [isLoading, setIsLoading] = useState(isEditMode)
 
     const { data: categories, isLoading: isLoadingCategories, error: categoriesError } = useGetBlogCategories()
-
+    const { data: blogPost, isLoading: isLoadingBlogPost } = useGetBlogPost(postId || "")
     const createBlogPost = useCreateBlogPost()
+    const updateBlogPost = useUpdateBlogPost()
 
     const form = useForm<BlogPostFormValues>({
         resolver: zodResolver(blogPostSchema),
@@ -45,11 +50,11 @@ export default function CreateBlogPost() {
             readTime: 0,
             categories: [],
         },
-        mode: "onSubmit",
-        reValidateMode: "onSubmit"
+        mode: "onChange",
+        reValidateMode: "onChange"
     })
 
-    const { watch, setValue } = form
+    const { watch, setValue, reset } = form
 
     const content = watch("content")
 
@@ -58,6 +63,30 @@ export default function CreateBlogPost() {
             toast.error("Failed to load categories. Please try refreshing the page.")
         }
     }, [categoriesError])
+
+    useEffect(() => {
+        if (isEditMode && blogPost) {
+            reset({
+                title: blogPost.title || "",
+                slug: blogPost.slug || "",
+                content: blogPost.content || "",
+                excerpt: blogPost.excerpt || "",
+                thumbnail: blogPost.thumbnail || "",
+                status: blogPost.status || "DRAFT",
+                readTime: typeof blogPost.readTime === 'string' ? parseInt(blogPost.readTime, 10) : (blogPost.readTime || 0),
+                categories: blogPost.categories?.map(cat => cat.id) || [],
+            })
+
+            const categoryIds = blogPost.categories?.map(cat => cat.id) || []
+            setSelectedCategories(categoryIds)
+            setIsAutoReadTime(false)
+            setIsLoading(false)
+        }
+    }, [blogPost, isEditMode, reset])
+
+    useEffect(() => {
+        setIsLoading(isEditMode && isLoadingBlogPost)
+    }, [isEditMode, isLoadingBlogPost])
 
     function handleEditorChange(newContent: string) {
         form.setValue("content", newContent, {
@@ -71,16 +100,18 @@ export default function CreateBlogPost() {
         const title = e.target.value
         setValue("title", title)
 
-        if (title) {
-            const slug = title
-                .trim()
-                .toLowerCase()
-                .replace(/[^\w\s]/gi, "")
-                .replace(/\s+/g, "-")
-                .replace(/-+$/, "")
-            setValue("slug", slug, { shouldValidate: true })
-        } else {
-            setValue("slug", "", { shouldValidate: true })
+        if (!isEditMode || !blogPost?.slug) {
+            if (title) {
+                const slug = title
+                    .trim()
+                    .toLowerCase()
+                    .replace(/[^\w\s]/gi, "")
+                    .replace(/\s+/g, "-")
+                    .replace(/-+$/, "")
+                setValue("slug", slug, { shouldValidate: true })
+            } else {
+                setValue("slug", "", { shouldValidate: true })
+            }
         }
     }
 
@@ -96,22 +127,57 @@ export default function CreateBlogPost() {
     }, [content, isAutoReadTime, setValue]);
 
     function onSubmit(data: BlogPostFormValues) {
+        const { categories, ...restData } = data;
+
         const postData = {
-            ...data,
-            categoryIds: data.categories,
+            ...restData,
+            categoryIds: categories,
             readTime: data.readTime || 1,
         };
 
-        createBlogPost.mutate(postData, {
-            onSuccess: () => {
-                router.push('/dashboard/blog');
-            }
-        });
+        if (isEditMode && postId) {
+            updateBlogPost.mutate(
+                {
+                    id: postId,
+                    postData
+                },
+                {
+                    onSuccess: () => {
+                        router.push('/dashboard/blog');
+                    }
+                }
+            );
+        } else {
+            createBlogPost.mutate(postData, {
+                onSuccess: () => {
+                    router.push('/dashboard/blog');
+                }
+            });
+        }
+    }
+
+    const isSubmitting = createBlogPost.isPending || updateBlogPost.isPending;
+    const pageTitle = isEditMode ? "Edit Blog Post" : "Create New Blog Post";
+    const buttonText = isEditMode
+        ? (isSubmitting ? "Updating..." : "Update")
+        : (watch("status") === "PUBLISHED"
+            ? (isSubmitting ? "Publishing..." : "Publish")
+            : (isSubmitting ? "Saving..." : "Save as Draft"));
+
+    if (isLoading) {
+        return (
+            <main className="flex items-center justify-center min-h-[50vh]">
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                    <p className="text-lg">Loading blog post...</p>
+                </div>
+            </main>
+        );
     }
 
     return (
         <main>
-            <h1 className="text-3xl font-bold pb-6">Create New Blog Post</h1>
+            <h1 className="text-3xl font-bold pb-6">{pageTitle}</h1>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -129,9 +195,13 @@ export default function CreateBlogPost() {
                                             <FormItem>
                                                 <FormLabel>Title *</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Enter blog title" {...field} onChange={handleTitleChange} />
+                                                    <Input
+                                                        placeholder="Enter blog title"
+                                                        {...field}
+                                                        onChange={handleTitleChange}
+                                                    />
                                                 </FormControl>
-                                                {form.formState.isSubmitted && <FormMessage />}
+                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />
@@ -142,8 +212,19 @@ export default function CreateBlogPost() {
                                             <FormItem>
                                                 <FormLabel>Slug</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Auto-generated from title" {...field} disabled className="bg-muted/50" />
+                                                    <Input
+                                                        placeholder="Auto-generated from title"
+                                                        {...field}
+                                                        disabled={isEditMode && !!blogPost?.slug}
+                                                        className={cn("bg-muted/50", {
+                                                            "cursor-not-allowed": isEditMode && !!blogPost?.slug
+                                                        })}
+                                                    />
                                                 </FormControl>
+                                                {isEditMode && !!blogPost?.slug && (
+                                                    <FormDescription>Slug cannot be changed for published posts</FormDescription>
+                                                )}
+                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />
@@ -186,7 +267,7 @@ export default function CreateBlogPost() {
                                                         content={content}
                                                         onChange={handleEditorChange}
                                                         className="w-full"
-                                                        maxHeight="700px" 
+                                                        maxHeight="700px"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -198,7 +279,6 @@ export default function CreateBlogPost() {
                         </div>
 
                         <div className="space-y-6">
-
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Categories & Media</CardTitle>
@@ -343,10 +423,14 @@ export default function CreateBlogPost() {
                                                             id="auto-read-time"
                                                             checked={isAutoReadTime}
                                                             onCheckedChange={(checked) => setIsAutoReadTime(checked === true)}
+                                                            disabled={isEditMode}
                                                         />
                                                         <label
                                                             htmlFor="auto-read-time"
-                                                            className="text-sm font-medium leading-none cursor-pointer"
+                                                            className={cn(
+                                                                "text-sm font-medium leading-none cursor-pointer",
+                                                                isEditMode && "opacity-50"
+                                                            )}
                                                         >
                                                             Auto-calculate
                                                         </label>
@@ -360,7 +444,10 @@ export default function CreateBlogPost() {
                                                         {...field}
                                                         disabled={isAutoReadTime}
                                                         className={isAutoReadTime ? "bg-muted/50" : ""}
-                                                        onChange={(e) => field.onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value === "" ? undefined : Number(e.target.value);
+                                                            field.onChange(value);
+                                                        }}
                                                     />
                                                 </FormControl>
                                                 <FormDescription>
@@ -377,15 +464,15 @@ export default function CreateBlogPost() {
                                 <Button
                                     size='lg'
                                     type="submit"
-                                    disabled={createBlogPost.isPending}
+                                    disabled={isSubmitting}
                                 >
-                                    {createBlogPost.isPending ? (
+                                    {isSubmitting ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            {form.watch("status") === "PUBLISHED" ? "Publishing..." : "Saving..."}
+                                            {buttonText}
                                         </>
                                     ) : (
-                                        form.watch("status") === "PUBLISHED" ? "Publish" : "Save as Draft"
+                                        buttonText
                                     )}
                                 </Button>
                             </div>
