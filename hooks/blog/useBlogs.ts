@@ -78,6 +78,24 @@ export const useCreateBlogPost = () => {
                 }
             );
 
+            queryClient.getQueriesData({ queryKey: blogKeys.userBlogs() }).forEach(([queryKey, queryData]) => {
+                if (queryData && typeof queryData === 'object' && 'posts' in queryData) {
+                    const typedData = queryData as {
+                        posts: BlogPost[];
+                        pagination?: { total: number }
+                    };
+
+                    queryClient.setQueryData(queryKey, {
+                        ...queryData,
+                        posts: [response.data.blogPost, ...typedData.posts],
+                        pagination: typedData.pagination ? {
+                            ...typedData.pagination,
+                            total: (typedData.pagination.total || 0) + 1
+                        } : undefined
+                    });
+                }
+            });
+
             queryClient.invalidateQueries({
                 queryKey: blogKeys.lists(),
             });
