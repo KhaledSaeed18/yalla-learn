@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, XAxis, YAxis, Bar, BarChart } from "recharts"
+import RoleBasedRoute from "@/components/RoleBasedRoute"
 
 // Mock data based on the provided API response
 const blogStatistics = {
@@ -274,267 +275,269 @@ export default function BlogStatistics() {
     )
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Blog Analytics</h1>
-                    <p className="text-muted-foreground">Comprehensive statistics and insights about blog content</p>
+        <RoleBasedRoute allowedRoles={["ADMIN"]}>
+            <main className="space-y-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight">Blog Analytics</h1>
+                        <p className="text-muted-foreground">Comprehensive statistics and insights about blog content</p>
+                    </div>
+                    <div>
+                        <Button variant="outline" size="sm" onClick={exportPDF}>
+                            <Download className="mr-2 h-4 w-4" />
+                            Export Report
+                        </Button>
+                    </div>
                 </div>
-                <div>
-                    <Button variant="outline" size="sm" onClick={exportPDF}>
-                        <Download className="mr-2 h-4 w-4" />
-                        Export Report
-                    </Button>
-                </div>
-            </div>
 
-            {/* Overview Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.totalPosts}</div>
-                        <p className="text-xs text-muted-foreground">All blog posts in the system</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle className="text-sm font-medium">Published</CardTitle>
-                        <FileCheck className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.postsByStatus.published}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {((stats.postsByStatus.published / stats.totalPosts) * 100).toFixed(1)}% of total posts
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle className="text-sm font-medium">Drafts</CardTitle>
-                        <FilePenLine className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.postsByStatus.draft}</div>
-                        <p className="text-xs text-muted-foreground">
-                            {((stats.postsByStatus.draft / stats.totalPosts) * 100).toFixed(1)}% of total posts
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
-                        <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats.recentActivity.lastWeekPosts}</div>
-                        <p className="text-xs text-muted-foreground">Posts in the last 7 days</p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Main Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column - Charts */}
-                <div className="lg:col-span-2 space-y-6">
-                    <Tabs defaultValue="posts" className="w-full">
-                        <div className="flex items-center justify-between">
-                            <TabsList>
-                                <TabsTrigger className="cursor-pointer" value="posts">Post Status</TabsTrigger>
-                                <TabsTrigger className="cursor-pointer" value="activity">Activity</TabsTrigger>
-                                <TabsTrigger className="cursor-pointer" value="growth">Content Growth</TabsTrigger>
-                            </TabsList>
-                            <div className="space-x-2">
-                                <Button
-                                    variant={timeframe === "week" ? "default" : "outline"}
-                                    size="sm"
-                                    onClick={() => setTimeframe("week")}
-                                >
-                                    Week
-                                </Button>
-                                <Button
-                                    variant={timeframe === "month" ? "default" : "outline"}
-                                    size="sm"
-                                    onClick={() => setTimeframe("month")}
-                                >
-                                    Month
-                                </Button>
-                            </div>
-                        </div>
-                        <TabsContent value="posts" className="space-y-4">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Post Status Distribution</CardTitle>
-                                    <CardDescription>Breakdown of published vs draft posts</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="h-[300px] w-full">
-                                        {renderPostStatusChart()}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-                        <TabsContent value="activity" className="space-y-4">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Weekly Post Activity</CardTitle>
-                                    <CardDescription>Number of posts created per day</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="h-[300px] w-full">
-                                        {renderActivityChart()}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-                        <TabsContent value="growth" className="space-y-4">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Content Growth Over Time</CardTitle>
-                                    <CardDescription>Published and draft posts by month</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="h-[300px] w-full">
-                                        {renderGrowthChart()}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-                    </Tabs>
-
+                {/* Overview Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Recent Posts</CardTitle>
-                            <CardDescription>Latest blog posts in the system</CardDescription>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
+                            <FileText className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
-                                {stats.recentActivity.recentPosts.map((post) => (
-                                    <div key={post.id} className="flex items-start justify-between border-b pb-4 last:border-0 last:pb-0">
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-2">
-                                                <h4 className="font-medium">{post.title}</h4>
-                                                <Badge variant={post.status === "PUBLISHED" ? "default" : "outline"}>{post.status}</Badge>
-                                            </div>
-                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <Clock className="h-3 w-3" />
-                                                <span>{format(new Date(post.createdAt), "MMM d, yyyy")}</span>
-                                            </div>
-                                        </div>
-                                        <Link href={`/blog/${post.slug}`}>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                <ArrowUpRight className="h-4 w-4" />
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                ))}
-                            </div>
+                            <div className="text-2xl font-bold">{stats.totalPosts}</div>
+                            <p className="text-xs text-muted-foreground">All blog posts in the system</p>
                         </CardContent>
-                        <CardFooter>
-                            <Link href="/dashboard/blog/all" className="w-full">
-                                <Button variant="outline" className="w-full">
-                                    View All Posts
-                                </Button>
-                            </Link>
-                        </CardFooter>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <CardTitle className="text-sm font-medium">Published</CardTitle>
+                            <FileCheck className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.postsByStatus.published}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {((stats.postsByStatus.published / stats.totalPosts) * 100).toFixed(1)}% of total posts
+                            </p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <CardTitle className="text-sm font-medium">Drafts</CardTitle>
+                            <FilePenLine className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.postsByStatus.draft}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {((stats.postsByStatus.draft / stats.totalPosts) * 100).toFixed(1)}% of total posts
+                            </p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
+                            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.recentActivity.lastWeekPosts}</div>
+                            <p className="text-xs text-muted-foreground">Posts in the last 7 days</p>
+                        </CardContent>
                     </Card>
                 </div>
 
-                {/* Right Column - Authors & Categories */}
-                <div className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Top Authors</CardTitle>
-                            <CardDescription>Authors with the most content</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                {stats.topAuthors.map((author) => (
-                                    <div key={author.id} className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <Avatar>
-                                                <AvatarFallback>
-                                                    {author.name
-                                                        .split(" ")
-                                                        .map((n) => n[0])
-                                                        .join("")}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div>
-                                                <p className="font-medium">{author.name}</p>
-                                                <p className="text-sm text-muted-foreground">{author.postCount} posts</p>
-                                            </div>
-                                        </div>
-                                        <Link href={`/dashboard/authors/${author.id}`}>
-                                            <Button variant="ghost" size="sm">
-                                                View
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Categories</CardTitle>
-                            <CardDescription>Distribution of posts by category</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                {stats.categoriesDistribution.map((category) => (
-                                    <div key={category.id} className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="bg-primary/10 p-2 rounded-full">
-                                                <Tag className="h-4 w-4 text-primary" />
-                                            </div>
-                                            <div>
-                                                <p className="font-medium">{category.name}</p>
-                                                <p className="text-sm text-muted-foreground">{category.postCount} posts</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-sm font-medium">
-                                            {((category.postCount / stats.totalPosts) * 100).toFixed(0)}%
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                        <CardFooter>
-                            <Link href="/dashboard/blog/categories" className="w-full">
-                                <Button variant="outline" className="w-full">
-                                    View All Categories
-                                </Button>
-                            </Link>
-                        </CardFooter>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Additional Metrics</CardTitle>
-                            <CardDescription>Other important blog statistics</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                        <p className="text-sm text-muted-foreground">Avg. Posts per User</p>
-                                        <p className="text-xl font-bold">{stats.metadata.averagePostsPerUser}</p>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <p className="text-sm text-muted-foreground">Posts without Categories</p>
-                                        <p className="text-xl font-bold">{stats.metadata.postsWithoutCategories}</p>
-                                    </div>
+                {/* Main Content */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Left Column - Charts */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <Tabs defaultValue="posts" className="w-full">
+                            <div className="flex items-center justify-between">
+                                <TabsList>
+                                    <TabsTrigger className="cursor-pointer" value="posts">Post Status</TabsTrigger>
+                                    <TabsTrigger className="cursor-pointer" value="activity">Activity</TabsTrigger>
+                                    <TabsTrigger className="cursor-pointer" value="growth">Content Growth</TabsTrigger>
+                                </TabsList>
+                                <div className="space-x-2">
+                                    <Button
+                                        variant={timeframe === "week" ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => setTimeframe("week")}
+                                    >
+                                        Week
+                                    </Button>
+                                    <Button
+                                        variant={timeframe === "month" ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => setTimeframe("month")}
+                                    >
+                                        Month
+                                    </Button>
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
+                            <TabsContent value="posts" className="space-y-4">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Post Status Distribution</CardTitle>
+                                        <CardDescription>Breakdown of published vs draft posts</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="h-[300px] w-full">
+                                            {renderPostStatusChart()}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+                            <TabsContent value="activity" className="space-y-4">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Weekly Post Activity</CardTitle>
+                                        <CardDescription>Number of posts created per day</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="h-[300px] w-full">
+                                            {renderActivityChart()}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+                            <TabsContent value="growth" className="space-y-4">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Content Growth Over Time</CardTitle>
+                                        <CardDescription>Published and draft posts by month</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="h-[300px] w-full">
+                                            {renderGrowthChart()}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+                        </Tabs>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Recent Posts</CardTitle>
+                                <CardDescription>Latest blog posts in the system</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    {stats.recentActivity.recentPosts.map((post) => (
+                                        <div key={post.id} className="flex items-start justify-between border-b pb-4 last:border-0 last:pb-0">
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <h4 className="font-medium">{post.title}</h4>
+                                                    <Badge variant={post.status === "PUBLISHED" ? "default" : "outline"}>{post.status}</Badge>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                    <Clock className="h-3 w-3" />
+                                                    <span>{format(new Date(post.createdAt), "MMM d, yyyy")}</span>
+                                                </div>
+                                            </div>
+                                            <Link href={`/blog/${post.slug}`}>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                    <ArrowUpRight className="h-4 w-4" />
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                            <CardFooter>
+                                <Link href="/dashboard/blog/all" className="w-full">
+                                    <Button variant="outline" className="w-full">
+                                        View All Posts
+                                    </Button>
+                                </Link>
+                            </CardFooter>
+                        </Card>
+                    </div>
+
+                    {/* Right Column - Authors & Categories */}
+                    <div className="space-y-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Top Authors</CardTitle>
+                                <CardDescription>Authors with the most content</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    {stats.topAuthors.map((author) => (
+                                        <div key={author.id} className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <Avatar>
+                                                    <AvatarFallback>
+                                                        {author.name
+                                                            .split(" ")
+                                                            .map((n) => n[0])
+                                                            .join("")}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div>
+                                                    <p className="font-medium">{author.name}</p>
+                                                    <p className="text-sm text-muted-foreground">{author.postCount} posts</p>
+                                                </div>
+                                            </div>
+                                            <Link href={`/dashboard/authors/${author.id}`}>
+                                                <Button variant="ghost" size="sm">
+                                                    View
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Categories</CardTitle>
+                                <CardDescription>Distribution of posts by category</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    {stats.categoriesDistribution.map((category) => (
+                                        <div key={category.id} className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="bg-primary/10 p-2 rounded-full">
+                                                    <Tag className="h-4 w-4 text-primary" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium">{category.name}</p>
+                                                    <p className="text-sm text-muted-foreground">{category.postCount} posts</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-sm font-medium">
+                                                {((category.postCount / stats.totalPosts) * 100).toFixed(0)}%
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                            <CardFooter>
+                                <Link href="/dashboard/blog/categories" className="w-full">
+                                    <Button variant="outline" className="w-full">
+                                        View All Categories
+                                    </Button>
+                                </Link>
+                            </CardFooter>
+                        </Card>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Additional Metrics</CardTitle>
+                                <CardDescription>Other important blog statistics</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <p className="text-sm text-muted-foreground">Avg. Posts per User</p>
+                                            <p className="text-xl font-bold">{stats.metadata.averagePostsPerUser}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-sm text-muted-foreground">Posts without Categories</p>
+                                            <p className="text-xl font-bold">{stats.metadata.postsWithoutCategories}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </main>
+        </RoleBasedRoute>
     )
 }
