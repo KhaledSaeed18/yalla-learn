@@ -100,7 +100,7 @@ export default function BlogEditor() {
         const title = e.target.value
         setValue("title", title)
 
-        if (!isEditMode || !blogPost?.slug) {
+        if (!isEditMode || !blogPost?.slug || blogPost?.status === "DRAFT") {
             if (title) {
                 const slug = title
                     .trim()
