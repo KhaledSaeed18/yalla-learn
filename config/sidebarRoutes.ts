@@ -1,4 +1,4 @@
-import { Home, FileText, PenLine, SquareStack, StickyNote, ChartNoAxesCombined } from "lucide-react";
+import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type SidebarRoute = {
@@ -52,7 +52,7 @@ export const sidebarRoutes: SidebarRoute[] = [
                 id: "all-posts",
                 label: "All Posts",
                 href: "/dashboard/blog/all",
-                icon: FileText,
+                icon: FileStack,
                 requiresAuth: true,
                 roles: ["ADMIN"],
                 activeWhen: (pathname) => pathname === "/dashboard/blog/all",
@@ -70,7 +70,7 @@ export const sidebarRoutes: SidebarRoute[] = [
                 id: "my-posts",
                 label: "My Posts",
                 href: "/dashboard/blog",
-                icon: StickyNote,
+                icon: Newspaper,
                 requiresAuth: true,
                 roles: ["USER", "ADMIN"],
                 activeWhen: (pathname) => pathname === "/dashboard/blog",
