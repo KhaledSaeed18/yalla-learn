@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 import QueryProvider from '@/providers/QueryProvider';
 import { Footer } from "@/components/shared/Footer";
 import { FooterWrapper } from "@/components/shared/FooterWrapper";
+import { HeaderWrapper } from "@/components/shared/HeaderWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
+              <HeaderWrapper />
               <main>
                 {children}
               </main>
