@@ -124,6 +124,10 @@
   }
 }
 
+button {
+  cursor: pointer;
+}
+
 /* TipTap Editor Styles */
 .ProseMirror p.is-editor-empty:first-child::before {
   color: oklch(0.7 0 0);

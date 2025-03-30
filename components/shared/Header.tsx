@@ -11,6 +11,7 @@ import { ChevronDown } from "lucide-react"
 import { ModeToggle } from "../theme/mode-toggle"
 import { Separator } from "../ui/separator"
 import React from "react"
+import SignInButton from "./SigninButton"
 
 export function Header() {
     const [isOpen, setIsOpen] = useState(false)
@@ -141,9 +142,9 @@ export function Header() {
                 {/* Right side items */}
                 <div className="flex items-center gap-2 ml-auto">
                     <ModeToggle />
-                    <Button asChild className="hidden md:inline-flex">
-                        <Link href="/auth/signin">Sign In</Link>
-                    </Button>
+                    <div className="hidden md:inline-flex">
+                        <SignInButton />
+                    </div>
 
                     {/* Mobile Menu */}
                     <Sheet open={isOpen} onOpenChange={setIsOpen}>
