@@ -4,11 +4,13 @@ import { useState } from "react"
 import Link from "next/link"
 import { Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { ChevronDown } from "lucide-react"
 import { ModeToggle } from "../theme/mode-toggle"
+import { Separator } from "../ui/separator"
+import React from "react"
 
 export function Header() {
     const [isOpen, setIsOpen] = useState(false)
@@ -90,14 +92,14 @@ export function Header() {
 
     return (
         <header className="sticky top-0 z-40 w-full border-b bg-background">
-            <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+            <div className="container mx-auto flex h-16 items-center px-4 md:px-6">
                 {/* Logo */}
                 <Link href="/" className="flex items-center space-x-2">
                     <span className="text-xl font-bold">Logo</span>
                 </Link>
 
                 {/* Desktop Navigation Menu */}
-                <div className="hidden md:flex md:flex-1 md:justify-center">
+                <div className="hidden md:flex md:flex-1 md:justify-center mx-auto">
                     <NavigationMenu>
                         <NavigationMenuList>
                             {navItems.map((item) => (
@@ -137,7 +139,7 @@ export function Header() {
                 </div>
 
                 {/* Right side items */}
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 ml-auto">
                     <ModeToggle />
                     <Button asChild className="hidden md:inline-flex">
                         <Link href="/auth/signin">Sign In</Link>
@@ -151,39 +153,53 @@ export function Header() {
                                 <span className="sr-only">Toggle menu</span>
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="right">
-                            <nav className="flex flex-col space-y-4 pt-6">
+                        <SheetContent side="right" className="p-3">
+                            <SheetTitle>
+                                Menu
+                            </SheetTitle>
+                            <SheetDescription className="sr-only">
+                                Navigate through our pages.
+                            </SheetDescription>
+                            <nav className="flex flex-col space-y-4 pt-2">
                                 {navItems.map((item) =>
                                     item.content ? (
                                         <Collapsible key={item.name} className="w-full">
-                                            <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-base font-medium">
+                                            <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-base font-medium cursor-pointer">
                                                 {item.name}
                                                 <ChevronDown className="h-4 w-4" />
                                             </CollapsibleTrigger>
+                                            <Separator/>
+
                                             <CollapsibleContent className="pl-4">
                                                 <div className="flex flex-col space-y-2 pt-2">
                                                     {item.content.map((subItem) => (
-                                                        <Link
-                                                            key={subItem.title}
-                                                            href={subItem.href}
-                                                            className="text-sm transition-colors hover:text-primary"
-                                                            onClick={() => setIsOpen(false)}
-                                                        >
-                                                            {subItem.title}
-                                                        </Link>
+                                                        <React.Fragment key={subItem.title}>
+                                                            <Link
+                                                                key={subItem.title}
+                                                                href={subItem.href}
+                                                                className="text-sm transition-colors hover:text-primary"
+                                                                onClick={() => setIsOpen(false)}
+                                                            >
+                                                                {subItem.title}
+                                                            </Link>
+                                                            <Separator />
+                                                        </React.Fragment>
                                                     ))}
                                                 </div>
                                             </CollapsibleContent>
                                         </Collapsible>
                                     ) : (
-                                        <Link
-                                            key={item.name}
-                                            href={item.href}
-                                            className="text-base font-medium transition-colors hover:text-primary py-2"
-                                            onClick={() => setIsOpen(false)}
-                                        >
-                                            {item.name}
-                                        </Link>
+                                        <>
+                                            <Link
+                                                key={item.name}
+                                                href={item.href}
+                                                className="text-base font-medium transition-colors hover:text-primary"
+                                                onClick={() => setIsOpen(false)}
+                                            >
+                                                {item.name}
+                                            </Link>
+                                            <Separator/>
+                                        </>
                                     ),
                                 )}
                                 <Button asChild className="mt-4">
