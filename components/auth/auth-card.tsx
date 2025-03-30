@@ -1,4 +1,7 @@
+"use client"
+
 import type React from "react"
+import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface AuthCardProps {
@@ -10,14 +13,21 @@ interface AuthCardProps {
 
 export function AuthCard({ title, description, children, footer }: AuthCardProps) {
   return (
-    <Card className="w-full shadow-lg border-muted">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">{title}</CardTitle>
-        {description && <CardDescription className="text-center">{description}</CardDescription>}
-      </CardHeader>
-      <CardContent>{children}</CardContent>
-      {footer && <CardFooter>{footer}</CardFooter>}
-    </Card>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="w-full max-w-md mx-auto"
+    >
+      <Card className="w-full shadow-lg border-muted overflow-hidden">
+        <CardHeader className="space-y-1 relative z-10">
+          <CardTitle className="text-2xl font-bold text-center">{title}</CardTitle>
+          {description && <CardDescription className="text-center">{description}</CardDescription>}
+        </CardHeader>
+        <CardContent className="relative z-10">{children}</CardContent>
+        {footer && <CardFooter className="relative z-10">{footer}</CardFooter>}
+      </Card>
+    </motion.div>
   )
 }
 

@@ -7,6 +7,7 @@ import { Eye, EyeOff } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { motion } from "framer-motion"
 
 interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: boolean
@@ -30,11 +31,17 @@ export function PasswordInput({ className, error, ...props }: PasswordInputProps
         onClick={() => setShowPassword(!showPassword)}
         tabIndex={-1}
       >
-        {showPassword ? (
-          <EyeOff className="h-4 w-4 text-muted-foreground" />
-        ) : (
-          <Eye className="h-4 w-4 text-muted-foreground" />
-        )}
+        <motion.div
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
+          {showPassword ? (
+            <EyeOff className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <Eye className="h-4 w-4 text-muted-foreground" />
+          )}
+        </motion.div>
         <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
       </Button>
     </div>
