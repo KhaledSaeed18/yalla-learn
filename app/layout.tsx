@@ -5,6 +5,8 @@ import ReduxProvider from "@/redux/Provider";
 import { ThemeAwareToaster } from "@/components/theme/theme-aware-toaster";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import QueryProvider from '@/providers/QueryProvider';
+import { Footer } from "@/components/shared/Footer";
+import { FooterWrapper } from "@/components/shared/FooterWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,6 +45,7 @@ export default function RootLayout({
               <main>
                 {children}
               </main>
+              <FooterWrapper />
               <ThemeAwareToaster />
             </ThemeProvider>
           </QueryProvider>
