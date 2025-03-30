@@ -31,7 +31,7 @@ export function AuthCard({
       transition={{ duration: 0.5 }}
       className="w-full max-w-md mx-auto"
     >
-      <Card className="w-full border-muted overflow-hidden shadow-[0px_0px_10px_0px_rgba(0,133,144,0.1)] relative">
+      <Card className="w-full border-muted overflow-hidden relative">
         {showBorderTrail && (
           <BorderTrail 
             className={borderTrailColor} 
