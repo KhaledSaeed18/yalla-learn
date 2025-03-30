@@ -19,6 +19,7 @@ import { setAuthData, setAuthError, clearError } from "@/redux/slices/authSlice"
 import { toast } from "sonner"
 import { authServices } from "@/services/auth/signin.services"
 import { ApiError } from "@/lib/api/baseAPI"
+import { Loader2, LogIn } from "lucide-react"
 
 type SignInValues = z.infer<typeof signinSchema>
 
@@ -112,7 +113,17 @@ export default function SignInPage() {
             />
 
             <Button type="submit" className="w-full mt-6" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ?
+                <>
+                  <Loader2 className="animate-spin mr-1" />
+                  {"Signing in..."}
+                </>
+                :
+                <>
+                  <LogIn className="mr-1" />
+                  {"Sign in"}
+                </>
+              }
             </Button>
           </form>
         </Form>
