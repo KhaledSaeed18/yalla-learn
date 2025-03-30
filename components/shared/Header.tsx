@@ -92,7 +92,7 @@ export function Header() {
 
     return (
         <header className="sticky top-0 z-40 w-full border-b bg-background">
-            <div className="container mx-auto flex h-16 items-center px-4 md:px-6">
+            <div className="container mx-auto flex px-4 h-16 items-center">
                 {/* Logo */}
                 <Link href="/" className="flex items-center space-x-2">
                     <span className="text-xl font-bold">Logo</span>
@@ -139,7 +139,7 @@ export function Header() {
                 </div>
 
                 {/* Right side items */}
-                <div className="flex items-center space-x-4 ml-auto">
+                <div className="flex items-center gap-2 ml-auto">
                     <ModeToggle />
                     <Button asChild className="hidden md:inline-flex">
                         <Link href="/auth/signin">Sign In</Link>
@@ -168,7 +168,7 @@ export function Header() {
                                                 {item.name}
                                                 <ChevronDown className="h-4 w-4" />
                                             </CollapsibleTrigger>
-                                            <Separator/>
+                                            <Separator />
 
                                             <CollapsibleContent className="pl-4">
                                                 <div className="flex flex-col space-y-2 pt-2">
@@ -198,7 +198,7 @@ export function Header() {
                                             >
                                                 {item.name}
                                             </Link>
-                                            <Separator/>
+                                            <Separator />
                                         </>
                                     ),
                                 )}
