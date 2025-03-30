@@ -19,7 +19,7 @@ export function AuthCard({ title, description, children, footer }: AuthCardProps
       transition={{ duration: 0.5 }}
       className="w-full max-w-md mx-auto"
     >
-      <Card className="w-full shadow-lg border-muted overflow-hidden">
+      <Card className="w-full border-muted overflow-hidden shadow-[0px_0px_69px_0px_rgba(0,133,144,0.2)]">
         <CardHeader className="space-y-1 relative z-10">
           <CardTitle className="text-2xl font-bold text-center">{title}</CardTitle>
           {description && <CardDescription className="text-center">{description}</CardDescription>}
