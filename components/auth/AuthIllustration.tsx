@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useTheme } from "next-themes"
 import { Database, Eye, EyeOff, Fingerprint, Key, Wifi } from "lucide-react"
@@ -13,22 +13,24 @@ function useThemeColors() {
         setMounted(true)
     }, [])
 
-    if (!mounted) return null
+    return useMemo(() => {
+        if (!mounted) return null
 
-    const isDark = resolvedTheme === "dark"
+        const isDark = resolvedTheme === "dark"
 
-    return {
-        bg: isDark ? "#171923" : "#F7FAFC",
-        primary: isDark ? "#6366F1" : "#4F46E5",
-        secondary: isDark ? "#A5B4FC" : "#818CF8",
-        accent: isDark ? "#38BDF8" : "#0EA5E9",
-        success: isDark ? "#10B981" : "#059669",
-        warning: isDark ? "#F59E0B" : "#D97706",
-        danger: isDark ? "#EF4444" : "#DC2626",
-        text: isDark ? "#F1F5F9" : "#1E293B",
-        lightShade: isDark ? "#2D3748" : "#EEF2FF",
-        darkShade: isDark ? "#1A202C" : "#C7D2FE",
-    }
+        return {
+            bg: isDark ? "#171923" : "#F7FAFC",
+            primary: isDark ? "#6366F1" : "#4F46E5",
+            secondary: isDark ? "#A5B4FC" : "#818CF8",
+            accent: isDark ? "#38BDF8" : "#0EA5E9",
+            success: isDark ? "#10B981" : "#059669",
+            warning: isDark ? "#F59E0B" : "#D97706",
+            danger: isDark ? "#EF4444" : "#DC2626",
+            text: isDark ? "#F1F5F9" : "#1E293B",
+            lightShade: isDark ? "#2D3748" : "#EEF2FF",
+            darkShade: isDark ? "#1A202C" : "#C7D2FE",
+        }
+    }, [mounted, resolvedTheme])
 }
 
 export function LeftIllustration() {
