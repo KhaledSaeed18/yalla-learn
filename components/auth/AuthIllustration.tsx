@@ -589,52 +589,6 @@ export function RightIllustration() {
 
                     <motion.circle cx="150" cy="450" r="30" fill={`${colors.success}30`} />
 
-                    {/* Dynamic wifi waves */}
-                    {[1, 2, 3].map((i) => (
-                        <motion.path
-                            key={`wifi-wave-${i}`}
-                            d={`M${150 - i * 12} ${455 - i * 5} Q 150 ${440 - i * 7} ${150 + i * 12} ${455 - i * 5}`}
-                            fill="none"
-                            stroke={colors.success}
-                            strokeWidth={securityCheck === 0 ? 3 : 2}
-                            strokeLinecap="round"
-                            initial={{ pathLength: 0, opacity: 0 }}
-                            animate={{
-                                pathLength: 1,
-                                opacity: securityCheck === 0 ? [0.7, 1, 0.7] : 0.7,
-                                y: securityCheck === 0 ? [0, -2, 0] : 0
-                            }}
-                            transition={{
-                                pathLength: { delay: 1.2 + i * 0.2, duration: 0.8 },
-                                opacity: { duration: 1.5, repeat: securityCheck === 0 ? Infinity : 0 },
-                                y: { duration: 0.8, repeat: securityCheck === 0 ? Infinity : 0 }
-                            }}
-                        />
-                    ))}
-
-                    {/* Data packets traveling along wifi waves */}
-                    {securityCheck === 0 && [1, 2].map((i) => (
-                        <motion.circle
-                            key={`data-packet-${i}`}
-                            cx="150"
-                            cy="450"
-                            r="4"
-                            fill={i % 2 === 0 ? colors.accent : colors.secondary}
-                            filter="drop-shadow(0 0 2px rgba(255,255,255,0.5))"
-                            initial={{ pathOffset: 0 }}
-                            animate={{ pathOffset: 1 }}
-                            transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                delay: i * 1,
-                                ease: "easeInOut"
-                            }}
-                            style={{
-                                offsetPath: `path('M${140} ${455} Q 150 ${435} ${160} ${455} Q 150 ${470} ${140} ${455}')`
-                            }}
-                        />
-                    ))}
-
                     <motion.g
                         animate={{
                             scale: [1, 1.1, 1],
@@ -655,19 +609,6 @@ export function RightIllustration() {
                             strokeWidth={1.5}
                         />
                     </motion.g>
-
-                    {/* Security shield indicator that appears when active */}
-                    {securityCheck === 0 && (
-                        <motion.path
-                            d="M150 435L157 440V452C157 456 153 459 150 460C147 459 143 456 143 452V440L150 435Z"
-                            fill="none"
-                            stroke={colors.success}
-                            strokeWidth="1"
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            transition={{ duration: 0.5 }}
-                        />
-                    )}
 
                     {/* Connection status text indicator */}
                     <motion.text
