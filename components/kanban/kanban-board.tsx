@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
-import { Plus, Filter, Search, BarChart4, Trash2, MoreVertical } from "lucide-react"
+import { Plus, Filter, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -13,7 +13,6 @@ import CreateColumnDialog from "./create-column-dialog"
 import TaskDetailsDialog from "./task-details-dialog"
 import CreateTaskDialog from "./create-task-dialog"
 import DeleteColumnDialog from "./delete-column-dialog"
-import EmptyBoardsState from "./empty-boards-state"
 import type { Board, Column, Task, Priority } from "@/lib/kanban/types"
 import { generateSampleData } from "@/lib/kanban/sample-data"
 
@@ -32,8 +31,6 @@ export default function KanbanBoard() {
   const [allTags, setAllTags] = useState<string[]>([])
   const [showDeleteColumn, setShowDeleteColumn] = useState(false)
   const [columnToDelete, setColumnToDelete] = useState<Column | null>(null)
-  const [showDeleteBoard, setShowDeleteBoard] = useState(false)
-  const [isAuthorized, setIsAuthorized] = useState(true)
 
   // Load sample data on first render
   useEffect(() => {
@@ -269,11 +266,6 @@ export default function KanbanBoard() {
 
     setSelectedBoard(updatedBoard)
     setColumnToDelete(null)
-  }
-
-  // If there are no boards, show the empty state
-  if (boards.length === 0) {
-    return <EmptyBoardsState onCreateBoard={() => setShowCreateBoard(true)} />
   }
 
   return (
