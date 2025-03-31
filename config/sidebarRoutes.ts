@@ -1,4 +1,4 @@
-import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout } from "lucide-react";
+import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout, FileUser } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type SidebarRoute = {
@@ -30,6 +30,15 @@ export const sidebarRoutes: SidebarRoute[] = [
         requiresAuth: true,
         roles: ["USER", "ADMIN"],
         activeWhen: (pathname) => pathname.startsWith("/dashboard/kanban-board"),
+    },
+    {
+        id: "resume-builder",
+        label: "Resume Builder",
+        href: "/dashboard/resume-builder",
+        icon: FileUser,
+        requiresAuth: true,
+        roles: ["USER", "ADMIN"],
+        activeWhen: (pathname) => pathname.startsWith("/dashboard/resume-builder"),
     },
     {
         id: "blog",
