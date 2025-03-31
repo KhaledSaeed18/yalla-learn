@@ -19,13 +19,13 @@ export default function TemplateSelector({ activeTemplate, setActiveTemplate }: 
       <RadioGroup
         value={activeTemplate}
         onValueChange={setActiveTemplate}
-        className={`grid ${isMobile ? "grid-cols-2" : "grid-cols-2 md:grid-cols-4"} gap-4`}
+        className={`grid ${isMobile ? "grid-cols-2" : "grid-cols-2 md:grid-cols-4"} gap-4 `}
       >
         <div>
           <RadioGroupItem value="professional" id="professional" className="peer sr-only" />
           <Label
             htmlFor="professional"
-            className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+            className="cursor-pointer flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
           >
             <div className="w-full h-24 bg-gray-100 mb-2 flex items-center justify-center">
               <div className="w-3/4 h-5/6 flex flex-col">
@@ -44,7 +44,7 @@ export default function TemplateSelector({ activeTemplate, setActiveTemplate }: 
           <RadioGroupItem value="modern" id="modern" className="peer sr-only" />
           <Label
             htmlFor="modern"
-            className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+            className="cursor-pointer flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
           >
             <div className="w-full h-24 bg-gray-100 mb-2 flex items-center justify-center">
               <div className="w-3/4 h-5/6 flex flex-col">
@@ -63,7 +63,7 @@ export default function TemplateSelector({ activeTemplate, setActiveTemplate }: 
           <RadioGroupItem value="minimal" id="minimal" className="peer sr-only" />
           <Label
             htmlFor="minimal"
-            className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+            className="cursor-pointer flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
           >
             <div className="w-full h-24 bg-gray-100 mb-2 flex items-center justify-center">
               <div className="w-3/4 h-5/6 flex flex-col">
@@ -83,7 +83,7 @@ export default function TemplateSelector({ activeTemplate, setActiveTemplate }: 
           <RadioGroupItem value="creative" id="creative" className="peer sr-only" />
           <Label
             htmlFor="creative"
-            className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+            className="cursor-pointer flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
           >
             <div className="w-full h-24 bg-gray-100 mb-2 flex items-center justify-center">
               <div className="w-3/4 h-5/6 flex">
