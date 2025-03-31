@@ -7,14 +7,12 @@ import { Plus, Filter, Search, BarChart4, Trash2, MoreVertical } from "lucide-re
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import BoardColumn from "./board-column"
 import CreateBoardDialog from "./create-board-dialog"
 import CreateColumnDialog from "./create-column-dialog"
 import TaskDetailsDialog from "./task-details-dialog"
 import CreateTaskDialog from "./create-task-dialog"
 import DeleteColumnDialog from "./delete-column-dialog"
-import DeleteBoardDialog from "./delete-board-dialog"
 import EmptyBoardsState from "./empty-boards-state"
 import type { Board, Column, Task, Priority } from "@/lib/kanban/types"
 import { generateSampleData } from "@/lib/kanban/sample-data"
@@ -35,8 +33,7 @@ export default function KanbanBoard() {
   const [showDeleteColumn, setShowDeleteColumn] = useState(false)
   const [columnToDelete, setColumnToDelete] = useState<Column | null>(null)
   const [showDeleteBoard, setShowDeleteBoard] = useState(false)
-  const [boardToDelete, setBoardToDelete] = useState<Board | null>(null)
-  const [isAuthorized, setIsAuthorized] = useState(true) // Simplified permission check
+  const [isAuthorized, setIsAuthorized] = useState(true)
 
   // Load sample data on first render
   useEffect(() => {
@@ -60,28 +57,6 @@ export default function KanbanBoard() {
     setBoards([...boards, newBoard])
     setSelectedBoard(newBoard)
     setShowCreateBoard(false)
-  }
-
-  const handleDeleteBoard = (boardId: string) => {
-    if (!isAuthorized) {
-      // In a real app, show an unauthorized message
-      console.error("User not authorized to delete this board")
-      return
-    }
-
-    // Remove the board from the boards array
-    const updatedBoards = boards.filter((board) => board.id !== boardId)
-    setBoards(updatedBoards)
-
-    // If the deleted board was selected, select another board or set to null
-    if (selectedBoard && selectedBoard.id === boardId) {
-      setSelectedBoard(updatedBoards.length > 0 ? updatedBoards[0] : null)
-    }
-
-    // Reset filters and search when changing boards
-    setSearchQuery("")
-    setFilterPriority("all")
-    setFilterTag("all")
   }
 
   const handleCreateColumn = (newColumn: Column) => {
@@ -334,29 +309,6 @@ export default function KanbanBoard() {
               <Plus className="h-4 w-4 mr-1" />
               New Board
             </Button>
-            {selectedBoard && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem
-                    className="text-red-600 focus:text-red-600"
-                    onClick={() => {
-                      if (selectedBoard) {
-                        setBoardToDelete(selectedBoard)
-                        setShowDeleteBoard(true)
-                      }
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete Board
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
           </div>
 
           <div className="flex flex-col md:flex-row items-start md:items-center gap-2 w-full md:w-auto">
@@ -487,15 +439,6 @@ export default function KanbanBoard() {
           onOpenChange={setShowDeleteColumn}
           column={columnToDelete}
           onConfirmDelete={confirmDeleteColumn}
-        />
-      )}
-
-      {showDeleteBoard && boardToDelete && (
-        <DeleteBoardDialog
-          open={showDeleteBoard}
-          onOpenChange={setShowDeleteBoard}
-          board={boardToDelete}
-          onConfirmDelete={handleDeleteBoard}
         />
       )}
     </DndProvider>
