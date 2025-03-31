@@ -25,7 +25,6 @@ export default function ResumeBuilder() {
 
   const [previewCollapsed, setPreviewCollapsed] = useState(false)
   const isMobile = useMediaQuery("(max-width: 1023px)")
-  const isSmallScreen = useMediaQuery("(max-width: 639px)")
 
   // Reset preview collapsed state when screen size changes
   useEffect(() => {
@@ -49,7 +48,7 @@ export default function ResumeBuilder() {
   return (
     <div className="flex flex-col gap-6">
       {/* Form Section */}
-      <div className="w-full rounded-lg shadow-md p-6">
+      <div className="w-full rounded-lg shadow-md">
         <Tabs defaultValue="personal" className="w-full">
           {/* Fixed TabsList for better responsive behavior */}
           <div className="mb-4 overflow-x-auto">
@@ -149,7 +148,7 @@ export default function ResumeBuilder() {
 
       {/* Preview Section */}
       <div className="w-full rounded-lg shadow-md overflow-hidden transition-all duration-300">
-        <div className="p-6">
+        <div className="">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3 sm:gap-0">
             <h2 className="text-xl font-semibold">Resume Preview</h2>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
