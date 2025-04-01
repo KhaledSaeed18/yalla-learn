@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { Download, Save } from "lucide-react"
+import { Download, RefreshCw, Save } from "lucide-react"
 import PersonalInfoForm from "../form-sections/personal-info-form"
 import SummaryForm from "../form-sections/summary-form"
 import WorkExperienceForm from "../form-sections/work-experience-form"
@@ -18,9 +18,10 @@ import TemplateSelector from "./template-selector"
 import { useResumeContext } from "@/lib/resume/resume-context"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { generatePDF } from "@/lib/resume/pdf-generator"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
 
 export default function ResumeBuilder() {
-  const { resumeData, updateResumeSection, activeTemplate, setActiveTemplate, isFormEmpty } = useResumeContext()
+  const { resumeData, updateResumeSection, activeTemplate, setActiveTemplate, isFormEmpty, resetResumeData } = useResumeContext()
 
   const [previewCollapsed, setPreviewCollapsed] = useState(false)
   const isMobile = useMediaQuery("(max-width: 1023px)")
@@ -147,6 +148,33 @@ export default function ResumeBuilder() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3 sm:gap-0">
             <h2 className="text-xl font-semibold">Resume Preview</h2>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    size="sm"
+                    className="flex items-center justify-center"
+                    variant="outline"
+                    color="destructive"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Reset
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Reset Resume Data</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will clear all the information you've entered. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={resetResumeData} className="bg-destructive text-white">
+                      Reset
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               <Button
                 onClick={handleSaveResume}
                 size="sm"
