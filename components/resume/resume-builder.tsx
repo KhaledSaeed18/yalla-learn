@@ -18,6 +18,7 @@ import TemplateSelector from "./template-selector"
 import { useResumeContext } from "@/lib/resume/resume-context"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { generatePDF } from "@/lib/resume/pdf-generator"
+import { ImportExportResume } from "./import-export"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
 
 export default function ResumeBuilder() {
@@ -175,6 +176,7 @@ export default function ResumeBuilder() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+              <ImportExportResume />
               <Button
                 onClick={handleSaveResume}
                 size="sm"
