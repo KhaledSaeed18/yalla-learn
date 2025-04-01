@@ -20,13 +20,11 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import { generatePDF } from "@/lib/resume/pdf-generator"
 
 export default function ResumeBuilder() {
-  // Use the context instead of local state
   const { resumeData, updateResumeSection, activeTemplate, setActiveTemplate, isFormEmpty } = useResumeContext()
 
   const [previewCollapsed, setPreviewCollapsed] = useState(false)
   const isMobile = useMediaQuery("(max-width: 1023px)")
 
-  // Reset preview collapsed state when screen size changes
   useEffect(() => {
     setPreviewCollapsed(false)
   }, [isMobile])
@@ -36,7 +34,6 @@ export default function ResumeBuilder() {
   }
 
   const handleSaveResume = () => {
-    // Log the data to console
     console.log("Resume Data:", JSON.stringify(resumeData, null, 2))
 
     // Show a toast notification
@@ -48,9 +45,8 @@ export default function ResumeBuilder() {
   return (
     <div className="flex flex-col gap-6">
       {/* Form Section */}
-      <div className="w-full rounded-lg shadow-md">
+      <div className="w-full rounded-lg shadow-md p-2">
         <Tabs defaultValue="personal" className="w-full">
-          {/* Fixed TabsList for better responsive behavior */}
           <div className="mb-4 overflow-x-auto">
             <TabsList className="inline-flex w-auto min-w-full">
               <TabsTrigger value="personal" className="flex-1 min-w-[100px]">
@@ -99,7 +95,6 @@ export default function ResumeBuilder() {
 
           <TabsContent value="more">
             <Tabs defaultValue="certifications">
-              {/* Fixed nested TabsList for better responsive behavior */}
               <div className="mb-4 overflow-x-auto">
                 <TabsList className="inline-flex w-auto min-w-full">
                   <TabsTrigger value="certifications" className="flex-1 min-w-[120px]">
