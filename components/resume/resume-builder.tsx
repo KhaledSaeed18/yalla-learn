@@ -20,6 +20,7 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import { generatePDF } from "@/lib/resume/pdf-generator"
 import { ImportExportResume } from "./import-export"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
+import { ATSAnalyzer } from "./ats-analyser"
 
 export default function ResumeBuilder() {
   const { resumeData, updateResumeSection, activeTemplate, setActiveTemplate, isFormEmpty, resetResumeData } = useResumeContext()
@@ -177,6 +178,7 @@ export default function ResumeBuilder() {
                 </AlertDialogContent>
               </AlertDialog>
               <ImportExportResume />
+              <ATSAnalyzer />
               <Button
                 onClick={handleSaveResume}
                 size="sm"
