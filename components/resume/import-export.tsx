@@ -60,8 +60,8 @@ export function ImportExportResume() {
     }
 
     return (
-        <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={handleExport}>
+        <div className="flex flex-col md:flex-row gap-2">
+            <Button variant="outline" size="sm" onClick={handleExport} className="w-full md:w-auto">
                 <Download className="h-4 w-4 mr-2" />
                 Export
             </Button>

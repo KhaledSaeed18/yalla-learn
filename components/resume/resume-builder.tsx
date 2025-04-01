@@ -145,11 +145,11 @@ export default function ResumeBuilder() {
       </div>
 
       {/* Preview Section */}
-      <div className="w-full rounded-lg shadow-md overflow-hidden transition-all duration-300">
+      <div className="w-full rounded-lg shadow-md overflow-hidden transition-all duration-300 overflow-x-auto p-2">
         <div className="">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3 sm:gap-0">
-            <h2 className="text-xl font-semibold">Resume Preview</h2>
-            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3 md:gap-0">
+            <h2 className="text-xl font-semibold mr-0 md:mr-2">Resume Preview</h2>
+            <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
