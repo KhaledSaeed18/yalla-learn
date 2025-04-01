@@ -24,9 +24,8 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
     <div
       ref={drag}
       onClick={onClick}
-      className={`bg-white dark:bg-gray-950 p-3 rounded-md shadow-sm cursor-pointer hover:shadow-md transition-shadow ${
-        isDragging ? "opacity-50" : ""
-      }`}
+      className={`cursor-grab bg-white dark:bg-gray-950 p-3 rounded-md shadow-sm hover:shadow-md transition-shadow ${isDragging ? "opacity-50" : ""
+        }`}
       style={{ borderLeft: `4px solid ${priorityColors[task.priority]}` }}
     >
       <h4 className="font-medium text-sm mb-1">{task.title}</h4>
