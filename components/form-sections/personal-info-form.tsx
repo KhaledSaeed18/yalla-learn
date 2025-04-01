@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import type { PersonalInfo } from "@/lib/resume/resume-types"
 import { isValidEmail, isValidPhone, isValidUrl } from "@/lib/resume/validation"
 import { FormField } from "@/components/ui/form-field"
+import { useSelector } from "react-redux"
 
 interface PersonalInfoFormProps {
   data: PersonalInfo
@@ -12,11 +13,21 @@ interface PersonalInfoFormProps {
 }
 
 export default function PersonalInfoForm({ data, updateData }: PersonalInfoFormProps) {
-  const [formData, setFormData] = useState<PersonalInfo>(data)
+
+  const user = useSelector((state: any) => state.auth.user)
+  const firstName = user?.firstName || ""
+  const lastName = user?.lastName || ""
+  const fullName = `${firstName} ${lastName}`
+  const email = user?.email || ""
+
+  const [formData, setFormData] = useState<PersonalInfo>({
+    ...data,
+    name: data.name || fullName,
+    email: data.email || email
+  })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
-    // Only update parent data when local form data changes and is valid
     const hasChanged = JSON.stringify(formData) !== JSON.stringify(data)
     if (hasChanged) {
       updateData(formData)
@@ -41,13 +52,11 @@ export default function PersonalInfoForm({ data, updateData }: PersonalInfoFormP
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
 
-    // Update form data
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }))
 
-    // Validate and update errors
     const error = validateField(name, value)
     setErrors((prev) => ({
       ...prev,
@@ -60,7 +69,13 @@ export default function PersonalInfoForm({ data, updateData }: PersonalInfoFormP
       <h2 className="text-xl font-semibold">Personal Information</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField id="name" label="Full Name" value={formData.name} onChange={handleChange} placeholder="John Doe" />
+        <FormField
+          id="name"
+          label="Full Name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="John Doe"
+        />
 
         <FormField
           id="title"
