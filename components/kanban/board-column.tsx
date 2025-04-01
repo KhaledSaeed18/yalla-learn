@@ -5,6 +5,7 @@ import { Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import TaskCard from "./task-card"
 import type { Column, Task } from "@/lib/kanban/types"
+import { useRef } from "react"
 
 interface BoardColumnProps {
   column: Column
@@ -25,6 +26,7 @@ export default function BoardColumn({
   filteredTasks,
   isFiltering,
 }: BoardColumnProps) {
+  const ref = useRef<HTMLDivElement>(null)
   const [{ isOver }, drop] = useDrop({
     accept: "TASK",
     drop: (item: { id: string; columnId: string }) => {
@@ -50,12 +52,13 @@ export default function BoardColumn({
       ? "Cannot delete column with tasks"
       : "Delete column"
 
+  drop(ref)
+
   return (
     <div
-      ref={drop}
-      className={`flex-shrink-0 w-72 bg-gray-100 dark:bg-gray-800 rounded-lg p-3 flex flex-col max-h-[calc(100vh-200px)] ${
-        isOver ? "border-2 border-primary border-dashed" : ""
-      }`}
+      ref={ref}
+      className={`flex-shrink-0 w-72 bg-gray-100 dark:bg-gray-800 rounded-lg p-3 flex flex-col max-h-[calc(100vh-200px)] ${isOver ? "border-2 border-primary border-dashed" : ""
+        }`}
     >
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-medium text-sm">{column.title}</h3>

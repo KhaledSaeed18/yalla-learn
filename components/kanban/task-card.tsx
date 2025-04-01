@@ -5,6 +5,7 @@ import { Calendar, Tag } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { type Task, priorityColors } from "@/lib/kanban/types"
 import { formatDate } from "@/lib/kanban/utils"
+import { useRef } from "react"
 
 interface TaskCardProps {
   task: Task
@@ -12,6 +13,7 @@ interface TaskCardProps {
 }
 
 export default function TaskCard({ task, onClick }: TaskCardProps) {
+  const ref = useRef<HTMLDivElement>(null)
   const [{ isDragging }, drag] = useDrag({
     type: "TASK",
     item: { id: task.id, columnId: task.listId },
@@ -19,10 +21,11 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
       isDragging: !!monitor.isDragging(),
     }),
   })
+  drag(ref)
 
   return (
     <div
-      ref={drag}
+      ref={ref}
       onClick={onClick}
       className={`cursor-grab bg-white dark:bg-gray-950 p-3 rounded-md shadow-sm hover:shadow-md transition-shadow ${isDragging ? "opacity-50" : ""
         }`}
