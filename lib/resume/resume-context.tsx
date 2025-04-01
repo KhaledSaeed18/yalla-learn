@@ -84,6 +84,7 @@ export function ResumeProvider({ children }: { children: React.ReactNode }) {
 
   const resetResumeData = () => {
     setResumeData(initialResumeData);
+    window.location.reload();
   }
 
   return (
