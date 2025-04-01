@@ -1,10 +1,13 @@
 import KanbanBoard from "@/components/kanban/kanban-board"
+import RoleBasedRoute from "@/components/RoleBasedRoute"
 
 export default function Home() {
     return (
-        <main>
-            <KanbanBoard />
-        </main>
+        <RoleBasedRoute allowedRoles={["USER", "ADMIN"]}>
+            <main>
+                <KanbanBoard />
+            </main>
+        </RoleBasedRoute>
     )
 }
 
