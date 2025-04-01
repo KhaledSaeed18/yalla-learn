@@ -17,7 +17,6 @@ export default function ResumePreview({ data, template }: ResumePreviewProps) {
   const { resumeData, activeTemplate } = useResumeContext()
   const isMobile = useMediaQuery("(max-width: 767px)")
 
-  // Use props if provided, otherwise use context
   const previewData = data || resumeData
   const previewTemplate = template || activeTemplate
 

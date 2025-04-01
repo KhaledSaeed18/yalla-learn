@@ -15,7 +15,6 @@ export default function InterestsForm({ data, updateData }: InterestsFormProps) 
   const [interests, setInterests] = useState<string[]>(data.length ? data : [""])
 
   useEffect(() => {
-    // Filter out empty interests and only update if different from props
     const filteredInterests = interests.filter((interest) => interest.trim() !== "")
     const hasChanged = JSON.stringify(filteredInterests) !== JSON.stringify(data)
 

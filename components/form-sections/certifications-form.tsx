@@ -20,7 +20,6 @@ export default function CertificationsForm({ data, updateData }: CertificationsF
   const [errors, setErrors] = useState<Record<string, Record<string, string>>>({})
 
   useEffect(() => {
-    // Only update parent data when certifications change and are different from props
     const hasChanged = JSON.stringify(certifications) !== JSON.stringify(data)
     if (hasChanged) {
       updateData(certifications)
@@ -42,7 +41,6 @@ export default function CertificationsForm({ data, updateData }: CertificationsF
   const removeCertification = (index: number) => {
     setCertifications(certifications.filter((_, i) => i !== index))
 
-    // Remove errors for this certification
     setErrors((prev) => {
       const newErrors = { ...prev }
       delete newErrors[index]
@@ -60,7 +58,6 @@ export default function CertificationsForm({ data, updateData }: CertificationsF
     ;[newCertifications[index], newCertifications[newIndex]] = [newCertifications[newIndex], newCertifications[index]]
     setCertifications(newCertifications)
 
-    // Swap errors too
     setErrors((prev) => {
       const newErrors = { ...prev }
       const tempErrors = newErrors[index]
@@ -89,7 +86,6 @@ export default function CertificationsForm({ data, updateData }: CertificationsF
     }
     setCertifications(updatedCertifications)
 
-    // Validate fields
     if (field === "date" || field === "url") {
       const error = validateField(field, value)
       setErrors((prev) => ({

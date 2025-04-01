@@ -18,7 +18,6 @@ export default function SkillsForm({ data, updateData }: SkillsFormProps) {
   const [categories, setCategories] = useState<SkillCategory[]>(data)
 
   useEffect(() => {
-    // Only update parent data when categories change and are different from props
     const hasChanged = JSON.stringify(categories) !== JSON.stringify(data)
     if (hasChanged) {
       updateData(categories)

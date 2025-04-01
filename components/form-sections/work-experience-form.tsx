@@ -21,7 +21,6 @@ export default function WorkExperienceForm({ data, updateData }: WorkExperienceF
   const [errors, setErrors] = useState<Record<string, Record<string, string>>>({})
 
   useEffect(() => {
-    // Only update parent data when experiences change and are different from props
     const hasChanged = JSON.stringify(experiences) !== JSON.stringify(data)
     if (hasChanged) {
       updateData(experiences)
@@ -47,7 +46,6 @@ export default function WorkExperienceForm({ data, updateData }: WorkExperienceF
   const removeExperience = (index: number) => {
     setExperiences(experiences.filter((_, i) => i !== index))
 
-    // Remove errors for this experience
     setErrors((prev) => {
       const newErrors = { ...prev }
       delete newErrors[index]
@@ -65,7 +63,6 @@ export default function WorkExperienceForm({ data, updateData }: WorkExperienceF
       ;[newExperiences[index], newExperiences[newIndex]] = [newExperiences[newIndex], newExperiences[index]]
     setExperiences(newExperiences)
 
-    // Swap errors too
     setErrors((prev) => {
       const newErrors = { ...prev }
       const tempErrors = newErrors[index]
@@ -93,7 +90,6 @@ export default function WorkExperienceForm({ data, updateData }: WorkExperienceF
     }
     setExperiences(updatedExperiences)
 
-    // Validate date fields
     if (field === "startDate" || field === "endDate") {
       const error = validateField(field as string, value as string)
       setErrors((prev) => ({

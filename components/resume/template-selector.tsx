@@ -9,7 +9,6 @@ interface TemplateSelectorProps {
   setActiveTemplate: (template: string) => void;
 }
 
-// Update function signature to accept props
 export default function TemplateSelector({ activeTemplate, setActiveTemplate }: TemplateSelectorProps) {
   const isMobile = useMediaQuery("(max-width: 639px)")
 

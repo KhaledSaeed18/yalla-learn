@@ -21,7 +21,6 @@ export default function ProjectsForm({ data, updateData }: ProjectsFormProps) {
   const [errors, setErrors] = useState<Record<string, Record<string, string>>>({})
 
   useEffect(() => {
-    // Only update parent data when projects change and are different from props
     const hasChanged = JSON.stringify(projects) !== JSON.stringify(data)
     if (hasChanged) {
       updateData(projects)
@@ -44,7 +43,6 @@ export default function ProjectsForm({ data, updateData }: ProjectsFormProps) {
   const removeProject = (index: number) => {
     setProjects(projects.filter((_, i) => i !== index))
 
-    // Remove errors for this project
     setErrors((prev) => {
       const newErrors = { ...prev }
       delete newErrors[index]
@@ -62,7 +60,6 @@ export default function ProjectsForm({ data, updateData }: ProjectsFormProps) {
     ;[newProjects[index], newProjects[newIndex]] = [newProjects[newIndex], newProjects[index]]
     setProjects(newProjects)
 
-    // Swap errors too
     setErrors((prev) => {
       const newErrors = { ...prev }
       const tempErrors = newErrors[index]
@@ -89,7 +86,6 @@ export default function ProjectsForm({ data, updateData }: ProjectsFormProps) {
     }
     setProjects(updatedProjects)
 
-    // Validate URL field
     if (field === "url") {
       const error = validateField(field as string, value as string)
       setErrors((prev) => ({

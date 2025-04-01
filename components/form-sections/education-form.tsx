@@ -20,7 +20,6 @@ export default function EducationForm({ data, updateData }: EducationFormProps) 
   const [errors, setErrors] = useState<Record<string, Record<string, string>>>({})
 
   useEffect(() => {
-    // Only update parent data when educations change and are different from props
     const hasChanged = JSON.stringify(educations) !== JSON.stringify(data)
     if (hasChanged) {
       updateData(educations)
@@ -46,7 +45,6 @@ export default function EducationForm({ data, updateData }: EducationFormProps) 
   const removeEducation = (index: number) => {
     setEducations(educations.filter((_, i) => i !== index))
 
-    // Remove errors for this education
     setErrors((prev) => {
       const newErrors = { ...prev }
       delete newErrors[index]
@@ -64,7 +62,6 @@ export default function EducationForm({ data, updateData }: EducationFormProps) 
     ;[newEducations[index], newEducations[newIndex]] = [newEducations[newIndex], newEducations[index]]
     setEducations(newEducations)
 
-    // Swap errors too
     setErrors((prev) => {
       const newErrors = { ...prev }
       const tempErrors = newErrors[index]
@@ -94,7 +91,6 @@ export default function EducationForm({ data, updateData }: EducationFormProps) 
     }
     setEducations(updatedEducations)
 
-    // Validate fields
     if (field === "startDate" || field === "endDate" || field === "gpa") {
       const error = validateField(field as string, value as string)
       setErrors((prev) => ({

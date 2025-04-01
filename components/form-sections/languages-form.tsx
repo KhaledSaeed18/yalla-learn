@@ -18,7 +18,6 @@ export default function LanguagesForm({ data, updateData }: LanguagesFormProps) 
   const [languages, setLanguages] = useState<Language[]>(data)
 
   useEffect(() => {
-    // Only update parent data when languages change and are different from props
     const hasChanged = JSON.stringify(languages) !== JSON.stringify(data)
     if (hasChanged) {
       updateData(languages)

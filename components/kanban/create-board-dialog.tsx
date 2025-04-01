@@ -52,7 +52,6 @@ export default function CreateBoardDialog({ open, onOpenChange, onCreateBoard }:
       ],
     }
 
-    // Set the boardId for each column
     newBoard.columns = newBoard.columns.map((column) => ({
       ...column,
       boardId: newBoard.id,

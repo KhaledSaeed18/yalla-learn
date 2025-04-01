@@ -32,13 +32,11 @@ export default function KanbanBoard() {
   const [showDeleteColumn, setShowDeleteColumn] = useState(false)
   const [columnToDelete, setColumnToDelete] = useState<Column | null>(null)
 
-  // Load sample data on first render
   useEffect(() => {
     const sampleData = generateSampleData()
     setBoards(sampleData)
     setSelectedBoard(sampleData[0])
 
-    // Extract all unique tags
     const tags = new Set<string>()
     sampleData.forEach((board) => {
       board.columns.forEach((column) => {
@@ -73,7 +71,6 @@ export default function KanbanBoard() {
   const handleCreateTask = (newTask: Task) => {
     if (!selectedBoard || !selectedColumn) return
 
-    // Add any new tags to the allTags list
     const newTags = newTask.tags.filter((tag) => !allTags.includes(tag))
     if (newTags.length > 0) {
       setAllTags([...allTags, ...newTags])
@@ -105,7 +102,6 @@ export default function KanbanBoard() {
 
     let movedTask: Task | null = null
 
-    // Find and remove the task from the source column
     const updatedColumns = selectedBoard.columns.map((column) => {
       if (column.id === sourceColumnId) {
         const taskIndex = column.tasks.findIndex((task) => task.id === taskId)
@@ -122,7 +118,6 @@ export default function KanbanBoard() {
 
     if (!movedTask) return
 
-    // Add the task to the target column
     const finalColumns = updatedColumns.map((column) => {
       if (column.id === targetColumnId && movedTask) {
         return {
@@ -146,7 +141,6 @@ export default function KanbanBoard() {
   const handleUpdateTask = (updatedTask: Task) => {
     if (!selectedBoard) return
 
-    // Add any new tags to the allTags list
     const newTags = updatedTask.tags.filter((tag) => !allTags.includes(tag))
     if (newTags.length > 0) {
       setAllTags([...allTags, ...newTags])
@@ -201,7 +195,6 @@ export default function KanbanBoard() {
 
     selectedBoard.columns.forEach((column) => {
       column.tasks.forEach((task) => {
-        // Apply filters
         const matchesSearch =
           searchQuery === "" ||
           task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -242,10 +235,8 @@ export default function KanbanBoard() {
     const column = selectedBoard.columns.find((col) => col.id === columnId)
     if (!column) return
 
-    // Don't allow deletion of default columns
     if (column.isDefault) return
 
-    // Only allow deletion of empty columns
     if (column.tasks.length > 0) return
 
     setColumnToDelete(column)
@@ -279,7 +270,6 @@ export default function KanbanBoard() {
                 const board = boards.find((b) => b.id === value)
                 if (board) {
                   setSelectedBoard(board)
-                  // Reset filters when changing boards
                   setSearchQuery("")
                   setFilterPriority("all")
                   setFilterTag("all")

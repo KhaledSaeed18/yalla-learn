@@ -17,7 +17,6 @@ export default function SummaryForm({ data, updateData }: SummaryFormProps) {
   const [summary, setSummary] = useState(data)
 
   useEffect(() => {
-    // Only update parent data when summary changes and is different from props
     if (summary !== data) {
       updateData(summary)
     }
@@ -28,7 +27,6 @@ export default function SummaryForm({ data, updateData }: SummaryFormProps) {
   }
 
   const generateAISummary = () => {
-    // This would connect to an AI service in a real implementation
     const aiSuggestions = [
       "Results-driven software engineer with 5+ years of experience developing scalable web applications. Proficient in JavaScript, React, and Node.js with a strong focus on code quality and performance optimization.",
       "Detail-oriented UX/UI designer with expertise in creating intuitive user experiences across multiple platforms. Skilled in user research, wireframing, and prototyping with a passion for accessibility and inclusive design.",

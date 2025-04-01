@@ -46,7 +46,6 @@ export default function TaskDetailsDialog({
   const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
-    // Reset form when task changes
     setTitle(task.title)
     setDescription(task.description)
     setPriority(task.priority)
