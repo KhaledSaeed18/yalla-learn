@@ -86,6 +86,10 @@ export function Header() {
             href: "/about",
         },
         {
+            name: "Blog",
+            href: "/blog",
+        },
+        {
             name: "Contact",
             href: "/contact",
         },

@@ -6,7 +6,6 @@ const nextConfig: NextConfig = {
       'www.krasamo.com',
       'api.dicebear.com', // For avatar images
       'images.unsplash.com', // Common image source
-      'res.cloudinary.com', // In case you're using Cloudinary
       'upload.wikimedia.org',
       'picsum.photos',
     ],

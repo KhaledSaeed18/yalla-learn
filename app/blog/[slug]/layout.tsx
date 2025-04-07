@@ -5,7 +5,6 @@ interface BlogPostLayoutProps {
     children: React.ReactNode
 }
 
-// Default metadata for the blog post layout
 export const metadata: Metadata = {
     title: "Blog Post | Blog",
     description: "Read our latest blog post",
