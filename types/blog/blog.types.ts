@@ -6,6 +6,9 @@ export interface BlogUser {
     id: string;
     firstName: string;
     lastName: string;
+    avatar: string | null;
+    bio: string | null;
+    location: string | null;
 }
 
 export interface BlogPost {

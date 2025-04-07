@@ -95,13 +95,13 @@ export default function BlogPostPage() {
 
     const shareToSocial = (platform: string) => {
         if (!post) return;
-        
+
         const title = encodeURIComponent(post.title);
         const url = encodeURIComponent(pageUrl);
         const text = encodeURIComponent(post.excerpt || `Article by ${post.user.firstName} ${post.user.lastName}`);
-        
+
         let shareUrl = '';
-        
+
         switch (platform) {
             case 'twitter':
                 shareUrl = `https://twitter.com/intent/tweet?text=${title}&url=${url}`;
@@ -113,7 +113,7 @@ export default function BlogPostPage() {
                 shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
                 break;
         }
-        
+
         if (shareUrl) {
             window.open(shareUrl, '_blank', 'width=600,height=400');
         }
@@ -204,15 +204,15 @@ export default function BlogPostPage() {
                             <PopoverContent className="w-80 p-4">
                                 <h3 className="font-semibold mb-2">Share this article</h3>
                                 <div className="flex space-x-2 mb-4">
-                                    <Input 
-                                        value={pageUrl} 
-                                        readOnly 
+                                    <Input
+                                        value={pageUrl}
+                                        readOnly
                                         className="text-xs"
                                         onClick={(e) => e.currentTarget.select()}
                                     />
-                                    <Button 
-                                        size="icon" 
-                                        variant="outline" 
+                                    <Button
+                                        size="icon"
+                                        variant="outline"
                                         onClick={handleCopyLink}
                                         title="Copy link"
                                     >
@@ -220,25 +220,25 @@ export default function BlogPostPage() {
                                     </Button>
                                 </div>
                                 <div className="flex justify-center space-x-4">
-                                    <Button 
-                                        size="icon" 
-                                        variant="outline" 
+                                    <Button
+                                        size="icon"
+                                        variant="outline"
                                         onClick={() => shareToSocial('twitter')}
                                         title="Share on Twitter"
                                     >
                                         <TwitterIcon className="h-4 w-4" />
                                     </Button>
-                                    <Button 
-                                        size="icon" 
-                                        variant="outline" 
+                                    <Button
+                                        size="icon"
+                                        variant="outline"
                                         onClick={() => shareToSocial('facebook')}
                                         title="Share on Facebook"
                                     >
                                         <FacebookIcon className="h-4 w-4" />
                                     </Button>
-                                    <Button 
-                                        size="icon" 
-                                        variant="outline" 
+                                    <Button
+                                        size="icon"
+                                        variant="outline"
                                         onClick={() => shareToSocial('linkedin')}
                                         title="Share on LinkedIn"
                                     >
@@ -248,7 +248,7 @@ export default function BlogPostPage() {
                             </PopoverContent>
                         </Popover>
                     </div>
-                    
+
                     <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-center">
                         {post.title}
                     </h1>
@@ -316,14 +316,32 @@ export default function BlogPostPage() {
                 <div className="mt-12 pt-8 border-t">
                     <div className="flex flex-col sm:flex-row items-center gap-4">
                         <Avatar className="h-16 w-16">
-                            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${post.user.firstName} ${post.user.lastName}`} alt={`${post.user.firstName} ${post.user.lastName}`} />
+                            {post.user.avatar ? (
+                                <AvatarImage src={post.user.avatar} alt={`${post.user.firstName} ${post.user.lastName}`} />
+                            ) : (
+                                <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${post.user.firstName} ${post.user.lastName}`} alt={`${post.user.firstName} ${post.user.lastName}`} />
+                            )}
                             <AvatarFallback>{post.user.firstName[0]}{post.user.lastName[0]}</AvatarFallback>
                         </Avatar>
                         <div className="text-center sm:text-left">
                             <h3 className="text-lg font-medium">About {post.user.firstName} {post.user.lastName}</h3>
-                            <p className="text-muted-foreground">
-                                Author of this article
-                            </p>
+                            {post.user.bio && (
+                                <p className="text-sm mt-1">
+                                    {post.user.bio}
+                                </p>
+                            )}
+                            {post.user.location && (
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    <span className="inline-flex items-center">
+                                        {post.user.location}
+                                    </span>
+                                </p>
+                            )}
+                            {!post.user.bio && !post.user.location && (
+                                <p className="text-muted-foreground">
+                                    Author of this article
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>
