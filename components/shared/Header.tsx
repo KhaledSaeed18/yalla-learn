@@ -61,27 +61,6 @@ export function Header() {
             ],
         },
         {
-            name: "Resources",
-            href: "/resources",
-            content: [
-                {
-                    title: "Documentation",
-                    href: "/resources/docs",
-                    description: "Comprehensive guides and references.",
-                },
-                {
-                    title: "Blog",
-                    href: "/resources/blog",
-                    description: "Latest news, tips, and best practices.",
-                },
-                {
-                    title: "Webinars",
-                    href: "/resources/webinars",
-                    description: "Educational sessions and demonstrations.",
-                },
-            ],
-        },
-        {
             name: "About",
             href: "/about",
         },
@@ -194,9 +173,8 @@ export function Header() {
                                             </CollapsibleContent>
                                         </Collapsible>
                                     ) : (
-                                        <>
+                                        <React.Fragment key={item.name}>
                                             <Link
-                                                key={item.name}
                                                 href={item.href}
                                                 className="text-base font-medium transition-colors hover:text-primary"
                                                 onClick={() => setIsOpen(false)}
@@ -204,7 +182,7 @@ export function Header() {
                                                 {item.name}
                                             </Link>
                                             <Separator />
-                                        </>
+                                        </React.Fragment>
                                     ),
                                 )}
                                 <Button asChild className="mt-4">
