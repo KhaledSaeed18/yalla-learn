@@ -6,21 +6,28 @@ import Image from "next/image"
 import Link from "next/link"
 import { format } from "date-fns"
 import { useGetBlogPost } from "@/hooks/blog/useBlogs"
-import { CalendarIcon, ClockIcon, TagIcon, UserIcon } from "lucide-react"
+import { CalendarIcon, ClockIcon, CopyIcon, FacebookIcon, LinkedinIcon, ShareIcon, TagIcon, TwitterIcon, UserIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import Head from "next/head"
+import { toast } from "sonner"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Input } from "@/components/ui/input"
 
 export default function BlogPostPage() {
     const params = useParams<{ slug: string }>()
     const { data: post, isLoading, isError, error } = useGetBlogPost(params.slug)
     const [mounted, setMounted] = useState(false)
+    const [pageUrl, setPageUrl] = useState("")
 
     useEffect(() => {
         setMounted(true)
+        if (typeof window !== 'undefined') {
+            setPageUrl(window.location.href)
+        }
     }, [])
 
     useEffect(() => {
@@ -72,6 +79,72 @@ export default function BlogPostPage() {
         }
     }, [post])
 
+    const handleCopyLink = async () => {
+        try {
+            await navigator.clipboard.writeText(pageUrl);
+            toast('URL copied to clipboard!', {
+                description: "You can now share it manually.",
+            });
+        } catch (error) {
+            console.error("Error copying text:", error);
+            toast('Failed to copy URL.', {
+                description: "Please try again or copy manually.",
+            });
+        }
+    };
+
+    const shareToSocial = (platform: string) => {
+        if (!post) return;
+        
+        const title = encodeURIComponent(post.title);
+        const url = encodeURIComponent(pageUrl);
+        const text = encodeURIComponent(post.excerpt || `Article by ${post.user.firstName} ${post.user.lastName}`);
+        
+        let shareUrl = '';
+        
+        switch (platform) {
+            case 'twitter':
+                shareUrl = `https://twitter.com/intent/tweet?text=${title}&url=${url}`;
+                break;
+            case 'facebook':
+                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+                break;
+            case 'linkedin':
+                shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+                break;
+        }
+        
+        if (shareUrl) {
+            window.open(shareUrl, '_blank', 'width=600,height=400');
+        }
+    };
+
+    const handleShare = async () => {
+        if (!post) return;
+
+        const shareData = {
+            title: post.title,
+            text: post.excerpt || `Article by ${post.user.firstName} ${post.user.lastName}`,
+            url: window.location.href,
+        };
+
+        try {
+            if (navigator.share && navigator.canShare(shareData)) {
+                await navigator.share(shareData);
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                toast('URL copied to clipboard!', {
+                    description: "You can now share it manually.",
+                });
+            }
+        } catch (error) {
+            console.error("Error sharing content:", error);
+            toast('Failed to share content.', {
+                description: "Please try again or copy the link manually.",
+            });
+        }
+    };
+
     if (isLoading) {
         return <BlogPostSkeleton />
     }
@@ -118,8 +191,64 @@ export default function BlogPostPage() {
                     </div>
                 )}
 
-                {/* Header */}
+                {/* Header with Share Button */}
                 <div className="space-y-4">
+                    <div className="flex justify-end mb-2">
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                                    <ShareIcon className="h-4 w-4" />
+                                    Share
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-80 p-4">
+                                <h3 className="font-semibold mb-2">Share this article</h3>
+                                <div className="flex space-x-2 mb-4">
+                                    <Input 
+                                        value={pageUrl} 
+                                        readOnly 
+                                        className="text-xs"
+                                        onClick={(e) => e.currentTarget.select()}
+                                    />
+                                    <Button 
+                                        size="icon" 
+                                        variant="outline" 
+                                        onClick={handleCopyLink}
+                                        title="Copy link"
+                                    >
+                                        <CopyIcon className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                                <div className="flex justify-center space-x-4">
+                                    <Button 
+                                        size="icon" 
+                                        variant="outline" 
+                                        onClick={() => shareToSocial('twitter')}
+                                        title="Share on Twitter"
+                                    >
+                                        <TwitterIcon className="h-4 w-4" />
+                                    </Button>
+                                    <Button 
+                                        size="icon" 
+                                        variant="outline" 
+                                        onClick={() => shareToSocial('facebook')}
+                                        title="Share on Facebook"
+                                    >
+                                        <FacebookIcon className="h-4 w-4" />
+                                    </Button>
+                                    <Button 
+                                        size="icon" 
+                                        variant="outline" 
+                                        onClick={() => shareToSocial('linkedin')}
+                                        title="Share on LinkedIn"
+                                    >
+                                        <LinkedinIcon className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                    
                     <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-center">
                         {post.title}
                     </h1>
