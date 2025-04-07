@@ -251,8 +251,65 @@ button {
 
 .prose h1,
 .prose h2,
-.prose h3 {
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
   color: var(--foreground);
   font-weight: 600;
   line-height: 1.25;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 2rem;
+}
+
+.prose h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.75rem;
+}
+
+.prose h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+}
+
+.prose h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.prose-headings\:font-bold h1,
+.prose-headings\:font-bold h2,
+.prose-headings\:font-bold h3,
+.prose-headings\:font-bold h4,
+.prose-headings\:font-bold h5,
+.prose-headings\:font-bold h6 {
+  font-weight: 700;
+}
+
+.prose-h1\:text-3xl h1 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.prose-h2\:text-2xl h2 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.prose-h3\:text-xl h3 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.prose-h4\:text-lg h4 {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
 }

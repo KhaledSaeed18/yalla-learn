@@ -11,7 +11,7 @@ export const setStoreReference = (store: Store): void => {
     storeReference = store;
 };
 
-const API_BASE_URL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+const API_BASE_URL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5005/api/v1';
 const API_TIMEOUT: number = 30000;
 
 export const axiosInstance = axios.create({

@@ -537,8 +537,10 @@ export default function BlogListingPage() {
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-2">
-                                    <Badge variant="outline" className="text-sm">
-                                        {post.slug || "No Slug available"}
+                                    <Badge variant="outline" className="text-sm px-2 max-w-full">
+                                        <span className="truncate inline-block max-w-full">
+                                            {post.slug || "No Slug available"}
+                                        </span>
                                     </Badge>
                                     <p className="text-sm">{post.excerpt || "No excerpt available"}</p>
                                 </CardContent>
