@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
@@ -10,34 +9,14 @@ import { format } from "date-fns"
 import { useGetBlogPosts } from "@/hooks/blog/useBlogs"
 import { useGetBlogCategories } from "@/hooks/blog/useBlogCategories"
 import type { BlogPost, BlogPostsQueryParams } from "@/types/blog/blog.types"
-import {
-    BookOpen,
-    CalendarDays,
-    ChevronLeft,
-    ChevronRight,
-    Clock,
-    Search,
-    SlidersHorizontal,
-    TagIcon,
-    User,
-    X,
-} from "lucide-react"
+import { BookOpen, CalendarDays, ChevronLeft, ChevronRight, Clock, Search, SlidersHorizontal, TagIcon, User, X } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-    Drawer,
-    DrawerClose,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
-} from "@/components/ui/drawer"
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer"
 import { Label } from "@/components/ui/label"
 
 // Custom debounce hook
@@ -71,7 +50,7 @@ export default function BlogPage() {
     // Search and filter state
     const [searchTerm, setSearchTerm] = useState(() => searchParams.get("search") || "")
     const [inputValue, setInputValue] = useState(() => searchParams.get("search") || "")
-    const debouncedSearchTerm = useDebounce(inputValue, 500) // 500ms debounce delay
+    const debouncedSearchTerm = useDebounce(inputValue, 500)
     const [selectedCategoryId, setSelectedCategoryId] = useState(() => {
         const categoryId = searchParams.get("categoryId")
         return categoryId || "all"
@@ -115,7 +94,6 @@ export default function BlogPage() {
 
         setQueryParams(updatedParams)
 
-        // Update URL params for bookmarking/sharing
         updateUrlWithFilters()
     }, [currentPage, postsPerPage, searchTerm, selectedCategoryId, sortBy, sortOrder])
 
@@ -150,7 +128,7 @@ export default function BlogPage() {
     // Handle search submission
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault()
-        setSearchTerm(inputValue) // Use current input value immediately on form submit
+        setSearchTerm(inputValue)
         setCurrentPage(1)
     }
 
@@ -158,7 +136,7 @@ export default function BlogPage() {
     const clearFilters = () => {
         setSearchTerm("")
         setInputValue("")
-        setSelectedCategoryId("all") // Changed from empty string to "all"
+        setSelectedCategoryId("all")
         setSortBy("publishedAt")
         setSortOrder("desc")
         setCurrentPage(1)
