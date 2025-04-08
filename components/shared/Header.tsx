@@ -1,20 +1,42 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import Link from "next/link"
-import { Menu } from "lucide-react"
+import { Menu, LogOut, LayoutDashboard, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { ChevronDown } from "lucide-react"
 import { ModeToggle } from "../theme/mode-toggle"
 import { Separator } from "../ui/separator"
 import React from "react"
 import SignInButton from "./SigninButton"
+import { useSelector } from "react-redux"
+import { RootState } from "@/redux/store"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { toast } from "sonner"
+import { logout } from "@/lib/auth/logout"
 
 export function Header() {
     const [isOpen, setIsOpen] = useState(false)
+    const { isAuthenticated, user } = useSelector((state: RootState) => state.auth)
+
+    const handleLogout = useCallback(async (e: React.MouseEvent) => {
+        try {
+            e.preventDefault()
+            await logout()
+        } catch (error) {
+            toast.error("Error", {
+                description: error instanceof Error ? error.message : "An unknown error occurred",
+            })
+        }
+    }, []);
+
+    const getUserInitials = () => {
+        if (!user?.firstName || !user?.lastName) return "U";
+        return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`;
+    };
 
     // Navigation data with dropdown content
     const navItems = [
@@ -125,8 +147,56 @@ export function Header() {
                 {/* Right side items */}
                 <div className="flex items-center gap-2 ml-auto">
                     <ModeToggle />
+                    
+                    {/* User Profile or Sign In button */}
                     <div className="hidden md:inline-flex">
-                        <SignInButton />
+                        {isAuthenticated ? (
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="ghost" className="relative p-0 h-10 w-10 rounded-full overflow-hidden">
+                                        <Avatar className="h-full w-full">
+                                            <AvatarImage src={user?.avatar} alt={`${user?.firstName} ${user?.lastName}`} className="object-cover" />
+                                            <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                                        </Avatar>
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-80 p-4" align="end">
+                                    <div className="flex items-center gap-4 pb-4">
+                                        <Avatar className="h-16 w-16">
+                                            <AvatarImage src={user?.avatar} alt={`${user?.firstName} ${user?.lastName}`} />
+                                            <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                                        </Avatar>
+                                        <div className="space-y-1">
+                                            <h4 className="font-semibold">{user?.firstName} {user?.lastName}</h4>
+                                            <p className="text-sm text-muted-foreground">{user?.email}</p>
+                                            <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold">
+                                                {user?.role}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <Separator className="my-2" />
+                                    <div className="space-y-2 pt-2">
+                                        <Link 
+                                            href="/dashboard"
+                                            className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-accent"
+                                        >
+                                            <LayoutDashboard className="h-4 w-4" />
+                                            Dashboard
+                                        </Link>
+                                        <Button 
+                                            variant="ghost" 
+                                            className="flex w-full items-center justify-start gap-2 px-2 text-sm hover:bg-destructive/10 hover:text-destructive" 
+                                            onClick={handleLogout}
+                                        >
+                                            <LogOut className="h-4 w-4" />
+                                            Logout
+                                        </Button>
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
+                        ) : (
+                            <SignInButton />
+                        )}
                     </div>
 
                     {/* Mobile Menu */}
@@ -185,11 +255,49 @@ export function Header() {
                                         </React.Fragment>
                                     ),
                                 )}
-                                <Button asChild className="mt-4">
-                                    <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
-                                        Sign In
-                                    </Link>
-                                </Button>
+                                
+                                {/* Show either auth buttons or user info in mobile menu */}
+                                {isAuthenticated ? (
+                                    <>
+                                        <div className="flex items-center gap-4 py-2">
+                                            <Avatar className="h-10 w-10">
+                                                <AvatarImage src={user?.avatar} alt={`${user?.firstName} ${user?.lastName}`} />
+                                                <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                                            </Avatar>
+                                            <div className="space-y-1">
+                                                <h4 className="font-semibold">{user?.firstName} {user?.lastName}</h4>
+                                                <p className="text-xs text-muted-foreground">{user?.email}</p>
+                                            </div>
+                                        </div>
+                                        <Separator />
+                                        <Link
+                                            href="/dashboard"
+                                            className="flex items-center gap-2 text-base font-medium transition-colors hover:text-primary"
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            <LayoutDashboard className="h-5 w-5" />
+                                            Dashboard
+                                        </Link>
+                                        <Separator />
+                                        <Button 
+                                            variant="ghost" 
+                                            className="flex w-full items-center justify-start gap-2 px-0 text-base font-medium transition-colors hover:text-destructive" 
+                                            onClick={(e) => {
+                                                handleLogout(e);
+                                                setIsOpen(false);
+                                            }}
+                                        >
+                                            <LogOut className="h-5 w-5" />
+                                            Logout
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <Button asChild className="mt-4">
+                                        <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
+                                            Sign In
+                                        </Link>
+                                    </Button>
+                                )}
                             </nav>
                         </SheetContent>
                     </Sheet>

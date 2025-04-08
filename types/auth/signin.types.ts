@@ -5,6 +5,9 @@ export interface User {
     email: string;
     role: string;
     isVerified: boolean;
+    avatar: string,
+    bio: true,
+    location: true
 }
 
 export interface SignInRequest {
