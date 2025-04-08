@@ -30,7 +30,7 @@ export default function CreateColumnDialog({ open, onOpenChange, onCreateColumn,
       title: title.trim(),
       tasks: [],
       boardId,
-      isDefault: false, // Mark as custom column
+      isDefault: false,
     }
 
     onCreateColumn(newColumn)

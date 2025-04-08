@@ -33,21 +33,21 @@ export default function CreateBoardDialog({ open, onOpenChange, onCreateBoard }:
           title: "To Do",
           tasks: [],
           boardId: "",
-          isDefault: true, // Mark as default column
+          isDefault: true, 
         },
         {
           id: uuidv4(),
           title: "In Progress",
           tasks: [],
           boardId: "",
-          isDefault: true, // Mark as default column
+          isDefault: true, 
         },
         {
           id: uuidv4(),
           title: "Done",
           tasks: [],
           boardId: "",
-          isDefault: true, // Mark as default column
+          isDefault: true, 
         },
       ],
     }

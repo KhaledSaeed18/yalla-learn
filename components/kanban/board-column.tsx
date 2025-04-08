@@ -43,7 +43,6 @@ export default function BoardColumn({
     ? column.tasks.filter((task) => filteredTasks.some((ft) => ft.id === task.id))
     : column.tasks
 
-  const canDelete = !column.isDefault && tasksToDisplay.length === 0
   const deleteTooltip = column.isDefault
     ? "Default columns cannot be deleted"
     : tasksToDisplay.length > 0
