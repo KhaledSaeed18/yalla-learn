@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { toast } from "sonner"
 import { logout } from "@/lib/auth/logout"
+import { ColorThemeToggle } from "../theme/color-theme-toggle"
 
 export function Header() {
     const [isOpen, setIsOpen] = useState(false)
@@ -147,6 +148,7 @@ export function Header() {
                 {/* Right side items */}
                 <div className="flex items-center gap-2 ml-auto">
                     <ModeToggle />
+                    <ColorThemeToggle/>
                     
                     {/* User Profile or Sign In button */}
                     <div className="hidden md:inline-flex">

@@ -8,6 +8,7 @@ import QueryProvider from '@/providers/QueryProvider';
 import { Footer } from "@/components/shared/Footer";
 import { FooterWrapper } from "@/components/shared/FooterWrapper";
 import { HeaderWrapper } from "@/components/shared/HeaderWrapper";
+import { ColorThemeProvider } from "@/components/theme/color-theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,11 +44,14 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <HeaderWrapper />
-              <main>
-                {children}
-              </main>
-              <FooterWrapper />
+              <ColorThemeProvider defaultTheme="blue">
+                <HeaderWrapper />
+                <main>
+                  {children}
+                </main>
+                <FooterWrapper />
+                <ThemeAwareToaster />
+              </ColorThemeProvider>
               <ThemeAwareToaster />
             </ThemeProvider>
           </QueryProvider>
