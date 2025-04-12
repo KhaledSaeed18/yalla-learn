@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState, useCallback } from "react"
 
-type ColorTheme = "blue" | "red"
+type ColorTheme = "blue" | "red" | "orange" | "rose" | "green" | "yellow"
 
 interface ColorThemeProviderProps {
     children: React.ReactNode
@@ -25,31 +25,31 @@ export function ColorThemeProvider({
     const [theme, setTheme] = useState<ColorTheme>(defaultTheme)
     const [mounted, setMounted] = useState(false)
 
-    // Available themes
-    const themes: ColorTheme[] = ["blue", "red"]
+    const themes: ColorTheme[] = ["blue", "red", "orange", "rose", "green", "yellow"]
 
-    // Handle initial client-side setup
     useEffect(() => {
         const savedTheme = localStorage.getItem("color-theme") as ColorTheme | null
         if (savedTheme && themes.includes(savedTheme)) {
             setTheme(savedTheme)
         }
         setMounted(true)
-    }, []) // No dependencies here to run only once
+    }, []) 
 
-    // Handle theme changes separately to avoid infinite loops
     useEffect(() => {
         if (!mounted) return;
 
-        // Update the DOM and localStorage when theme changes
         document.documentElement.classList.remove(...themes)
         document.documentElement.classList.add(theme)
         localStorage.setItem("color-theme", theme)
-    }, [theme, mounted]) // Only depends on theme and mounted state
+    }, [theme, mounted]) 
+
+    const setThemeCallback = useCallback((newTheme: ColorTheme) => {
+        setTheme(newTheme)
+    }, []);
 
     const value = {
         theme,
-        setTheme,
+        setTheme: setThemeCallback,
         themes,
     }
 

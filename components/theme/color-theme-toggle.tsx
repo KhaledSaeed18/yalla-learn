@@ -29,7 +29,12 @@ export function ColorThemeToggle() {
                                 transition={{ duration: 0.2 }}
                                 className="absolute inset-0 flex items-center justify-center"
                             >
-                                <Palette className="h-[1.2rem] w-[1.2rem]" />
+                                <div className="relative">
+                                    <Palette className="h-[1.2rem] w-[1.2rem]" />
+                                    <div 
+                                        className={`absolute bottom-0 right-0 h-1.5 w-1.5 rounded-full ${getColorForTheme(theme)}`}
+                                    />
+                                </div>
                             </motion.div>
                         </AnimatePresence>
                     )}
@@ -66,13 +71,20 @@ export function ColorThemeToggle() {
     )
 }
 
-// Helper function to get preview color based on theme
 function getColorForTheme(theme: string): string {
     switch (theme) {
         case "blue":
             return "bg-[oklch(0.623_0.214_259.815)]"
         case "red":
             return "bg-[oklch(0.637_0.237_25.331)]"
+        case "orange":
+            return "bg-[oklch(0.705_0.213_47.604)]"
+        case "rose":
+            return "bg-[oklch(0.645_0.246_16.439)]"
+        case "green":
+            return "bg-[oklch(0.723_0.219_149.579)]"
+        case "yellow":
+            return "bg-[oklch(0.795_0.184_86.047)]"
         default:
             return "bg-[oklch(0.623_0.214_259.815)]"
     }
