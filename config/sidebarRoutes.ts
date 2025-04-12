@@ -1,4 +1,4 @@
-import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout, FileUser } from "lucide-react";
+import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout, FileUser, Settings } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type SidebarRoute = {
@@ -21,6 +21,15 @@ export const sidebarRoutes: SidebarRoute[] = [
         requiresAuth: true,
         roles: ["USER", "ADMIN"],
         activeWhen: (pathname) => pathname === "/dashboard",
+    },
+    {
+        id: "settings",
+        label: "Settings",
+        href: "/dashboard/settings",
+        icon: Settings,
+        requiresAuth: true,
+        roles: ["USER", "ADMIN"],
+        activeWhen: (pathname) => pathname === "/dashboard/settings",
     },
     {
         id: "kanban",
