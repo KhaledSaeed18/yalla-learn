@@ -9,6 +9,7 @@ import { Footer } from "@/components/shared/Footer";
 import { FooterWrapper } from "@/components/shared/FooterWrapper";
 import { HeaderWrapper } from "@/components/shared/HeaderWrapper";
 import { ColorThemeProvider } from "@/components/theme/color-theme-provider";
+import { FontSizeProvider } from "@/components/theme/font-size-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,12 +46,14 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <ColorThemeProvider defaultTheme="blue">
-                <HeaderWrapper />
-                <main>
-                  {children}
-                </main>
-                <FooterWrapper />
-                <ThemeAwareToaster />
+                <FontSizeProvider defaultSize="medium">
+                  <HeaderWrapper />
+                  <main>
+                    {children}
+                  </main>
+                  <FooterWrapper />
+                  <ThemeAwareToaster />
+                </FontSizeProvider>
               </ColorThemeProvider>
               <ThemeAwareToaster />
             </ThemeProvider>

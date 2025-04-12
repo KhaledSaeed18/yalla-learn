@@ -3,7 +3,8 @@
 import * as React from "react"
 import { useTheme } from "next-themes"
 import { useColorTheme } from "@/components/theme/color-theme-provider"
-import { Moon, Sun, Laptop, Check } from "lucide-react"
+import { useFontSize } from "@/components/theme/font-size-provider"
+import { Moon, Sun, Laptop, Check, Type } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
@@ -30,15 +31,19 @@ function AppearanceSettings() {
             </CardHeader>
             <CardContent>
                 <Tabs defaultValue="mode" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 mb-8">
+                    <TabsList className="grid w-full grid-cols-3 mb-8">
                         <TabsTrigger value="mode">Mode</TabsTrigger>
                         <TabsTrigger value="color">Color</TabsTrigger>
+                        <TabsTrigger value="fontsize">Font Size</TabsTrigger>
                     </TabsList>
                     <TabsContent value="mode">
                         <ThemeModeSelector />
                     </TabsContent>
                     <TabsContent value="color">
                         <ThemeColorSelector />
+                    </TabsContent>
+                    <TabsContent value="fontsize">
+                        <FontSizeSelector />
                     </TabsContent>
                 </Tabs>
             </CardContent>
@@ -162,6 +167,65 @@ function ThemeColorSelector() {
                         </button>
                     )
                 })}
+            </div>
+        </div>
+    )
+}
+
+function FontSizeSelector() {
+    const { fontSize, setFontSize, fontSizes } = useFontSize()
+    const [mounted, setMounted] = React.useState(false)
+
+    React.useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    if (!mounted) return null
+
+    const sizes = [
+        { id: "small", label: "Small", textClass: "text-xs" },
+        { id: "medium", label: "Medium", textClass: "text-sm" },
+        { id: "large", label: "Large", textClass: "text-base" }
+    ]
+
+    return (
+        <div className="space-y-4">
+            <h3 className="text-lg font-medium">Choose font size</h3>
+            <div className="grid gap-4 sm:grid-cols-3">
+                {sizes.map((size) => {
+                    const isActive = fontSize === size.id
+
+                    return (
+                        <button
+                            key={size.id}
+                            className={`
+                                relative flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-all
+                                ${isActive
+                                    ? 'border-primary bg-primary/5'
+                                    : 'border-border hover:border-primary/30 hover:bg-primary/5'}
+                            `}
+                            onClick={() => setFontSize(size.id as any)}
+                        >
+                            <div className={`flex items-center justify-center h-12 w-12 rounded-full ${isActive ? 'bg-primary/20' : 'bg-muted'}`}>
+                                <Type className={`h-6 w-6 ${isActive ? 'text-primary' : 'opacity-70'}`} />
+                            </div>
+                            <div className="flex flex-col items-center">
+                                <span className={`${size.textClass} font-medium`}>A</span>
+                                <span className="text-sm font-medium mt-1">{size.label}</span>
+                            </div>
+                            {isActive && (
+                                <div className="absolute right-2 top-2 text-primary">
+                                    <Check className="h-4 w-4" />
+                                </div>
+                            )}
+                        </button>
+                    )
+                })}
+            </div>
+            <div className="mt-4 p-4 bg-muted rounded-lg">
+                <p className="text-sm mb-2">Preview:</p>
+                <h4 className="text-xl font-medium mb-2">This is a heading</h4>
+                <p>This is how text will appear throughout the application with your selected font size.</p>
             </div>
         </div>
     )

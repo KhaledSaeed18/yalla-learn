@@ -4,7 +4,29 @@
 
 @custom-variant dark (&:is(.dark *));
 
+:root.font-size-small {
+  --font-size-multiplier: 0.875;
+}
+
+:root.font-size-medium {
+  --font-size-multiplier: 1;
+}
+
+:root.font-size-large {
+  --font-size-multiplier: 1.125;
+}
+
 :root {
+  --text-xs: calc(0.75rem * var(--font-size-multiplier, 1));
+  --text-sm: calc(0.875rem * var(--font-size-multiplier, 1));
+  --text-base: calc(1rem * var(--font-size-multiplier, 1));
+  --text-lg: calc(1.125rem * var(--font-size-multiplier, 1));
+  --text-xl: calc(1.25rem * var(--font-size-multiplier, 1));
+  --text-2xl: calc(1.5rem * var(--font-size-multiplier, 1));
+  --text-3xl: calc(1.875rem * var(--font-size-multiplier, 1));
+  --text-4xl: calc(2.25rem * var(--font-size-multiplier, 1));
+  --text-5xl: calc(3rem * var(--font-size-multiplier, 1));
+  --text-7xl: calc(4.5rem * var(--font-size-multiplier, 1));
   --radius: 0.5rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
