@@ -8,6 +8,7 @@ import { Moon, Sun, Laptop, Check, Type } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
 
 export default function SettingsPage() {
     return (
@@ -21,6 +22,26 @@ export default function SettingsPage() {
 }
 
 function AppearanceSettings() {
+    const searchParams = useSearchParams()
+    const router = useRouter()
+    const pathname = usePathname()
+
+    const tabMap = {
+        "mode": "mode",
+        "color": "color",
+        "font-size": "fontsize"
+    }
+
+    const currentTab = searchParams.get("tab") || "mode"
+    const activeTab = tabMap[currentTab as keyof typeof tabMap] || "mode"
+
+    const handleTabChange = (value: string) => {
+        const urlValue = Object.entries(tabMap).find(([key, val]) => val === value)?.[0] || "mode"
+        const params = new URLSearchParams(searchParams)
+        params.set("tab", urlValue)
+        router.push(`${pathname}?${params.toString()}`)
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -30,7 +51,7 @@ function AppearanceSettings() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <Tabs defaultValue="mode" className="w-full">
+                <Tabs defaultValue={activeTab} value={activeTab} className="w-full" onValueChange={handleTabChange}>
                     <TabsList className="grid w-full grid-cols-3 mb-8">
                         <TabsTrigger value="mode">Mode</TabsTrigger>
                         <TabsTrigger value="color">Color</TabsTrigger>
