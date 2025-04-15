@@ -1,4 +1,4 @@
-import { api, axiosInstance } from '@/lib/api/baseAPI';
+import { api } from '@/lib/api/baseAPI';
 import { io, Socket } from 'socket.io-client';
 import { toast } from 'sonner';
 

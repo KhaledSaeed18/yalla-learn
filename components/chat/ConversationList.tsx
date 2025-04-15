@@ -1,4 +1,3 @@
-// src/components/chat/ConversationList.tsx
 import React from 'react';
 import { useChat } from '@/context/ChatContext';
 import Image from 'next/image';

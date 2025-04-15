@@ -1,4 +1,3 @@
-// src/components/chat/MessageInput.tsx
 import React, { useState } from 'react';
 import { useChat } from '@/context/ChatContext';
 

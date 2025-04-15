@@ -1,5 +1,4 @@
 "use client";
-// src/contexts/ChatContext.tsx
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { chatService } from '@/services/chat/chatService';
@@ -144,7 +143,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
             // Update unread counts
             const newUnreadCounts = { ...unreadCounts };
-            newConversations.forEach((conv) => {
+            newConversations.forEach((conv: any) => {
                 newUnreadCounts[conv._id] = conv.unreadCount || 0;
             });
             setUnreadCounts(newUnreadCounts);

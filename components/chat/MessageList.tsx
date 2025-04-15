@@ -1,4 +1,3 @@
-// src/components/chat/MessageList.tsx
 import React, { useRef, useEffect } from 'react';
 import { useChat } from '@/context/ChatContext';
 import { formatRelative } from 'date-fns';
