@@ -10,6 +10,7 @@ import { FooterWrapper } from "@/components/shared/FooterWrapper";
 import { HeaderWrapper } from "@/components/shared/HeaderWrapper";
 import { ColorThemeProvider } from "@/components/theme/color-theme-provider";
 import { FontSizeProvider } from "@/components/theme/font-size-provider";
+import { ChatProvider } from "@/context/ChatContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,24 +40,26 @@ export default function RootLayout({
       >
         <ReduxProvider>
           <QueryProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <ColorThemeProvider defaultTheme="blue">
-                <FontSizeProvider defaultSize="medium">
-                  <HeaderWrapper />
-                  <main>
-                    {children}
-                  </main>
-                  <FooterWrapper />
-                  <ThemeAwareToaster />
-                </FontSizeProvider>
-              </ColorThemeProvider>
-              <ThemeAwareToaster />
-            </ThemeProvider>
+            <ChatProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <ColorThemeProvider defaultTheme="blue">
+                  <FontSizeProvider defaultSize="medium">
+                    <HeaderWrapper />
+                    <main>
+                      {children}
+                    </main>
+                    <FooterWrapper />
+                    <ThemeAwareToaster />
+                  </FontSizeProvider>
+                </ColorThemeProvider>
+                <ThemeAwareToaster />
+              </ThemeProvider>
+            </ChatProvider>
           </QueryProvider>
         </ReduxProvider>
       </body>
