@@ -5,12 +5,10 @@ import ReduxProvider from "@/redux/Provider";
 import { ThemeAwareToaster } from "@/components/theme/theme-aware-toaster";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import QueryProvider from '@/providers/QueryProvider';
-import { Footer } from "@/components/shared/Footer";
 import { FooterWrapper } from "@/components/shared/FooterWrapper";
 import { HeaderWrapper } from "@/components/shared/HeaderWrapper";
 import { ColorThemeProvider } from "@/components/theme/color-theme-provider";
 import { FontSizeProvider } from "@/components/theme/font-size-provider";
-import { ChatProvider } from "@/context/ChatContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,7 +38,6 @@ export default function RootLayout({
       >
         <ReduxProvider>
           <QueryProvider>
-            <ChatProvider>
               <ThemeProvider
                 attribute="class"
                 defaultTheme="system"
@@ -59,7 +56,6 @@ export default function RootLayout({
                 </ColorThemeProvider>
                 <ThemeAwareToaster />
               </ThemeProvider>
-            </ChatProvider>
           </QueryProvider>
         </ReduxProvider>
       </body>
