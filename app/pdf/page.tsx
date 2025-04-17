@@ -19,7 +19,6 @@ export default function Chat() {
             } else if (error && typeof error === 'object') {
                 errorMessage = JSON.stringify(error);
             }
-
             toast.error('Error', {
                 description: errorMessage,
                 duration: 5000,
@@ -31,7 +30,6 @@ export default function Chat() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFormSubmit = async (event: React.FormEvent) => {
-        // Clear previous errors
         setErrorDetails(null);
 
         try {
