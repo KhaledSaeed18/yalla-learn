@@ -62,18 +62,60 @@ export async function POST(req: Request) {
 
         // Try to parse the response as JSON
         try {
-            // First, find JSON content if it's embedded in text
-            const jsonMatch = response.match(/```json\s*([\s\S]*?)\s*```/) ||
-                response.match(/\{[\s\S]*"root"[\s\S]*\}/);
+            // Check if the response is already a JSON object with a 'text' field
+            let jsonContent = response;
 
-            const jsonContent = jsonMatch ? jsonMatch[1] || jsonMatch[0] : response;
+            // Handle case where response is an object with a text property containing the JSON
+            if (typeof response === 'object' && response !== null && 'text' in response) {
+                jsonContent = response.text;
+            }
+
+            // If we're working with a string, extract JSON content if embedded in text
+            if (typeof jsonContent === 'string') {
+                // First, try to match JSON code blocks (```json ... ```)
+                const jsonMatch = jsonContent.match(/```json\s*([\s\S]*?)\s*```/) ||
+                    // Then try to match any JSON-like structure with "root"
+                    jsonContent.match(/\{[\s\S]*"root"[\s\S]*\}/);
+
+                if (jsonMatch) {
+                    jsonContent = jsonMatch[1] || jsonMatch[0];
+                }
+            }
+
+            // Ensure we're working with a string before attempting to parse
+            if (typeof jsonContent !== 'string') {
+                jsonContent = JSON.stringify(jsonContent);
+            }
+
             const parsedResponse = JSON.parse(jsonContent.trim());
+
+            // Verify the structure has the expected format with a "root" property
+            if (!parsedResponse.root) {
+                throw new Error("Invalid mind map structure - missing root node");
+            }
 
             return new Response(JSON.stringify(parsedResponse), {
                 headers: { 'Content-Type': 'application/json' }
             });
         } catch (parseError) {
             console.error('Failed to parse AI response as JSON:', parseError);
+
+            // For debugging purposes, log the response structure
+            console.log('Response type:', typeof response);
+            console.log('Response preview:',
+                typeof response === 'string'
+                    ? response.substring(0, 200)
+                    : JSON.stringify(response).substring(0, 200)
+            );
+
+            // If the response is an object with a valid root structure already, try to use it directly
+            if (typeof response === 'object' && response !== null &&
+                response.root && typeof response.root === 'object') {
+                return new Response(JSON.stringify(response), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+
             // Return the raw text if parsing fails
             return new Response(JSON.stringify({
                 error: 'Failed to generate structured mind map',
