@@ -27,32 +27,30 @@ export async function POST(req: Request) {
 
         // Enhance the prompt to get a structured response suitable for mind maps
         const enhancedPrompt = `
-      Create a structured mind map for the following topic: "${prompt}"
-      
-      Format the result as a JSON object with the following structure:
-      {
+        Create a structured mind map for the following topic: "${prompt}"
+        Format the result as a JSON object with the following structure:
+        {
         "root": {
-          "text": "Main Topic",
-          "children": [
+            "text": "Main Topic",
+            "children": [
             {
-              "text": "Subtopic 1",
-              "children": [
+                "text": "Subtopic 1",
+                "children": [
                 {"text": "Detail 1.1"},
                 {"text": "Detail 1.2"}
-              ]
+                ]
             },
             {
-              "text": "Subtopic 2",
-              "children": [
+                "text": "Subtopic 2",
+                "children": [
                 {"text": "Detail 2.1"},
                 {"text": "Detail 2.2"}
-              ]
+                ]
             }
-          ]
+            ]
         }
-      }
-      
-      Ensure the mind map is comprehensive, well-structured, and logical. The JSON should be valid and properly nested.
+        }
+        Ensure the mind map is comprehensive, well-structured, and logical. The JSON should be valid and properly nested.
     `;
 
         const response = await generateText({
