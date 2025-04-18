@@ -61,7 +61,7 @@ export async function POST(req: Request) {
         // Try to parse the response as JSON
         try {
             // Check if the response is already a JSON object with a 'text' field
-            let jsonContent = response;
+            let jsonContent: string | any = response;
 
             // Handle case where response is an object with a text property containing the JSON
             if (typeof response === 'object' && response !== null && 'text' in response) {
@@ -102,16 +102,23 @@ export async function POST(req: Request) {
             console.log('Response type:', typeof response);
             console.log('Response preview:',
                 typeof response === 'string'
-                    ? response.substring(0, 200)
+                    ? (response as string).substring(0, 200)
                     : JSON.stringify(response).substring(0, 200)
             );
 
             // If the response is an object with a valid root structure already, try to use it directly
             if (typeof response === 'object' && response !== null &&
-                response.root && typeof response.root === 'object') {
-                return new Response(JSON.stringify(response), {
-                    headers: { 'Content-Type': 'application/json' }
-                });
+                'text' in response && typeof response.text === 'string') {
+                try {
+                    const parsedText = JSON.parse(response.text);
+                    if (parsedText.root && typeof parsedText.root === 'object') {
+                        return new Response(JSON.stringify(parsedText), {
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                    }
+                } catch (innerParseError) {
+                    // Continue to the fallback response if parsing fails
+                }
             }
 
             // Return the raw text if parsing fails
