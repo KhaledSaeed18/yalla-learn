@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Loader2, Send, Download, RefreshCw } from "lucide-react";
+import { Loader2, Send, Download, RefreshCw, ZoomIn, ZoomOut, RotateCw, Maximize, Minimize } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Tree, TreeNode } from "react-organizational-chart";
 import { motion } from "framer-motion";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -33,6 +34,7 @@ export default function MindMapGenerator() {
     const [mindMapData, setMindMapData] = useState<MindMapData | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [exportName, setExportName] = useState("mindmap");
+    const [isFullScreen, setIsFullScreen] = useState(false);
     const mindMapRef = useRef<HTMLDivElement>(null);
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -96,6 +98,10 @@ export default function MindMapGenerator() {
         document.body.appendChild(downloadAnchorNode);
         downloadAnchorNode.click();
         downloadAnchorNode.remove();
+    };
+
+    const toggleFullScreen = () => {
+        setIsFullScreen(!isFullScreen);
     };
 
     // Custom recursive component to render the mind map nodes
@@ -187,7 +193,7 @@ export default function MindMapGenerator() {
                 )}
 
                 {mindMapData && (
-                    <Card>
+                    <Card className={isFullScreen ? "fixed inset-0 z-50 rounded-none" : ""}>
                         <CardHeader>
                             <div className="flex justify-between items-center">
                                 <CardTitle>Your Mind Map</CardTitle>
@@ -202,6 +208,13 @@ export default function MindMapGenerator() {
                                         <Download className="mr-2 h-4 w-4" />
                                         Export
                                     </Button>
+                                    <Button variant="outline" onClick={toggleFullScreen}>
+                                        {isFullScreen ? (
+                                            <Minimize className="h-4 w-4" />
+                                        ) : (
+                                            <Maximize className="h-4 w-4" />
+                                        )}
+                                    </Button>
                                 </div>
                             </div>
                         </CardHeader>
@@ -214,28 +227,66 @@ export default function MindMapGenerator() {
                                 <TabsContent value="visual">
                                     <div
                                         ref={mindMapRef}
-                                        className="overflow-auto p-4 border rounded-md bg-muted/30 min-h-[400px]"
+                                        className="overflow-hidden p-4 border rounded-md bg-muted/30"
+                                        style={{
+                                            minHeight: isFullScreen ? 'calc(100vh - 200px)' : '500px',
+                                            height: isFullScreen ? 'calc(100vh - 200px)' : 'auto'
+                                        }}
                                     >
-                                        <div className="flex justify-center">
-                                            <Tree
-                                                lineWidth="2px"
-                                                lineColor="var(--primary)"
-                                                lineBorderRadius="10px"
-                                                label={
-                                                    <motion.div
-                                                        initial={{ opacity: 0 }}
-                                                        animate={{ opacity: 1 }}
-                                                        className="p-4 rounded-xl bg-primary text-primary-foreground shadow-lg"
+                                        <TransformWrapper
+                                            initialScale={1}
+                                            minScale={0.3}
+                                            maxScale={2.5}
+                                            centerOnInit={true}
+                                            wheel={{ step: 0.05 }}
+                                        >
+                                            {({ zoomIn, zoomOut, resetTransform }) => (
+                                                <>
+                                                    <div className="absolute bottom-4 right-4 z-10 flex gap-2 bg-background/80 p-2 rounded-lg shadow-md backdrop-blur-sm">
+                                                        <Button variant="outline" size="icon" onClick={() => zoomIn()}>
+                                                            <ZoomIn className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button variant="outline" size="icon" onClick={() => zoomOut()}>
+                                                            <ZoomOut className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button variant="outline" size="icon" onClick={() => resetTransform()}>
+                                                            <RotateCw className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                    <TransformComponent
+                                                        wrapperStyle={{
+                                                            width: '100%',
+                                                            height: '100%'
+                                                        }}
+                                                        contentStyle={{
+                                                            width: '100%',
+                                                            height: '100%'
+                                                        }}
                                                     >
-                                                        <div className="font-bold">{mindMapData.root.text}</div>
-                                                    </motion.div>
-                                                }
-                                            >
-                                                {mindMapData.root.children?.map((child, index) =>
-                                                    renderNode(child, index, 1)
-                                                )}
-                                            </Tree>
-                                        </div>
+                                                        <div className="flex justify-center items-center h-full min-w-full">
+                                                            <Tree
+                                                                lineWidth="2px"
+                                                                lineColor="var(--primary)"
+                                                                lineBorderRadius="10px"
+                                                                label={
+                                                                    <motion.div
+                                                                        initial={{ opacity: 0 }}
+                                                                        animate={{ opacity: 1 }}
+                                                                        className="p-4 rounded-xl bg-primary text-primary-foreground shadow-lg"
+                                                                    >
+                                                                        <div className="font-bold">{mindMapData.root.text}</div>
+                                                                    </motion.div>
+                                                                }
+                                                            >
+                                                                {mindMapData.root.children?.map((child, index) =>
+                                                                    renderNode(child, index, 1)
+                                                                )}
+                                                            </Tree>
+                                                        </div>
+                                                    </TransformComponent>
+                                                </>
+                                            )}
+                                        </TransformWrapper>
                                     </div>
                                 </TabsContent>
                                 <TabsContent value="json">
