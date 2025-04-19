@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
-import { Menu, LogOut, LayoutDashboard, ChevronDown, FileImage, Image, MessageSquare, Network, Languages, Sparkles } from "lucide-react"
+import { Menu, LogOut, LayoutDashboard, ChevronDown, FileImage, Image, MessageSquare, Network, Languages, Sparkles, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
@@ -42,31 +42,6 @@ export function Header() {
     // Navigation data with dropdown content
     const navItems = [
         {
-            name: "Products",
-            href: "/products",
-            icon: <FileImage className="size-5 mr-2 text-primary" />,
-            content: [
-                {
-                    title: "Product A",
-                    href: "/products/a",
-                    description: "Our flagship product with amazing features.",
-                    icon: <FileImage className="size-5 mr-2 text-primary" />
-                },
-                {
-                    title: "Product B",
-                    href: "/products/b",
-                    description: "Advanced solution for professional users.",
-                    icon: <FileImage className="size-5 mr-2 text-primary" />
-                },
-                {
-                    title: "Product C",
-                    href: "/products/c",
-                    description: "Entry-level option with essential features.",
-                    icon: <FileImage className="size-5 mr-2 text-primary" />
-                },
-            ],
-        },
-        {
             name: "AI Tools",
             href: "/ai-tools",
             icon: <Sparkles className="size-5 mr-2 text-primary" />,
@@ -75,7 +50,7 @@ export function Header() {
                     title: "PDF AI Chat",
                     href: "/pdf",
                     description: "Chat with PDF documents using AI technology.",
-                    icon: <MessageSquare className="size-5 mr-2 text-primary" />
+                    icon: <FileText className="size-5 mr-2 text-primary" />
                 },
                 {
                     title: "Image Generation",
