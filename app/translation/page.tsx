@@ -379,8 +379,8 @@ const Translation = () => {
                                 </CardContent>
 
                                 <CardFooter className="flex flex-col items-start gap-4 w-full">
-                                    <div className="flex justify-around items-end w-full">
-                                        <div className="">
+                                    <div className="flex flex-col lg:flex-row justify-around items-center w-full gap-4">
+                                        <div className="w-full sm:w-auto">
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <Button
@@ -388,7 +388,7 @@ const Translation = () => {
                                                         role="combobox"
                                                         aria-expanded={open}
                                                         disabled={autoDetect}
-                                                        className="w-[180px] justify-between"
+                                                        className="w-[140px] sm:w-[180px] justify-between"
                                                     >
                                                         {sourceLanguage
                                                             ? languageOptions.find((language) => language.value === sourceLanguage)?.label
@@ -426,7 +426,7 @@ const Translation = () => {
                                             </Popover>
                                         </div>
 
-                                        <div className="">
+                                        <div className="flex items-center">
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
@@ -438,14 +438,14 @@ const Translation = () => {
                                             </Button>
                                         </div>
 
-                                        <div className="">
+                                        <div className="w-full sm:w-auto">
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <Button
                                                         variant="outline"
                                                         role="combobox"
                                                         aria-expanded={open}
-                                                        className="w-[180px] justify-between"
+                                                        className="w-[140px] sm:w-[180px] justify-between"
                                                     >
                                                         {targetLanguage
                                                             ? languageOptions.find((language) => language.value === targetLanguage)?.label
@@ -629,11 +629,11 @@ const Translation = () => {
                                                 item.isFavorite ? "border-amber-300 dark:border-amber-700" : "",
                                             )}
                                         >
-                                            <CardContent className="py-0 px-4">
+                                            <CardContent className="py-3 px-4">
                                                 <div className="flex flex-col gap-2">
-                                                    <div className="flex justify-between items-start">
-                                                        <div className="flex items-center gap-2">
-                                                            <Badge variant="outline">
+                                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            <Badge variant="outline" className="text-xs whitespace-normal">
                                                                 {getLanguageName(item.sourceLanguage)} → {getLanguageName(item.targetLanguage)}
                                                             </Badge>
                                                             <span className="text-xs text-muted-foreground">
