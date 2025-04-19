@@ -5,7 +5,7 @@ import { useChat } from "@ai-sdk/react"
 import { useRef, useState, useEffect } from "react"
 import Image from "next/image"
 import { toast } from "sonner"
-import { FileUp, Send, X, Loader2, MessageSquare, FileText } from 'lucide-react'
+import { FileUp, Send, X, Loader2, MessageSquare, FileText, Copy, CheckCircle } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
@@ -71,6 +71,7 @@ export default function Chat() {
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const messagesContainerRef = useRef<HTMLDivElement>(null)
     const [showScrollToTop, setShowScrollToTop] = useState(false)
+    const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
     const scrollToBottom = () => {
         if (messagesContainerRef.current) {
@@ -84,6 +85,23 @@ export default function Chat() {
             messagesContainerRef.current.scrollTop = 0;
         }
     }
+
+    const copyToClipboard = (text: string, messageId: string) => {
+        navigator.clipboard.writeText(text)
+            .then(() => {
+                setCopiedMessageId(messageId);
+                toast.success("Copied to clipboard");
+                
+                // Reset the copied state after 2 seconds
+                setTimeout(() => {
+                    setCopiedMessageId(null);
+                }, 2000);
+            })
+            .catch(err => {
+                console.error('Failed to copy text: ', err);
+                toast.error("Failed to copy text");
+            });
+    };
 
     // Check scroll position to show/hide scroll-to-top button
     useEffect(() => {
@@ -184,9 +202,23 @@ export default function Chat() {
                                             "flex flex-col max-w-[80%] rounded-lg p-4",
                                             message.role === "user"
                                                 ? "ml-auto bg-primary text-primary-foreground"
-                                                : "bg-card border border-border shadow-sm",
+                                                : "bg-card border border-border shadow-sm relative",
                                         )}
                                     >
+                                        {message.role === "assistant" && (
+                                            <Button 
+                                                variant="ghost" 
+                                                size="icon" 
+                                                className="absolute top-2 right-2 h-6 w-6 opacity-70 hover:opacity-100"
+                                                onClick={() => copyToClipboard(message.content, message.id)}
+                                                aria-label="Copy message"
+                                            >
+                                                {copiedMessageId === message.id ? 
+                                                    <CheckCircle className="h-4 w-4" /> : 
+                                                    <Copy className="h-4 w-4" />
+                                                }
+                                            </Button>
+                                        )}
                                         <div className="whitespace-pre-wrap">
                                             {formatMessageText(message.content)}
                                         </div>
