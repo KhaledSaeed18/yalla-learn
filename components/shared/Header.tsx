@@ -102,7 +102,9 @@ export function Header() {
                                 <NavigationMenuItem key={item.name}>
                                     {item.content ? (
                                         <>
-                                            <NavigationMenuTrigger>{item.icon} {item.name}</NavigationMenuTrigger>
+                                            <NavigationMenuTrigger>
+                                                <span className="animate-pulse">{item.icon}</span>{item.name}
+                                            </NavigationMenuTrigger>
                                             <NavigationMenuContent>
                                                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                                                     {item.content.map((subItem) => (
