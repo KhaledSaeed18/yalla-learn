@@ -49,27 +49,27 @@ export function Header() {
                 {
                     title: "PDF AI Chat",
                     href: "/pdf",
-                    description: "Chat with PDF documents using AI technology.",
+                    description: "Chat with PDFs - summarize, search and extract info instantly using AI.",
                     icon: <FileText className="size-5 mr-2 text-primary" />
                 },
                 {
-                    title: "Image Generation",
+                    title: "Image AI Chat",
                     href: "/image",
-                    description: "Generate images from text descriptions using AI.",
+                    description: "Upload an image and chat with AI to explore, analyze, and understand it.",
                     icon: <Image className="size-5 mr-2 text-primary" />
                 },
                 {
                     title: "Mindmap Creation",
                     href: "/mindmap",
-                    description: "Create visual mindmaps from text input using AI.",
+                    description: "Turn ideas into clear, visual mindmaps in seconds with AI.",
                     icon: <Network className="size-5 mr-2 text-primary" />
                 },
                 {
                     title: "Translation",
                     href: "/translation",
-                    description: "Translate text to over 130 languages using advanced AI.",
+                    description: "Translate text into 130+ languages instantly and accurately.",
                     icon: <Languages className="size-5 mr-2 text-primary" />
-                },
+                }
             ],
         },
         {
