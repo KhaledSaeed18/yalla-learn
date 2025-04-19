@@ -629,7 +629,7 @@ const Translation = () => {
                                                 item.isFavorite ? "border-amber-300 dark:border-amber-700" : "",
                                             )}
                                         >
-                                            <CardContent className="p-4">
+                                            <CardContent className="py-0 px-4">
                                                 <div className="flex flex-col gap-2">
                                                     <div className="flex justify-between items-start">
                                                         <div className="flex items-center gap-2">
