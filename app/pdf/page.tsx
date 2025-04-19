@@ -12,14 +12,12 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 
 export default function Chat() {
-    const [errorDetails, setErrorDetails] = useState<string | null>(null)
     const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
         api: "/api/chat",
         onError: (error) => {
             let errorMessage = "An error occurred while sending your message"
             if (error instanceof Error) {
                 errorMessage = error.message
-                setErrorDetails(error.stack || null)
             } else if (typeof error === "string") {
                 errorMessage = error
             } else if (error && typeof error === "object") {
@@ -38,12 +36,10 @@ export default function Chat() {
 
     const handleFormSubmit = async (event: React.FormEvent) => {
         event.preventDefault()
-        setErrorDetails(null)
 
         if (!input.trim() && (!files || files.length === 0)) {
             return
         }
-
         try {
             await handleSubmit(event, {
                 experimental_attachments: files,
@@ -97,19 +93,13 @@ export default function Chat() {
             </div>
 
             {/* Chat container */}
-            <Card className="flex-1 overflow-hidden mb-4 p-0">
+            <Card className="flex-1 overflow-hidden mb-8 p-0">
                 <CardContent className="p-0 overflow-y-auto">
                     <div className="p-4 space-y-6">
                         {error && (
                             <div className="p-4 mb-4 text-destructive bg-destructive/10 rounded-md">
                                 <div className="font-semibold">Error:</div>
                                 <div>{error.message || "Something went wrong"}</div>
-                                {errorDetails && (
-                                    <details className="mt-2">
-                                        <summary className="cursor-pointer text-sm">Technical details</summary>
-                                        <pre className="text-xs mt-1 bg-destructive/20 p-2 overflow-auto max-h-40 rounded">{errorDetails}</pre>
-                                    </details>
-                                )}
                             </div>
                         )}
 
