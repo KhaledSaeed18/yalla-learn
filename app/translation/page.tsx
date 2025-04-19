@@ -10,21 +10,7 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import {
-    Loader2,
-    Copy,
-    Volume2,
-    Trash2,
-    History,
-    Star,
-    StarOff,
-    FlipHorizontalIcon as SwapHorizontal,
-    Check,
-    MoonStar,
-    SunMedium,
-    Sparkles,
-    Languages,
-} from "lucide-react"
+import { Loader2, Copy, Volume2, Trash2, History, Star, StarOff, Sparkles, Languages, Check } from "lucide-react"
 import { toast } from "sonner"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
