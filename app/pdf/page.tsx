@@ -107,21 +107,21 @@ export default function Chat() {
                 setSpeakingMessageId(null);
                 return;
             }
-            
+
             window.speechSynthesis.cancel();
-            
+
             const utterance = new SpeechSynthesisUtterance(text);
-            
+
             setSpeakingMessageId(messageId);
-            
+
             utterance.onend = () => {
                 setSpeakingMessageId(null);
             };
-            
+
             utterance.onerror = () => {
                 setSpeakingMessageId(null);
             };
-            
+
             window.speechSynthesis.speak(utterance);
         } else {
             toast.error("Text-to-speech is not supported in your browser");
@@ -205,7 +205,7 @@ export default function Chat() {
     }
 
     return (
-        <div className="flex flex-col w-full max-w-6xl mx-auto">
+        <div className="flex flex-col w-full container px-4 mx-auto">
             {/* Chat container */}
             <Card className="flex-1 overflow-hidden my-6 p-0 relative border-primary">
                 <CardContent className="p-0 overflow-y-auto h-[60vh]" ref={messagesContainerRef}>
@@ -237,13 +237,13 @@ export default function Chat() {
                                     >
                                         {message.role === "assistant" && (
                                             <div className="absolute top-2 right-2 flex space-x-1">
-                                                <Button 
+                                                <Button
                                                     variant={speakingMessageId === message.id ? "default" : "ghost"}
-                                                    size="icon" 
+                                                    size="icon"
                                                     className={cn(
                                                         "h-6 w-6 transition-all",
-                                                        speakingMessageId === message.id 
-                                                            ? "bg-primary text-primary-foreground" 
+                                                        speakingMessageId === message.id
+                                                            ? "bg-primary text-primary-foreground"
                                                             : "opacity-70 hover:opacity-100"
                                                     )}
                                                     onClick={() => speakText(message.content, message.id)}
@@ -251,16 +251,16 @@ export default function Chat() {
                                                 >
                                                     <Volume2 className="h-4 w-4" />
                                                 </Button>
-                                                
-                                                <Button 
-                                                    variant="ghost" 
-                                                    size="icon" 
+
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
                                                     className="h-6 w-6 opacity-70 hover:opacity-100"
                                                     onClick={() => copyToClipboard(message.content, message.id)}
                                                     aria-label="Copy message"
                                                 >
-                                                    {copiedMessageId === message.id ? 
-                                                        <CheckCircle className="h-4 w-4" /> : 
+                                                    {copiedMessageId === message.id ?
+                                                        <CheckCircle className="h-4 w-4" /> :
                                                         <Copy className="h-4 w-4" />
                                                     }
                                                 </Button>
