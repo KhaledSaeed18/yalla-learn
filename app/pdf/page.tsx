@@ -221,7 +221,7 @@ export default function Chat() {
                             <div className="flex flex-col items-center justify-center h-[55vh] text-muted-foreground">
                                 <MessageSquare className="h-12 w-12 mb-2 text-primary" />
                                 <h3 className="text-lg font-medium mb-1">Chat with PDF</h3>
-                                <p>Upload a document to start an interactive conversation about its contents</p>
+                                <p className='text-center'>Upload a document to start an interactive conversation about its contents</p>
                             </div>
                         ) : (
                             <div className="space-y-6">
@@ -396,7 +396,7 @@ export default function Chat() {
 
                     {/* Message input */}
                     <form onSubmit={handleFormSubmit} className="w-full p-3">
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col md:flex-row items-center gap-2">
                             <Input
                                 className="flex-1"
                                 value={input}
@@ -410,6 +410,7 @@ export default function Chat() {
                                 variant={isLoading || (!input.trim() && (!files || files.length === 0)) ? "secondary" : "default"}
                                 size="icon"
                                 aria-label="Send message"
+                                className='w-full md:w-9'
                             >
                                 {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                             </Button>
