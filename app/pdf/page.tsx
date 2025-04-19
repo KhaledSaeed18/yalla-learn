@@ -35,6 +35,7 @@ export default function Chat() {
     const [isDragging, setIsDragging] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const messagesContainerRef = useRef<HTMLDivElement>(null)
+    const [showScrollToTop, setShowScrollToTop] = useState(false)
 
     const scrollToBottom = () => {
         if (messagesContainerRef.current) {
@@ -42,7 +43,27 @@ export default function Chat() {
             scrollContainer.scrollTop = scrollContainer.scrollHeight;
         }
     }
-    
+
+    const scrollToTop = () => {
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = 0;
+        }
+    }
+
+    // Check scroll position to show/hide scroll-to-top button
+    useEffect(() => {
+        const container = messagesContainerRef.current;
+        if (!container) return;
+
+        const handleScroll = () => {
+            // Show button if scrolled down more than 300px
+            setShowScrollToTop(container.scrollTop > 300);
+        };
+
+        container.addEventListener('scroll', handleScroll);
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, []);
+
     // Auto-scroll when messages change
     useEffect(() => {
         scrollToBottom()
@@ -102,12 +123,8 @@ export default function Chat() {
 
     return (
         <div className="flex flex-col w-full max-w-6xl mx-auto">
-            <div className="flex items-center justify-center my-4">
-                <h1 className="text-2xl font-bold text-foreground">Chat with PDF</h1>
-            </div>
-
             {/* Chat container */}
-            <Card className="flex-1 overflow-hidden mb-8 p-0">
+            <Card className="flex-1 overflow-hidden my-6 p-0 relative border-primary">
                 <CardContent className="p-0 overflow-y-auto h-[60vh]" ref={messagesContainerRef}>
                     <div className="p-4 space-y-6">
                         {error && (
@@ -118,9 +135,10 @@ export default function Chat() {
                         )}
 
                         {messages.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-[40vh] text-muted-foreground">
-                                <MessageSquare className="h-12 w-12 mb-2" />
-                                <p>Start a conversation or upload a document</p>
+                            <div className="flex flex-col items-center justify-center h-[55vh] text-muted-foreground">
+                                <MessageSquare className="h-12 w-12 mb-2 text-primary" />
+                                <h3 className="text-lg font-medium mb-1">Chat with PDF</h3>
+                                <p>Upload a document to start an interactive conversation about its contents</p>
                             </div>
                         ) : (
                             <div className="space-y-6">
@@ -179,12 +197,31 @@ export default function Chat() {
                         )}
                     </div>
                 </CardContent>
-                <CardFooter className="p-0 border-t">
+                
+                {/* Scroll to top button */}
+                {showScrollToTop && (
+                    <div className="absolute bottom-30 left-1/2 transform -translate-x-1/2 z-10">
+                        <Button
+                            variant="secondary"
+                            size="icon"
+                            className="rounded-full shadow-md"
+                            onClick={scrollToTop}
+                            aria-label="Scroll to top"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-up">
+                                <path d="m5 12 7-7 7 7"/>
+                                <path d="M12 19V5"/>
+                            </svg>
+                        </Button>
+                    </div>
+                )}
+
+                <CardFooter className="p-0 border-t border-primary">
                     {/* File upload area */}
                     {(!files || files.length === 0) && (
                         <div
                             className={cn(
-                                "w-full border-2 border-dashed rounded-none p-6 flex flex-col items-center justify-center cursor-pointer transition-colors",
+                                "w-full border rounded-none p-6 flex flex-col items-center justify-center cursor-pointer transition-colors",
                                 isDragging
                                     ? "border-primary bg-primary/10"
                                     : "border-border hover:border-primary/50 dark:hover:border-primary/30",
