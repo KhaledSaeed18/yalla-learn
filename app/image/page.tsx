@@ -2,8 +2,46 @@
 
 import { useChat } from '@ai-sdk/react';
 import { useRef, useState, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import { toast } from 'sonner';
+import { FileUp, Send, X, Loader2, MessageSquare, Copy, CheckCircle, Volume2, Camera } from 'lucide-react';
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+
+const formatMessageText = (text: string) => {
+    if (!text) return text;
+
+    const boldParts = text.split(/(\*\*.*?\*\*)/g);
+    const processedBold = boldParts.map((part, index) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+            const boldText = part.slice(2, -2);
+            return <strong key={`bold-${index}`}>{boldText}</strong>;
+        }
+        return part;
+    });
+
+    const lines = processedBold.flatMap((part, partIndex) => {
+        if (typeof part !== 'string') return part;
+
+        const textLines = part.split('\n');
+        return textLines.map((line, lineIndex) => {
+            if (line.trim().startsWith('* ')) {
+                return (
+                    <div key={`bullet-${partIndex}-${lineIndex}`} className="flex ml-2 my-1">
+                        <span className="mr-2">•</span>
+                        <span>{line.substring(2)}</span>
+                    </div>
+                );
+            }
+            return lineIndex < textLines.length - 1 ? <React.Fragment key={`line-${partIndex}-${lineIndex}`}>{line}<br /></React.Fragment> : line;
+        });
+    });
+
+    return lines;
+};
 
 export default function ImageChat() {
     const [errorDetails, setErrorDetails] = useState<string | null>(null);
@@ -29,6 +67,12 @@ export default function ImageChat() {
     const [imageFile, setImageFile] = useState<File | undefined>(undefined);
     const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
+    const [showScrollToTop, setShowScrollToTop] = useState(false);
+    const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+    const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
 
     useEffect(() => {
         // Create a URL for the selected image file for preview
@@ -41,6 +85,87 @@ export default function ImageChat() {
             setImageUrl(undefined);
         }
     }, [imageFile]);
+
+    const scrollToBottom = () => {
+        if (messagesContainerRef.current) {
+            const scrollContainer = messagesContainerRef.current;
+            scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        }
+    }
+
+    const scrollToTop = () => {
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = 0;
+        }
+    }
+
+    useEffect(() => {
+        const container = messagesContainerRef.current;
+        if (!container) return;
+
+        const handleScroll = () => {
+            setShowScrollToTop(container.scrollTop > 300);
+        };
+
+        container.addEventListener('scroll', handleScroll);
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    const copyToClipboard = (text: string, messageId: string) => {
+        navigator.clipboard.writeText(text)
+            .then(() => {
+                setCopiedMessageId(messageId);
+                toast.success("Copied to clipboard");
+
+                setTimeout(() => {
+                    setCopiedMessageId(null);
+                }, 2000);
+            })
+            .catch(err => {
+                console.error('Failed to copy text: ', err);
+                toast.error("Failed to copy text");
+            });
+    };
+
+    const speakText = (text: string, messageId: string) => {
+        if ("speechSynthesis" in window) {
+            if (speakingMessageId === messageId) {
+                window.speechSynthesis.cancel();
+                setSpeakingMessageId(null);
+                return;
+            }
+            
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            setSpeakingMessageId(messageId);
+            
+            utterance.onend = () => {
+                setSpeakingMessageId(null);
+            };
+            
+            utterance.onerror = () => {
+                setSpeakingMessageId(null);
+            };
+            
+            window.speechSynthesis.speak(utterance);
+        } else {
+            toast.error("Text-to-speech is not supported in your browser");
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            if ("speechSynthesis" in window) {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
@@ -85,101 +210,232 @@ export default function ImageChat() {
         }
     };
 
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(true);
+    }
+
+    const handleDragLeave = () => {
+        setIsDragging(false);
+    }
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            setImageFile(e.dataTransfer.files[0]);
+            setMessages([]);
+        }
+    }
+
     return (
-        <div className="flex flex-col w-full max-w-2xl py-12 mx-auto stretch px-4">
-            <h1 className="text-2xl font-semibold mb-4 text-center">Chat with Image</h1>
+        <div className="flex flex-col w-full max-w-6xl mx-auto">
+            <Card className="flex-1 overflow-hidden my-6 p-0 relative border-primary">
+                <CardContent className="p-0 overflow-y-auto h-[60vh]" ref={messagesContainerRef}>
+                    <div className="p-4 space-y-6">
+                        {error && (
+                            <div className="p-4 mb-4 text-destructive bg-destructive/10 rounded-md">
+                                <div className="font-semibold">Error:</div>
+                                <div>{error.message || "Something went wrong"}</div>
+                                {errorDetails && (
+                                    <details className="mt-2">
+                                        <summary className="cursor-pointer text-sm">Technical details</summary>
+                                        <pre className="text-xs mt-1 bg-destructive/5 p-2 overflow-auto max-h-40">{errorDetails}</pre>
+                                    </details>
+                                )}
+                            </div>
+                        )}
 
-            {error && (
-                <div className="p-4 mb-4 text-red-500 bg-red-50 rounded-md">
-                    <div className="font-semibold">Error:</div>
-                    <div>{error.message || 'Something went wrong'}</div>
-                    {errorDetails && (
-                        <details className="mt-2">
-                            <summary className="cursor-pointer text-sm">Technical details</summary>
-                            <pre className="text-xs mt-1 bg-red-100 p-2 overflow-auto max-h-40">{errorDetails}</pre>
-                        </details>
-                    )}
-                </div>
-            )}
+                        {messages.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center h-[55vh] text-muted-foreground">
+                                <Camera className="h-12 w-12 mb-2 text-primary" />
+                                <h3 className="text-lg font-medium mb-1">Chat with Image</h3>
+                                <p>Upload an image to start an interactive conversation about its contents</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {messages.map((message) => (
+                                    <div
+                                        key={message.id}
+                                        className={cn(
+                                            "flex flex-col max-w-[80%] rounded-lg p-4",
+                                            message.role === "user"
+                                                ? "ml-auto bg-primary text-primary-foreground"
+                                                : "bg-card border border-border shadow-sm relative",
+                                        )}
+                                    >
+                                        {message.role === "assistant" && (
+                                            <div className="absolute top-2 right-2 flex space-x-1">
+                                                <Button 
+                                                    variant={speakingMessageId === message.id ? "default" : "ghost"}
+                                                    size="icon" 
+                                                    className={cn(
+                                                        "h-6 w-6 transition-all",
+                                                        speakingMessageId === message.id 
+                                                            ? "bg-primary text-primary-foreground" 
+                                                            : "opacity-70 hover:opacity-100"
+                                                    )}
+                                                    onClick={() => speakText(message.content, message.id)}
+                                                    aria-label={speakingMessageId === message.id ? "Stop speaking" : "Speak message"}
+                                                >
+                                                    <Volume2 className="h-4 w-4" />
+                                                </Button>
+                                                
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="icon" 
+                                                    className="h-6 w-6 opacity-70 hover:opacity-100"
+                                                    onClick={() => copyToClipboard(message.content, message.id)}
+                                                    aria-label="Copy message"
+                                                >
+                                                    {copiedMessageId === message.id ? 
+                                                        <CheckCircle className="h-4 w-4" /> : 
+                                                        <Copy className="h-4 w-4" />
+                                                    }
+                                                </Button>
+                                            </div>
+                                        )}
+                                        <div className={cn(
+                                            "whitespace-pre-wrap",
+                                            message.role === "assistant" && "pr-6"
+                                        )}>
+                                            {formatMessageText(message.content)}
+                                        </div>
 
-            {/* Image Upload and Preview Area */}
-            <div className="mb-4 p-4 border border-gray-300 rounded shadow-lg bg-white">
-                {!imageUrl ? (
-                    <div className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-300 rounded-lg">
-                        <label htmlFor="image-upload" className="cursor-pointer text-blue-500 hover:text-blue-700">
-                            Click to upload an image
-                        </label>
-                        <input
-                            id="image-upload"
-                            type="file"
-                            className="hidden"
-                            onChange={handleFileChange}
-                            accept="image/*"
-                            ref={fileInputRef}
-                        />
-                        <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF, WEBP</p>
+                                        {(message.experimental_attachments?.length ?? 0) > 0 && (
+                                            <div className="mt-3 space-y-3">
+                                                {(message.experimental_attachments ?? [])
+                                                    .filter(
+                                                        (attachment) =>
+                                                            attachment?.contentType?.startsWith("image/"),
+                                                    )
+                                                    .map((attachment, index) => (
+                                                        <div key={`${message.id}-${index}`} className="rounded-md overflow-hidden border border-border">
+                                                            <Image
+                                                                src={attachment.url || "/placeholder.svg"}
+                                                                width={500}
+                                                                height={500}
+                                                                alt={attachment.name ?? `attachment-${index}`}
+                                                                className="max-w-full h-auto"
+                                                            />
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                                <div ref={messagesEndRef} />
+                            </div>
+                        )}
                     </div>
-                ) : (
-                    <div className="relative group">
-                        <Image
-                            src={imageUrl}
-                            alt="Uploaded preview"
-                            width={500}
-                            height={300}
-                            className="rounded-lg object-contain max-h-80 w-auto mx-auto"
-                        />
-                        <button
-                            onClick={clearImage}
-                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                            aria-label="Clear image"
+                </CardContent>
+
+                {/* Scroll to top button */}
+                {showScrollToTop && (
+                    <div className="absolute bottom-35 left-1/2 transform -translate-x-1/2 z-10">
+                        <Button
+                            variant="secondary"
+                            size="icon"
+                            className="rounded-full shadow-md"
+                            onClick={scrollToTop}
+                            aria-label="Scroll to top"
                         >
-                            ✕
-                        </button>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-up">
+                                <path d="m5 12 7-7 7 7" />
+                                <path d="M12 19V5" />
+                            </svg>
+                        </Button>
                     </div>
                 )}
-            </div>
 
-
-            {/* Chat Messages Area */}
-            {messages.length > 0 && (
-                <div className="space-y-4 mb-4 max-h-96 overflow-y-auto p-4 border border-gray-200 rounded bg-gray-50">
-                    {messages.map(m => (
-                        <div key={m.id} className={`whitespace-pre-wrap p-3 rounded-lg ${m.role === 'user' ? 'bg-blue-100 text-blue-900' : 'bg-gray-100 text-gray-800'}`}>
-                            <span className="font-semibold capitalize">{m.role}: </span>
-                            {m.content}
-                            {/* We don't need to render attachments here as they are part of the prompt, not the response */}
+                <CardFooter className="p-0 border-t border-primary">
+                    {/* Image upload area */}
+                    {!imageFile && (
+                        <div
+                            className={cn(
+                                "w-full border rounded-none p-6 flex flex-col items-center justify-center cursor-pointer transition-colors",
+                                isDragging
+                                    ? "border-primary bg-primary/10"
+                                    : "border-border hover:border-primary/50 dark:hover:border-primary/30",
+                            )}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                            onClick={() => fileInputRef.current?.click()}
+                        >
+                            <FileUp className="h-8 w-8 text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground">Drag & drop an image here or click to browse</p>
+                            <p className="text-xs text-muted-foreground/70 mt-1">Supports PNG, JPG, GIF, WEBP</p>
+                            <input
+                                id="image-upload"
+                                type="file"
+                                className="hidden"
+                                onChange={handleFileChange}
+                                accept="image/*"
+                                ref={fileInputRef}
+                            />
                         </div>
-                    ))}
-                </div>
-            )}
+                    )}
 
-            {/* Input Form */}
-            <form
-                className="sticky bottom-0 bg-white py-4 border-t border-gray-200"
-                onSubmit={handleFormSubmit}
-            >
-                <div className="flex items-center gap-2">
-                    <input
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        value={input}
-                        placeholder={isLoading ? "Processing..." : (imageFile ? "Ask something about the image..." : "Upload an image first...")}
-                        onChange={handleInputChange}
-                        disabled={isLoading || !imageFile} // Disable if loading or no image is uploaded
-                    />
-                    <button
-                        type="submit"
-                        disabled={isLoading || !input.trim() || !imageFile} // Disable if loading, input empty, or no image
-                        className="px-5 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                    >
-                        {isLoading ? (
-                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        ) : 'Send'}
-                    </button>
-                </div>
-            </form>
+                    {/* Selected image display */}
+                    {imageFile && (
+                        <div className="w-full p-3 border-b border-border">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <Camera className="h-4 w-4 text-primary mr-2" />
+                                    <span className="text-sm font-medium">
+                                        Image selected: {imageFile.name}
+                                    </span>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={clearImage}
+                                    className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                                    aria-label="Clear image"
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                            {imageUrl && (
+                                <div className="mt-2 flex justify-center">
+                                    <div className="relative max-w-xs max-h-40 overflow-hidden rounded-md">
+                                        <Image
+                                            src={imageUrl}
+                                            alt="Selected image preview"
+                                            width={200}
+                                            height={150}
+                                            className="object-contain"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Message input */}
+                    <form onSubmit={handleFormSubmit} className="w-full p-3">
+                        <div className="flex items-center gap-2">
+                            <Input
+                                className="flex-1"
+                                value={input}
+                                placeholder={isLoading ? "Processing..." : imageFile ? "Ask something about the image..." : "Upload an image first..."}
+                                onChange={handleInputChange}
+                                disabled={isLoading || !imageFile}
+                            />
+                            <Button
+                                type="submit"
+                                disabled={isLoading || !input.trim() || !imageFile}
+                                variant={isLoading || !input.trim() || !imageFile ? "secondary" : "default"}
+                                size="icon"
+                                aria-label="Send message"
+                            >
+                                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                            </Button>
+                        </div>
+                    </form>
+                </CardFooter>
+            </Card>
         </div>
     );
 }
