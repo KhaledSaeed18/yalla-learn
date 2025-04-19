@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from 'react';
 import React from 'react';
 import Image from 'next/image';
 import { toast } from 'sonner';
-import { FileUp, Send, X, Loader2, MessageSquare, Copy, CheckCircle, Volume2, Camera } from 'lucide-react';
+import { FileUp, Send, X, Loader2, Copy, CheckCircle, Volume2, Camera } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -44,14 +44,12 @@ const formatMessageText = (text: string) => {
 };
 
 export default function ImageChat() {
-    const [errorDetails, setErrorDetails] = useState<string | null>(null);
     const { messages, input, handleInputChange, handleSubmit, isLoading, error, setMessages } = useChat({
         api: '/api/chat',
         onError: (error) => {
             let errorMessage = 'An error occurred while sending your message';
             if (error instanceof Error) {
                 errorMessage = error.message;
-                setErrorDetails(error.stack || null);
             } else if (typeof error === 'string') {
                 errorMessage = error;
             } else if (error && typeof error === 'object') {
@@ -75,11 +73,9 @@ export default function ImageChat() {
     const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
 
     useEffect(() => {
-        // Create a URL for the selected image file for preview
         if (imageFile) {
             const url = URL.createObjectURL(imageFile);
             setImageUrl(url);
-            // Clean up the object URL when the component unmounts or the file changes
             return () => URL.revokeObjectURL(url);
         } else {
             setImageUrl(undefined);
@@ -170,21 +166,18 @@ export default function ImageChat() {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             setImageFile(event.target.files[0]);
-            // Clear previous messages when a new image is uploaded
             setMessages([]);
         }
     };
 
     const handleFormSubmit = async (event: React.FormEvent) => {
-        event.preventDefault(); // Prevent default form submission
-        setErrorDetails(null);
+        event.preventDefault(); 
 
         if (!imageFile) {
             toast.error('Please upload an image first.');
             return;
         }
 
-        // Convert the single File to a FileList to match the expected type
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(imageFile);
         const fileList = dataTransfer.files;
@@ -198,13 +191,12 @@ export default function ImageChat() {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             toast.error('Submission error', { description: errorMessage });
         }
-        // Note: We don't clear the image file here, allowing follow-up questions
     };
 
     const clearImage = () => {
         setImageFile(undefined);
         setImageUrl(undefined);
-        setMessages([]); // Clear messages when image is cleared
+        setMessages([]);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -237,12 +229,6 @@ export default function ImageChat() {
                             <div className="p-4 mb-4 text-destructive bg-destructive/10 rounded-md">
                                 <div className="font-semibold">Error:</div>
                                 <div>{error.message || "Something went wrong"}</div>
-                                {errorDetails && (
-                                    <details className="mt-2">
-                                        <summary className="cursor-pointer text-sm">Technical details</summary>
-                                        <pre className="text-xs mt-1 bg-destructive/5 p-2 overflow-auto max-h-40">{errorDetails}</pre>
-                                    </details>
-                                )}
                             </div>
                         )}
 
@@ -371,7 +357,7 @@ export default function ImageChat() {
                                 type="file"
                                 className="hidden"
                                 onChange={handleFileChange}
-                                accept="image/*"
+                                accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
                                 ref={fileInputRef}
                             />
                         </div>
