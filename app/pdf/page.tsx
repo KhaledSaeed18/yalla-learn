@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input"
 const formatMessageText = (text: string) => {
     if (!text) return text;
 
-    // First handle the double asterisks for bold text
     const boldParts = text.split(/(\*\*.*?\*\*)/g);
     const processedBold = boldParts.map((part, index) => {
         if (part.startsWith('**') && part.endsWith('**')) {
@@ -24,14 +23,12 @@ const formatMessageText = (text: string) => {
         return part;
     });
 
-    // Then process each line for bullet points (lines starting with * followed by space)
     const lines = processedBold.flatMap((part, partIndex) => {
         if (typeof part !== 'string') return part;
 
         const textLines = part.split('\n');
         return textLines.map((line, lineIndex) => {
             if (line.trim().startsWith('* ')) {
-                // This is a bullet point
                 return (
                     <div key={`bullet-${partIndex}-${lineIndex}`} className="flex ml-2 my-1">
                         <span className="mr-2">•</span>
@@ -93,7 +90,6 @@ export default function Chat() {
                 setCopiedMessageId(messageId);
                 toast.success("Copied to clipboard");
 
-                // Reset the copied state after 2 seconds
                 setTimeout(() => {
                     setCopiedMessageId(null);
                 }, 2000);
@@ -106,14 +102,12 @@ export default function Chat() {
 
     const speakText = (text: string, messageId: string) => {
         if ("speechSynthesis" in window) {
-            // If already speaking this message, stop it
             if (speakingMessageId === messageId) {
                 window.speechSynthesis.cancel();
                 setSpeakingMessageId(null);
                 return;
             }
             
-            // Cancel any ongoing speech from other messages
             window.speechSynthesis.cancel();
             
             const utterance = new SpeechSynthesisUtterance(text);
@@ -134,7 +128,6 @@ export default function Chat() {
         }
     };
 
-    // Cancel any ongoing speech when component unmounts
     useEffect(() => {
         return () => {
             if ("speechSynthesis" in window) {
@@ -143,13 +136,11 @@ export default function Chat() {
         };
     }, []);
 
-    // Check scroll position to show/hide scroll-to-top button
     useEffect(() => {
         const container = messagesContainerRef.current;
         if (!container) return;
 
         const handleScroll = () => {
-            // Show button if scrolled down more than 300px
             setShowScrollToTop(container.scrollTop > 300);
         };
 
@@ -157,7 +148,6 @@ export default function Chat() {
         return () => container.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Auto-scroll when messages change
     useEffect(() => {
         scrollToBottom()
     }, [messages])
