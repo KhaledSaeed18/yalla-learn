@@ -276,7 +276,10 @@ export default function Chat() {
                                                 </Button>
                                             </div>
                                         )}
-                                        <div className="whitespace-pre-wrap">
+                                        <div className={cn(
+                                            "whitespace-pre-wrap",
+                                            message.role === "assistant" && "pr-6"
+                                        )}>
                                             {formatMessageText(message.content)}
                                         </div>
 
