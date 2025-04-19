@@ -106,27 +106,42 @@ export default function Chat() {
 
     const speakText = (text: string, messageId: string) => {
         if ("speechSynthesis" in window) {
-            // Cancel any ongoing speech
+            // If already speaking this message, stop it
+            if (speakingMessageId === messageId) {
+                window.speechSynthesis.cancel();
+                setSpeakingMessageId(null);
+                return;
+            }
+            
+            // Cancel any ongoing speech from other messages
             window.speechSynthesis.cancel();
-
+            
             const utterance = new SpeechSynthesisUtterance(text);
-
+            
             setSpeakingMessageId(messageId);
-
+            
             utterance.onend = () => {
                 setSpeakingMessageId(null);
             };
-
+            
             utterance.onerror = () => {
                 setSpeakingMessageId(null);
-                toast.error("Failed to speak text");
             };
-
+            
             window.speechSynthesis.speak(utterance);
         } else {
             toast.error("Text-to-speech is not supported in your browser");
         }
     };
+
+    // Cancel any ongoing speech when component unmounts
+    useEffect(() => {
+        return () => {
+            if ("speechSynthesis" in window) {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
 
     // Check scroll position to show/hide scroll-to-top button
     useEffect(() => {
@@ -232,27 +247,30 @@ export default function Chat() {
                                     >
                                         {message.role === "assistant" && (
                                             <div className="absolute top-2 right-2 flex space-x-1">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-6 w-6 opacity-70 hover:opacity-100"
+                                                <Button 
+                                                    variant={speakingMessageId === message.id ? "default" : "ghost"}
+                                                    size="icon" 
+                                                    className={cn(
+                                                        "h-6 w-6 transition-all",
+                                                        speakingMessageId === message.id 
+                                                            ? "bg-primary text-primary-foreground" 
+                                                            : "opacity-70 hover:opacity-100"
+                                                    )}
                                                     onClick={() => speakText(message.content, message.id)}
-                                                    aria-label="Speak message"
+                                                    aria-label={speakingMessageId === message.id ? "Stop speaking" : "Speak message"}
                                                 >
-                                                    <Volume2 className={cn(
-                                                        "h-4 w-4",
-                                                        speakingMessageId === message.id ? "text-primary animate-pulse" : ""
-                                                    )} />
+                                                    <Volume2 className="h-4 w-4" />
                                                 </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
+                                                
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="icon" 
                                                     className="h-6 w-6 opacity-70 hover:opacity-100"
                                                     onClick={() => copyToClipboard(message.content, message.id)}
                                                     aria-label="Copy message"
                                                 >
-                                                    {copiedMessageId === message.id ?
-                                                        <CheckCircle className="h-4 w-4" /> :
+                                                    {copiedMessageId === message.id ? 
+                                                        <CheckCircle className="h-4 w-4" /> : 
                                                         <Copy className="h-4 w-4" />
                                                     }
                                                 </Button>
