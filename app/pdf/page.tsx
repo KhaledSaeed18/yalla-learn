@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useChat } from "@ai-sdk/react"
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import Image from "next/image"
 import { toast } from "sonner"
 import { FileUp, Send, X, Loader2, MessageSquare, FileText } from 'lucide-react'
@@ -33,6 +33,20 @@ export default function Chat() {
     const [files, setFiles] = useState<FileList | undefined>(undefined)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [isDragging, setIsDragging] = useState(false)
+    const messagesEndRef = useRef<HTMLDivElement>(null)
+    const messagesContainerRef = useRef<HTMLDivElement>(null)
+
+    const scrollToBottom = () => {
+        if (messagesContainerRef.current) {
+            const scrollContainer = messagesContainerRef.current;
+            scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        }
+    }
+    
+    // Auto-scroll when messages change
+    useEffect(() => {
+        scrollToBottom()
+    }, [messages])
 
     const handleFormSubmit = async (event: React.FormEvent) => {
         event.preventDefault()
@@ -94,7 +108,7 @@ export default function Chat() {
 
             {/* Chat container */}
             <Card className="flex-1 overflow-hidden mb-8 p-0">
-                <CardContent className="p-0 overflow-y-auto">
+                <CardContent className="p-0 overflow-y-auto h-[60vh]" ref={messagesContainerRef}>
                     <div className="p-4 space-y-6">
                         {error && (
                             <div className="p-4 mb-4 text-destructive bg-destructive/10 rounded-md">
@@ -160,6 +174,7 @@ export default function Chat() {
                                         )}
                                     </div>
                                 ))}
+                                <div ref={messagesEndRef} />
                             </div>
                         )}
                     </div>
