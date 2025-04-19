@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
-import { Menu, LogOut, LayoutDashboard, ChevronDown, FileImage, Image, MessageSquare, Network, Languages } from "lucide-react"
+import { Menu, LogOut, LayoutDashboard, ChevronDown, FileImage, Image, MessageSquare, Network, Languages, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
@@ -44,6 +44,7 @@ export function Header() {
         {
             name: "Products",
             href: "/products",
+            icon: <FileImage className="size-5 mr-2 text-primary" />,
             content: [
                 {
                     title: "Product A",
@@ -68,6 +69,7 @@ export function Header() {
         {
             name: "AI Tools",
             href: "/ai-tools",
+            icon: <Sparkles className="size-5 mr-2 text-primary" />,
             content: [
                 {
                     title: "PDF AI Chat",
@@ -125,7 +127,7 @@ export function Header() {
                                 <NavigationMenuItem key={item.name}>
                                     {item.content ? (
                                         <>
-                                            <NavigationMenuTrigger>{item.name}</NavigationMenuTrigger>
+                                            <NavigationMenuTrigger>{item.icon} {item.name}</NavigationMenuTrigger>
                                             <NavigationMenuContent>
                                                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                                                     {item.content.map((subItem) => (
