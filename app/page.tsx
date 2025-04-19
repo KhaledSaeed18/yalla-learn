@@ -1,7 +1,6 @@
 import { FeaturesSectionUI } from "@/components/shared/FeaturesSectionUI";
 import { GlowingEffectUI } from "@/components/shared/GlowingEffectUI";
 import { MacbookScrollUi } from "@/components/shared/MacbookScrollUI";
-import { ThreeDMarqueeUI } from "@/components/shared/ThreeDMarqueeUI";
 
 export default function Home() {
   return (
@@ -10,8 +9,7 @@ export default function Home() {
       <main className="container mx-auto p-4">
         <GlowingEffectUI />
         <FeaturesSectionUI />
-        <ThreeDMarqueeUI />
-      </main>
+]      </main>
     </>
   );
 }
