@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 import { useChat } from "@ai-sdk/react"
 import { useRef, useState, useEffect } from "react"
 import Image from "next/image"
@@ -10,6 +10,41 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+
+const formatMessageText = (text: string) => {
+    if (!text) return text;
+    
+    // First handle the double asterisks for bold text
+    const boldParts = text.split(/(\*\*.*?\*\*)/g);
+    const processedBold = boldParts.map((part, index) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+            const boldText = part.slice(2, -2);
+            return <strong key={`bold-${index}`}>{boldText}</strong>;
+        }
+        return part;
+    });
+    
+    // Then process each line for bullet points (lines starting with * followed by space)
+    const lines = processedBold.flatMap((part, partIndex) => {
+        if (typeof part !== 'string') return part;
+        
+        const textLines = part.split('\n');
+        return textLines.map((line, lineIndex) => {
+            if (line.trim().startsWith('* ')) {
+                // This is a bullet point
+                return (
+                    <div key={`bullet-${partIndex}-${lineIndex}`} className="flex ml-2 my-1">
+                        <span className="mr-2">•</span>
+                        <span>{line.substring(2)}</span>
+                    </div>
+                );
+            }
+            return lineIndex < textLines.length - 1 ? <React.Fragment key={`line-${partIndex}-${lineIndex}`}>{line}<br /></React.Fragment> : line;
+        });
+    });
+    
+    return lines;
+};
 
 export default function Chat() {
     const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
@@ -152,7 +187,9 @@ export default function Chat() {
                                                 : "bg-card border border-border shadow-sm",
                                         )}
                                     >
-                                        <div className="whitespace-pre-wrap">{message.content}</div>
+                                        <div className="whitespace-pre-wrap">
+                                            {formatMessageText(message.content)}
+                                        </div>
 
                                         {(message.experimental_attachments?.length ?? 0) > 0 && (
                                             <div className="mt-3 space-y-3">
@@ -200,7 +237,7 @@ export default function Chat() {
                 
                 {/* Scroll to top button */}
                 {showScrollToTop && (
-                    <div className="absolute bottom-30 left-1/2 transform -translate-x-1/2 z-10">
+                    <div className="absolute bottom-35 left-1/2 transform -translate-x-1/2 z-10">
                         <Button
                             variant="secondary"
                             size="icon"
