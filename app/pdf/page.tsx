@@ -5,7 +5,7 @@ import { useChat } from "@ai-sdk/react"
 import { useRef, useState, useEffect } from "react"
 import Image from "next/image"
 import { toast } from "sonner"
-import { FileUp, Send, X, Loader2, MessageSquare, FileText, Copy, CheckCircle } from 'lucide-react'
+import { FileUp, Send, X, Loader2, MessageSquare, FileText, Copy, CheckCircle, Volume2 } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 
 const formatMessageText = (text: string) => {
     if (!text) return text;
-    
+
     // First handle the double asterisks for bold text
     const boldParts = text.split(/(\*\*.*?\*\*)/g);
     const processedBold = boldParts.map((part, index) => {
@@ -23,11 +23,11 @@ const formatMessageText = (text: string) => {
         }
         return part;
     });
-    
+
     // Then process each line for bullet points (lines starting with * followed by space)
     const lines = processedBold.flatMap((part, partIndex) => {
         if (typeof part !== 'string') return part;
-        
+
         const textLines = part.split('\n');
         return textLines.map((line, lineIndex) => {
             if (line.trim().startsWith('* ')) {
@@ -42,7 +42,7 @@ const formatMessageText = (text: string) => {
             return lineIndex < textLines.length - 1 ? <React.Fragment key={`line-${partIndex}-${lineIndex}`}>{line}<br /></React.Fragment> : line;
         });
     });
-    
+
     return lines;
 };
 
@@ -72,6 +72,7 @@ export default function Chat() {
     const messagesContainerRef = useRef<HTMLDivElement>(null)
     const [showScrollToTop, setShowScrollToTop] = useState(false)
     const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+    const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
 
     const scrollToBottom = () => {
         if (messagesContainerRef.current) {
@@ -91,7 +92,7 @@ export default function Chat() {
             .then(() => {
                 setCopiedMessageId(messageId);
                 toast.success("Copied to clipboard");
-                
+
                 // Reset the copied state after 2 seconds
                 setTimeout(() => {
                     setCopiedMessageId(null);
@@ -101,6 +102,30 @@ export default function Chat() {
                 console.error('Failed to copy text: ', err);
                 toast.error("Failed to copy text");
             });
+    };
+
+    const speakText = (text: string, messageId: string) => {
+        if ("speechSynthesis" in window) {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+
+            setSpeakingMessageId(messageId);
+
+            utterance.onend = () => {
+                setSpeakingMessageId(null);
+            };
+
+            utterance.onerror = () => {
+                setSpeakingMessageId(null);
+                toast.error("Failed to speak text");
+            };
+
+            window.speechSynthesis.speak(utterance);
+        } else {
+            toast.error("Text-to-speech is not supported in your browser");
+        }
     };
 
     // Check scroll position to show/hide scroll-to-top button
@@ -206,18 +231,32 @@ export default function Chat() {
                                         )}
                                     >
                                         {message.role === "assistant" && (
-                                            <Button 
-                                                variant="ghost" 
-                                                size="icon" 
-                                                className="absolute top-2 right-2 h-6 w-6 opacity-70 hover:opacity-100"
-                                                onClick={() => copyToClipboard(message.content, message.id)}
-                                                aria-label="Copy message"
-                                            >
-                                                {copiedMessageId === message.id ? 
-                                                    <CheckCircle className="h-4 w-4" /> : 
-                                                    <Copy className="h-4 w-4" />
-                                                }
-                                            </Button>
+                                            <div className="absolute top-2 right-2 flex space-x-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-6 w-6 opacity-70 hover:opacity-100"
+                                                    onClick={() => speakText(message.content, message.id)}
+                                                    aria-label="Speak message"
+                                                >
+                                                    <Volume2 className={cn(
+                                                        "h-4 w-4",
+                                                        speakingMessageId === message.id ? "text-primary animate-pulse" : ""
+                                                    )} />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-6 w-6 opacity-70 hover:opacity-100"
+                                                    onClick={() => copyToClipboard(message.content, message.id)}
+                                                    aria-label="Copy message"
+                                                >
+                                                    {copiedMessageId === message.id ?
+                                                        <CheckCircle className="h-4 w-4" /> :
+                                                        <Copy className="h-4 w-4" />
+                                                    }
+                                                </Button>
+                                            </div>
                                         )}
                                         <div className="whitespace-pre-wrap">
                                             {formatMessageText(message.content)}
@@ -266,7 +305,7 @@ export default function Chat() {
                         )}
                     </div>
                 </CardContent>
-                
+
                 {/* Scroll to top button */}
                 {showScrollToTop && (
                     <div className="absolute bottom-35 left-1/2 transform -translate-x-1/2 z-10">
@@ -278,8 +317,8 @@ export default function Chat() {
                             aria-label="Scroll to top"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-up">
-                                <path d="m5 12 7-7 7 7"/>
-                                <path d="M12 19V5"/>
+                                <path d="m5 12 7-7 7 7" />
+                                <path d="M12 19V5" />
                             </svg>
                         </Button>
                     </div>
