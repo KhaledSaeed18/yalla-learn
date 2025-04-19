@@ -283,11 +283,18 @@ const Translation = () => {
     return (
         <div className="container max-w-5xl mx-auto my-6 px-4 transition-colors duration-300">
             <div className="flex flex-col gap-6">
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-1">
                     <h1 className="text-3xl font-bold flex items-center gap-2">
                         <Languages className="h-8 w-8" />
                         <span>AI Translator</span>
                     </h1>
+                    <p className="text-muted-foreground">
+                        Translate your text to any of{" "}
+                        <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full bg-primary text-white shadow-sm transition-all duration-300 hover:shadow-md transform hover:scale-105 hover:cursor-pointer">
+                            {languageOptions.length}
+                        </span>
+                        {" "}supported languages
+                    </p>
                 </div>
 
                 <Tabs defaultValue="translate" value={activeTab} onValueChange={handleTabChange} className="w-full">
