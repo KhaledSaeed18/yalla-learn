@@ -46,15 +46,6 @@ const languageOptions = [
     { value: "zh-Hans", label: "Chinese (Simplified)" },
 ]
 
-// Common phrases for quick translation
-const commonPhrases = [
-    { text: "Hello, how are you?", language: "en" },
-    { text: "Thank you very much", language: "en" },
-    { text: "Where is the bathroom?", language: "en" },
-    { text: "I don't understand", language: "en" },
-    { text: "How much does this cost?", language: "en" },
-]
-
 // Azure translation API constants
 const TRANSLATE_API_URL = "https://api.cognitive.microsofttranslator.com/translate"
 const API_VERSION = "3.0"
@@ -523,29 +514,6 @@ const Translation = () => {
                                 </CardFooter>
                             </Card>
                         </div>
-
-                        {/* Common phrases section */}
-                        <Card>
-                            <CardHeader className="pb-3">
-                                <CardTitle>Common Phrases</CardTitle>
-                                <CardDescription>Click on a phrase to quickly translate it</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex flex-wrap gap-2">
-                                    {commonPhrases.map((phrase, index) => (
-                                        <Button
-                                            key={index}
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => useCommonPhrase(phrase)}
-                                            className="text-sm"
-                                        >
-                                            {phrase.text}
-                                        </Button>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
                     </TabsContent>
 
                     <TabsContent value="history" className="space-y-4">
