@@ -73,12 +73,13 @@ export function Header() {
             ],
         },
         {
-            name: "About",
-            href: "/about",
-        },
-        {
             name: "Blog",
             href: "/blog",
+            icon: <FileText className="size-5 mr-2 text-primary" />
+        },
+        {
+            name: "About",
+            href: "/about",
         },
         {
             name: "Contact",
@@ -103,7 +104,8 @@ export function Header() {
                                     {item.content ? (
                                         <>
                                             <NavigationMenuTrigger>
-                                                <span className="animate-pulse">{item.icon}</span>{item.name}
+                                                <span className="animate-pulse">{item.icon}</span>
+                                                {item.name}
                                             </NavigationMenuTrigger>
                                             <NavigationMenuContent>
                                                 <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
@@ -130,7 +132,12 @@ export function Header() {
                                         </>
                                     ) : (
                                         <Link href={item.href} legacyBehavior passHref>
-                                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>{item.name}</NavigationMenuLink>
+                                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                                                <div className="flex items-center">
+                                                    <span className="animate-pulse inline">{item.icon}</span>
+                                                    {item.name}
+                                                </div>
+                                            </NavigationMenuLink>
                                         </Link>
                                     )}
                                 </NavigationMenuItem>
