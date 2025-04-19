@@ -352,13 +352,13 @@ export default function Chat() {
                         >
                             <FileUp className="h-8 w-8 text-muted-foreground mb-2" />
                             <p className="text-sm text-muted-foreground">Drag & drop files here or click to browse</p>
-                            <p className="text-xs text-muted-foreground/70 mt-1">Supports images and PDFs</p>
+                            <p className="text-xs text-muted-foreground/70 mt-1">Supports PDF files</p>
                             <input
                                 type="file"
                                 className="hidden"
                                 onChange={handleFileSelect}
                                 multiple
-                                accept="image/*,application/pdf"
+                                accept="application/pdf"
                                 ref={fileInputRef}
                             />
                         </div>
