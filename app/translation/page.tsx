@@ -9,20 +9,7 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import {
-    Loader2,
-    Copy,
-    Volume2,
-    Trash2,
-    History,
-    Star,
-    StarOff,
-    Sparkles,
-    Languages,
-    Check,
-    ArrowLeftRight,
-    ChevronsUpDown,
-} from "lucide-react"
+import { Loader2, Copy, Volume2, Trash2, History, Star, StarOff, Sparkles, Languages, Check, ArrowLeftRight, ChevronsUpDown } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { useDebounce } from "@/hooks/use-debounce"
