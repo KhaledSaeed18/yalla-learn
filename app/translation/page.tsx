@@ -47,7 +47,7 @@ const Translation = () => {
     const [inputText, setInputText] = useState("")
     const debouncedInputText = useDebounce(inputText, 1000)
     const [sourceLanguage, setSourceLanguage] = useState("en")
-    const [targetLanguage, setTargetLanguage] = useState("es")
+    const [targetLanguage, setTargetLanguage] = useState("ar")
     const [translatedText, setTranslatedText] = useState("")
     const [detectedLanguage, setDetectedLanguage] = useState("")
     const [isLoading, setIsLoading] = useState(false)
@@ -63,7 +63,11 @@ const Translation = () => {
         const savedHistory = localStorage.getItem("translationHistory")
         if (savedHistory) {
             try {
-                setTranslationHistory(JSON.parse(savedHistory))
+                const parsedHistory = JSON.parse(savedHistory)
+                if (Array.isArray(parsedHistory)) {
+                    setTranslationHistory(parsedHistory)
+                    console.log("Loaded translation history:", parsedHistory)
+                }
             } catch (e) {
                 console.error("Failed to parse translation history", e)
             }
@@ -71,8 +75,31 @@ const Translation = () => {
     }, [])
 
     useEffect(() => {
-        localStorage.setItem("translationHistory", JSON.stringify(translationHistory))
+        if (translationHistory.length > 0) {
+            try {
+                localStorage.setItem("translationHistory", JSON.stringify(translationHistory))
+                console.log("Saved translation history:", translationHistory)
+            } catch (e) {
+                console.error("Failed to save translation history", e)
+            }
+        }
     }, [translationHistory])
+
+    useEffect(() => {
+        if (activeTab === "history") {
+            const savedHistory = localStorage.getItem("translationHistory")
+            if (savedHistory) {
+                try {
+                    setTranslationHistory(JSON.parse(savedHistory))
+                } catch (e) {
+                    console.error("Failed to parse translation history", e)
+                    toast("Could not load translation history", {
+                        description: "There was an error loading your saved translations",
+                    })
+                }
+            }
+        }
+    }, [activeTab])
 
     useEffect(() => {
         if (autoTranslate && debouncedInputText && debouncedInputText.trim().length > 0) {
@@ -187,13 +214,33 @@ const Translation = () => {
     }
 
     const toggleFavorite = (id: string) => {
-        setTranslationHistory((prev) =>
-            prev.map((item) => (item.id === id ? { ...item, isFavorite: !item.isFavorite } : item)),
-        )
+        setTranslationHistory((prev) => {
+            const updated = prev.map((item) => 
+                (item.id === id ? { ...item, isFavorite: !item.isFavorite } : item)
+            )
+            localStorage.setItem("translationHistory", JSON.stringify(updated))
+            return updated
+        })
     }
 
     const deleteHistoryItem = (id: string) => {
-        setTranslationHistory((prev) => prev.filter((item) => item.id !== id))
+        setTranslationHistory((prev) => {
+            const updated = prev.filter((item) => item.id !== id)
+            localStorage.setItem("translationHistory", JSON.stringify(updated))
+            return updated
+        })
+    }
+
+    const clearHistory = () => {
+        if (confirm("Are you sure you want to clear all history?")) {
+            setTranslationHistory([])
+            try {
+                localStorage.removeItem("translationHistory")
+                toast("Translation history cleared")
+            } catch (e) {
+                console.error("Failed to clear translation history", e)
+            }
+        }
     }
 
     const useHistoryItem = (item: TranslationHistoryItem) => {
@@ -488,12 +535,7 @@ const Translation = () => {
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => {
-                                                if (confirm("Are you sure you want to clear all history?")) {
-                                                    setTranslationHistory([])
-                                                    toast("Translation history cleared")
-                                                }
-                                            }}
+                                            onClick={clearHistory}
                                         >
                                             Clear All
                                         </Button>
