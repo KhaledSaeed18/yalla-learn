@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Loader2, Copy, Volume2, Trash2, History, Star, StarOff, Sparkles, Languages, Check } from "lucide-react"
+import { Loader2, Copy, Volume2, Trash2, History, Star, StarOff, Sparkles, Languages, Check, ArrowLeftRight } from "lucide-react"
 import { toast } from "sonner"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
@@ -352,9 +352,10 @@ const Translation = () => {
                                         )}
                                     </div>
                                 </CardContent>
-                                <CardFooter className="flex flex-col items-start gap-4">
-                                    <div className="flex items-center gap-4 w-full">
-                                        <div className="w-full">
+
+                                <CardFooter className="flex flex-col items-start gap-4 w-full">
+                                    <div className="flex justify-around items-end w-full">
+                                        <div className="">
                                             <Select value={sourceLanguage} onValueChange={setSourceLanguage} disabled={autoDetect}>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Source language" />
@@ -369,7 +370,13 @@ const Translation = () => {
                                             </Select>
                                         </div>
 
-                                        <div className="w-full">
+                                        <div className="">
+                                            <Button variant="ghost" size="icon" onClick={swapLanguages} disabled={autoDetect} title="Swap languages, disabled when auto-detect is enabled">
+                                                <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
+                                            </Button>
+                                        </div>
+
+                                        <div className="">
                                             <Select value={targetLanguage} onValueChange={setTargetLanguage}>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Target language" />
