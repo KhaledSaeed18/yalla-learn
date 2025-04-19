@@ -1,20 +1,34 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Loader2, Copy, Volume2, Trash2, History, Star, StarOff, Sparkles, Languages, Check, ArrowLeftRight } from "lucide-react"
+import {
+    Loader2,
+    Copy,
+    Volume2,
+    Trash2,
+    History,
+    Star,
+    StarOff,
+    Sparkles,
+    Languages,
+    Check,
+    ArrowLeftRight,
+    ChevronsUpDown,
+} from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { useDebounce } from "@/hooks/use-debounce"
 import { useSearchParams, useRouter } from "next/navigation"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 const languageOptions = [
     { value: "en", label: "English" },
@@ -65,6 +79,7 @@ const Translation = () => {
     const [copied, setCopied] = useState(false)
     const inputRef = useRef<HTMLTextAreaElement>(null)
     const outputRef = useRef<HTMLDivElement>(null)
+    const [open, setOpen] = useState(false)
 
     const handleTabChange = (tab: string) => {
         setActiveTab(tab)
@@ -238,9 +253,7 @@ const Translation = () => {
 
     const toggleFavorite = (id: string) => {
         setTranslationHistory((prev) => {
-            const updated = prev.map((item) => 
-                (item.id === id ? { ...item, isFavorite: !item.isFavorite } : item)
-            )
+            const updated = prev.map((item) => (item.id === id ? { ...item, isFavorite: !item.isFavorite } : item))
             localStorage.setItem("translationHistory", JSON.stringify(updated))
             return updated
         })
@@ -279,7 +292,6 @@ const Translation = () => {
             const utterance = new SpeechSynthesisUtterance(text)
             utterance.lang = lang
             window.speechSynthesis.speak(utterance)
-            toast("Speaking text")
         } else {
             toast("Text-to-speech is not supported in your browser")
         }
@@ -305,12 +317,7 @@ const Translation = () => {
                     </h1>
                 </div>
 
-                <Tabs 
-                    defaultValue="translate" 
-                    value={activeTab} 
-                    onValueChange={handleTabChange} 
-                    className="w-full"
-                >
+                <Tabs defaultValue="translate" value={activeTab} onValueChange={handleTabChange} className="w-full">
                     <TabsList className="grid grid-cols-2 mb-4">
                         <TabsTrigger value="translate" className="flex items-center gap-2">
                             <Sparkles className="h-4 w-4" />
@@ -394,39 +401,106 @@ const Translation = () => {
                                 <CardFooter className="flex flex-col items-start gap-4 w-full">
                                     <div className="flex justify-around items-end w-full">
                                         <div className="">
-                                            <Select value={sourceLanguage} onValueChange={setSourceLanguage} disabled={autoDetect}>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Source language" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {languageOptions.map((language) => (
-                                                        <SelectItem key={language.value} value={language.value}>
-                                                            {language.label}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        role="combobox"
+                                                        aria-expanded={open}
+                                                        disabled={autoDetect}
+                                                        className="w-[180px] justify-between"
+                                                    >
+                                                        {sourceLanguage
+                                                            ? languageOptions.find((language) => language.value === sourceLanguage)?.label
+                                                            : "Source language"}
+                                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-[180px] p-0">
+                                                    <Command>
+                                                        <CommandInput placeholder="Search language..." />
+                                                        <CommandList>
+                                                            <CommandEmpty>No language found.</CommandEmpty>
+                                                            <CommandGroup>
+                                                                {languageOptions.map((language) => (
+                                                                    <CommandItem
+                                                                        key={language.value}
+                                                                        value={language.value}
+                                                                        onSelect={(value) => {
+                                                                            setSourceLanguage(value)
+                                                                        }}
+                                                                    >
+                                                                        <Check
+                                                                            className={cn(
+                                                                                "mr-2 h-4 w-4",
+                                                                                sourceLanguage === language.value ? "opacity-100" : "opacity-0",
+                                                                            )}
+                                                                        />
+                                                                        {language.label}
+                                                                    </CommandItem>
+                                                                ))}
+                                                            </CommandGroup>
+                                                        </CommandList>
+                                                    </Command>
+                                                </PopoverContent>
+                                            </Popover>
                                         </div>
 
                                         <div className="">
-                                            <Button variant="ghost" size="icon" onClick={swapLanguages} disabled={autoDetect} title="Swap languages, disabled when auto-detect is enabled">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={swapLanguages}
+                                                disabled={autoDetect}
+                                                title="Swap languages, disabled when auto-detect is enabled"
+                                            >
                                                 <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
                                             </Button>
                                         </div>
 
                                         <div className="">
-                                            <Select value={targetLanguage} onValueChange={setTargetLanguage}>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Target language" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {languageOptions.map((language) => (
-                                                        <SelectItem key={language.value} value={language.value}>
-                                                            {language.label}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        role="combobox"
+                                                        aria-expanded={open}
+                                                        className="w-[180px] justify-between"
+                                                    >
+                                                        {targetLanguage
+                                                            ? languageOptions.find((language) => language.value === targetLanguage)?.label
+                                                            : "Target language"}
+                                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-[180px] p-0">
+                                                    <Command>
+                                                        <CommandInput placeholder="Search language..." />
+                                                        <CommandList>
+                                                            <CommandEmpty>No language found.</CommandEmpty>
+                                                            <CommandGroup>
+                                                                {languageOptions.map((language) => (
+                                                                    <CommandItem
+                                                                        key={language.value}
+                                                                        value={language.value}
+                                                                        onSelect={(value) => {
+                                                                            setTargetLanguage(value)
+                                                                        }}
+                                                                    >
+                                                                        <Check
+                                                                            className={cn(
+                                                                                "mr-2 h-4 w-4",
+                                                                                targetLanguage === language.value ? "opacity-100" : "opacity-0",
+                                                                            )}
+                                                                        />
+                                                                        {language.label}
+                                                                    </CommandItem>
+                                                                ))}
+                                                            </CommandGroup>
+                                                        </CommandList>
+                                                    </Command>
+                                                </PopoverContent>
+                                            </Popover>
                                         </div>
                                     </div>
 
@@ -560,11 +634,7 @@ const Translation = () => {
                                 <div className="flex justify-between items-center">
                                     <h3 className="text-lg font-medium">Recent Translations</h3>
                                     {translationHistory.length > 0 && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={clearHistory}
-                                        >
+                                        <Button variant="outline" size="sm" onClick={clearHistory}>
                                             Clear All
                                         </Button>
                                     )}
