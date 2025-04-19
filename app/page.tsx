@@ -3,7 +3,7 @@ import { ThreeDMarqueeUI } from "@/components/shared/ThreeDMarqueeUI";
 
 export default function Home() {
   return (
-    <main className="container mx-auto px-4">
+    <main className="container mx-auto p-4">
       <GlowingEffectUI />
       <ThreeDMarqueeUI />
     </main>
