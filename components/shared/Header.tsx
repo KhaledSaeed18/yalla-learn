@@ -213,7 +213,9 @@ export function Header() {
                                     item.content ? (
                                         <Collapsible key={item.name} className="w-full">
                                             <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-base font-medium cursor-pointer">
-                                                {item.name}
+                                                <div className="flex items-center">
+                                                    {item.icon}{item.name}
+                                                </div>
                                                 <ChevronDown className="h-4 w-4" />
                                             </CollapsibleTrigger>
                                             <Separator />
