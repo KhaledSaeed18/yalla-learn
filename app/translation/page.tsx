@@ -16,21 +16,7 @@ import { useDebounce } from "@/hooks/use-debounce"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-
-const languageOptions = [
-    { value: "en", label: "English" },
-    { value: "es", label: "Spanish" },
-    { value: "fr", label: "French" },
-    { value: "de", label: "German" },
-    { value: "it", label: "Italian" },
-    { value: "pt", label: "Portuguese" },
-    { value: "nl", label: "Dutch" },
-    { value: "ja", label: "Japanese" },
-    { value: "ko", label: "Korean" },
-    { value: "ar", label: "Arabic" },
-    { value: "ru", label: "Russian" },
-    { value: "zh-Hans", label: "Chinese (Simplified)" },
-]
+import { languageOptions } from "@/constants/languages"
 
 const TRANSLATE_API_URL = "https://api.cognitive.microsofttranslator.com/translate"
 const API_VERSION = "3.0"
@@ -295,12 +281,12 @@ const Translation = () => {
     }
 
     return (
-        <div className="container max-w-5xl mx-auto py-8 px-4 transition-colors duration-300">
+        <div className="container max-w-5xl mx-auto my-6 px-4 transition-colors duration-300">
             <div className="flex flex-col gap-6">
                 <div className="flex justify-between items-center">
                     <h1 className="text-3xl font-bold flex items-center gap-2">
                         <Languages className="h-8 w-8" />
-                        <span>Translator</span>
+                        <span>AI Translator</span>
                     </h1>
                 </div>
 
