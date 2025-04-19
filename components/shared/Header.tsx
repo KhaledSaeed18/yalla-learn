@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
-import { Menu, LogOut, LayoutDashboard, ChevronDown } from "lucide-react"
+import { Menu, LogOut, LayoutDashboard, ChevronDown, FileImage, Image, MessageSquare, Network, Languages } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
@@ -49,37 +49,49 @@ export function Header() {
                     title: "Product A",
                     href: "/products/a",
                     description: "Our flagship product with amazing features.",
+                    icon: <FileImage className="size-5 mr-2 text-primary" />
                 },
                 {
                     title: "Product B",
                     href: "/products/b",
                     description: "Advanced solution for professional users.",
+                    icon: <FileImage className="size-5 mr-2 text-primary" />
                 },
                 {
                     title: "Product C",
                     href: "/products/c",
                     description: "Entry-level option with essential features.",
+                    icon: <FileImage className="size-5 mr-2 text-primary" />
                 },
             ],
         },
         {
-            name: "Services",
-            href: "/services",
+            name: "AI Tools",
+            href: "/ai-tools",
             content: [
                 {
-                    title: "Consulting",
-                    href: "/services/consulting",
-                    description: "Expert advice for your business needs.",
+                    title: "PDF AI Chat",
+                    href: "/pdf",
+                    description: "Chat with PDF documents using AI technology.",
+                    icon: <MessageSquare className="size-5 mr-2 text-primary" />
                 },
                 {
-                    title: "Implementation",
-                    href: "/services/implementation",
-                    description: "Full-service setup and configuration.",
+                    title: "Image Generation",
+                    href: "/image",
+                    description: "Generate images from text descriptions using AI.",
+                    icon: <Image className="size-5 mr-2 text-primary" />
                 },
                 {
-                    title: "Support",
-                    href: "/services/support",
-                    description: "24/7 technical assistance and maintenance.",
+                    title: "Mindmap Creation",
+                    href: "/mindmap",
+                    description: "Create visual mindmaps from text input using AI.",
+                    icon: <Network className="size-5 mr-2 text-primary" />
+                },
+                {
+                    title: "Translation",
+                    href: "/translation",
+                    description: "Translate text to over 130 languages using advanced AI.",
+                    icon: <Languages className="size-5 mr-2 text-primary" />
                 },
             ],
         },
@@ -123,7 +135,10 @@ export function Header() {
                                                                     href={subItem.href}
                                                                     className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                                 >
-                                                                    <div className="text-sm font-medium leading-none">{subItem.title}</div>
+                                                                    <div className="text-sm font-medium leading-none flex items-center">
+                                                                        {subItem.icon}
+                                                                        {subItem.title}
+                                                                    </div>
                                                                     <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                                                                         {subItem.description}
                                                                     </p>
@@ -148,8 +163,8 @@ export function Header() {
                 {/* Right side items */}
                 <div className="flex items-center gap-2 ml-auto">
                     <ModeToggle />
-                    <ColorThemeToggle/>
-                    
+                    <ColorThemeToggle />
+
                     {/* User Profile or Sign In button */}
                     <div className="hidden md:inline-flex">
                         {isAuthenticated ? (
@@ -178,16 +193,16 @@ export function Header() {
                                     </div>
                                     <Separator className="my-2" />
                                     <div className="space-y-2 pt-2">
-                                        <Link 
+                                        <Link
                                             href="/dashboard"
                                             className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-accent"
                                         >
                                             <LayoutDashboard className="h-4 w-4" />
                                             Dashboard
                                         </Link>
-                                        <Button 
-                                            variant="ghost" 
-                                            className="flex w-full items-center justify-start gap-2 px-2 text-sm hover:bg-destructive/10 hover:text-destructive" 
+                                        <Button
+                                            variant="ghost"
+                                            className="flex w-full items-center justify-start gap-2 px-2 text-sm hover:bg-destructive/10 hover:text-destructive"
                                             onClick={handleLogout}
                                         >
                                             <LogOut className="h-4 w-4" />
@@ -233,9 +248,10 @@ export function Header() {
                                                             <Link
                                                                 key={subItem.title}
                                                                 href={subItem.href}
-                                                                className="text-sm transition-colors hover:text-primary"
+                                                                className="text-sm transition-colors hover:text-primary flex items-center"
                                                                 onClick={() => setIsOpen(false)}
                                                             >
+                                                                {subItem.icon}
                                                                 {subItem.title}
                                                             </Link>
                                                             <Separator />
@@ -257,7 +273,7 @@ export function Header() {
                                         </React.Fragment>
                                     ),
                                 )}
-                                
+
                                 {/* Show either auth buttons or user info in mobile menu */}
                                 {isAuthenticated ? (
                                     <>
@@ -281,9 +297,9 @@ export function Header() {
                                             Dashboard
                                         </Link>
                                         <Separator />
-                                        <Button 
-                                            variant="ghost" 
-                                            className="flex w-full items-center justify-start gap-2 px-0 text-base font-medium transition-colors hover:text-destructive" 
+                                        <Button
+                                            variant="ghost"
+                                            className="flex w-full items-center justify-start gap-2 px-0 text-base font-medium transition-colors hover:text-destructive"
                                             onClick={(e) => {
                                                 handleLogout(e);
                                                 setIsOpen(false);
