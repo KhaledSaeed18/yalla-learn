@@ -12,11 +12,9 @@ import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Loader2, Copy, Volume2, Trash2, History, Star, StarOff, Sparkles, Languages, Check, ArrowLeftRight } from "lucide-react"
 import { toast } from "sonner"
-import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
 import { useDebounce } from "@/hooks/use-debounce"
 
-// Language options for translation
 const languageOptions = [
     { value: "en", label: "English" },
     { value: "es", label: "Spanish" },
@@ -32,11 +30,9 @@ const languageOptions = [
     { value: "zh-Hans", label: "Chinese (Simplified)" },
 ]
 
-// Azure translation API constants
 const TRANSLATE_API_URL = "https://api.cognitive.microsofttranslator.com/translate"
 const API_VERSION = "3.0"
 
-// Type for translation history items
 interface TranslationHistoryItem {
     id: string
     sourceText: string
@@ -55,17 +51,14 @@ const Translation = () => {
     const [translatedText, setTranslatedText] = useState("")
     const [detectedLanguage, setDetectedLanguage] = useState("")
     const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
     const [autoTranslate, setAutoTranslate] = useState(false)
     const [autoDetect, setAutoDetect] = useState(true)
     const [translationHistory, setTranslationHistory] = useState<TranslationHistoryItem[]>([])
     const [activeTab, setActiveTab] = useState("translate")
     const [copied, setCopied] = useState(false)
-    const { theme, setTheme } = useTheme()
     const inputRef = useRef<HTMLTextAreaElement>(null)
     const outputRef = useRef<HTMLDivElement>(null)
 
-    // Load history from localStorage on component mount
     useEffect(() => {
         const savedHistory = localStorage.getItem("translationHistory")
         if (savedHistory) {
@@ -77,12 +70,10 @@ const Translation = () => {
         }
     }, [])
 
-    // Save history to localStorage when it changes
     useEffect(() => {
         localStorage.setItem("translationHistory", JSON.stringify(translationHistory))
     }, [translationHistory])
 
-    // Auto-translate when input text changes (if enabled)
     useEffect(() => {
         if (autoTranslate && debouncedInputText && debouncedInputText.trim().length > 0) {
             handleTranslate()
@@ -96,7 +87,6 @@ const Translation = () => {
         }
 
         setIsLoading(true)
-        setError(null)
 
         try {
             const response = await fetch(
@@ -132,7 +122,6 @@ const Translation = () => {
                     }
                 }
 
-                // Add to history
                 const newHistoryItem: TranslationHistoryItem = {
                     id: Date.now().toString(),
                     sourceText: inputText,
@@ -149,7 +138,6 @@ const Translation = () => {
             }
         } catch (err) {
             console.error("Translation error:", err)
-            setError(err instanceof Error ? err.message : "An unexpected error occurred")
 
             toast("Translation failed. Please try again.", {
                 description: err instanceof Error ? err.message : "An unexpected error occurred",
@@ -160,12 +148,10 @@ const Translation = () => {
         }
     }
 
-    // Get language name from code
     const getLanguageName = (code: string) => {
         return languageOptions.find((lang) => lang.value === code)?.label || code
     }
 
-    // Copy translated text to clipboard
     const copyToClipboard = () => {
         if (translatedText) {
             navigator.clipboard.writeText(translatedText)
@@ -175,24 +161,20 @@ const Translation = () => {
         }
     }
 
-    // Clear input text
     const clearInput = () => {
         setInputText("")
         setTranslatedText("")
-        setError(null)
         if (inputRef.current) {
             inputRef.current.focus()
         }
     }
 
-    // Swap source and target languages
     const swapLanguages = () => {
         if (!autoDetect) {
             const temp = sourceLanguage
             setSourceLanguage(targetLanguage)
             setTargetLanguage(temp)
 
-            // Also swap the text if there's translated content
             if (translatedText) {
                 setInputText(translatedText)
                 setTranslatedText(inputText)
@@ -204,19 +186,16 @@ const Translation = () => {
         }
     }
 
-    // Toggle favorite status for a history item
     const toggleFavorite = (id: string) => {
         setTranslationHistory((prev) =>
             prev.map((item) => (item.id === id ? { ...item, isFavorite: !item.isFavorite } : item)),
         )
     }
 
-    // Delete a history item
     const deleteHistoryItem = (id: string) => {
         setTranslationHistory((prev) => prev.filter((item) => item.id !== id))
     }
 
-    // Use a history item
     const useHistoryItem = (item: TranslationHistoryItem) => {
         setInputText(item.sourceText)
         setTranslatedText(item.translatedText)
@@ -225,7 +204,6 @@ const Translation = () => {
         setActiveTab("translate")
     }
 
-    // Text-to-speech function
     const speakText = (text: string, lang: string) => {
         if ("speechSynthesis" in window) {
             const utterance = new SpeechSynthesisUtterance(text)
@@ -237,21 +215,6 @@ const Translation = () => {
         }
     }
 
-    // Use a common phrase
-    const useCommonPhrase = useCallback(
-        (phrase: { text: string; language: string }) => {
-            setInputText(phrase.text)
-            setSourceLanguage(phrase.language)
-            if (autoTranslate) {
-                // Translation will happen automatically due to the useEffect
-            } else {
-                handleTranslate()
-            }
-        },
-        [autoTranslate, handleTranslate],
-    )
-
-    // Format relative time for history items
     const formatRelativeTime = (timestamp: number) => {
         const now = Date.now()
         const diff = now - timestamp
