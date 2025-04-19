@@ -14,6 +14,7 @@ import { Loader2, Copy, Volume2, Trash2, History, Star, StarOff, Sparkles, Langu
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { useDebounce } from "@/hooks/use-debounce"
+import { useSearchParams, useRouter } from "next/navigation"
 
 const languageOptions = [
     { value: "en", label: "English" },
@@ -44,6 +45,9 @@ interface TranslationHistoryItem {
 }
 
 const Translation = () => {
+    const router = useRouter()
+    const searchParams = useSearchParams()
+
     const [inputText, setInputText] = useState("")
     const debouncedInputText = useDebounce(inputText, 1000)
     const [sourceLanguage, setSourceLanguage] = useState("en")
@@ -54,10 +58,29 @@ const Translation = () => {
     const [autoTranslate, setAutoTranslate] = useState(false)
     const [autoDetect, setAutoDetect] = useState(true)
     const [translationHistory, setTranslationHistory] = useState<TranslationHistoryItem[]>([])
-    const [activeTab, setActiveTab] = useState("translate")
+    const [activeTab, setActiveTab] = useState(() => {
+        const tabParam = searchParams.get("tab")
+        return tabParam === "history" ? "history" : "translate"
+    })
     const [copied, setCopied] = useState(false)
     const inputRef = useRef<HTMLTextAreaElement>(null)
     const outputRef = useRef<HTMLDivElement>(null)
+
+    const handleTabChange = (tab: string) => {
+        setActiveTab(tab)
+
+        const params = new URLSearchParams(searchParams.toString())
+        params.set("tab", tab)
+
+        router.replace(`/translation?${params.toString()}`, { scroll: false })
+    }
+
+    useEffect(() => {
+        const tabParam = searchParams.get("tab")
+        if (tabParam === "history" || tabParam === "translate") {
+            setActiveTab(tabParam)
+        }
+    }, [searchParams])
 
     useEffect(() => {
         const savedHistory = localStorage.getItem("translationHistory")
@@ -282,7 +305,12 @@ const Translation = () => {
                     </h1>
                 </div>
 
-                <Tabs defaultValue="translate" value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <Tabs 
+                    defaultValue="translate" 
+                    value={activeTab} 
+                    onValueChange={handleTabChange} 
+                    className="w-full"
+                >
                     <TabsList className="grid grid-cols-2 mb-4">
                         <TabsTrigger value="translate" className="flex items-center gap-2">
                             <Sparkles className="h-4 w-4" />
