@@ -43,18 +43,18 @@ export async function POST(request: Request) {
         ]
 
         const prompt = `Generate a list of flashcards for the topic: "${topic}".
-Each flashcard must have a term and a concise definition.
-Format the output strictly as a list of "Term: Definition" pairs, with each pair on a new line.
-Ensure terms and definitions are distinct and clearly separated by a single colon and a space (': ').
-Do not include any introductory text, explanations, or numbering. Just the list.
+            Each flashcard must have a term and a concise definition.
+            Format the output strictly as a list of "Term: Definition" pairs, with each pair on a new line.
+            Ensure terms and definitions are distinct and clearly separated by a single colon and a space (': ').
+            Do not include any introductory text, explanations, or numbering. Just the list.
 
-Example for "Spanish Greetings":
-Hello: Hola
-Goodbye: Adiós
-Good morning: Buenos días
-Thank you: Gracias
+            Example for "Spanish Greetings":
+            Hello: Hola
+            Goodbye: Adiós
+            Good morning: Buenos días
+            Thank you: Gracias
 
-Now generate for "${topic}":`
+            Now generate for "${topic}":`
 
         const result = await model.generateContent({
             contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -88,7 +88,6 @@ Now generate for "${topic}":`
         return NextResponse.json({ flashcards })
 
     } catch (error: unknown) {
-        console.error("Error in /api/flashcard/generate:", error)
         const message = error instanceof Error ? error.message : "An unknown error occurred during generation."
         return NextResponse.json({ error: message }, { status: 500 })
     }

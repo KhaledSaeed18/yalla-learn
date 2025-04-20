@@ -54,7 +54,6 @@ export default function FlashcardPage() {
                 setError("No valid flashcards could be generated. Please check the topic or format.")
             }
         } catch (err: unknown) {
-            console.error("Error generating flashcards:", err)
             const message = err instanceof Error ? err.message : "An unknown error occurred"
             setError(`Failed to generate flashcards: ${message}`)
         } finally {
