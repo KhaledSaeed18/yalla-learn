@@ -102,7 +102,7 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
 
         setProcessedData(positionedRoot)
 
-        // Auto-center the mind map
+        // Center the mind map on the root node
         setOffset({ x: 0, y: 0 })
         setScale(0.9)
     }, [data])
@@ -128,9 +128,16 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
         // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-        // Apply transformations
+        // Apply transformations - center on root node
         ctx.save()
-        ctx.translate(canvas.width / (2 * window.devicePixelRatio) + offset.x, canvas.height / (5 * window.devicePixelRatio) + offset.y)
+        const rootX = processedData.x || 0
+        const rootY = processedData.y || 0
+        const rootWidth = processedData.width || NODE_WIDTH
+
+        ctx.translate(
+            canvas.width / (2 * window.devicePixelRatio) - (rootX + rootWidth / 2) * scale + offset.x,
+            canvas.height / (5 * window.devicePixelRatio) - rootY * scale + offset.y
+        )
         ctx.scale(scale, scale)
 
         // Draw function for nodes and connections
@@ -274,8 +281,12 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
         if (isDragging || !processedData || !canvasRef.current) return
 
         const rect = canvasRef.current.getBoundingClientRect()
-        const x = (e.clientX - rect.left - (canvasRef.current.width / (2 * window.devicePixelRatio) + offset.x)) / scale
-        const y = (e.clientY - rect.top - (canvasRef.current.height / (5 * window.devicePixelRatio) + offset.y)) / scale
+        const rootX = processedData.x || 0
+        const rootY = processedData.y || 0
+        const rootWidth = processedData.width || NODE_WIDTH
+
+        const x = (e.clientX - rect.left - (canvasRef.current.width / (2 * window.devicePixelRatio) - (rootX + rootWidth / 2) * scale + offset.x)) / scale
+        const y = (e.clientY - rect.top - (canvasRef.current.height / (5 * window.devicePixelRatio) - rootY * scale + offset.y)) / scale
 
         const isInNode = (node: MindMapNode): boolean => {
             if (node.x === undefined || node.y === undefined) return false
@@ -326,7 +337,7 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
 
     // Handle download
     const handleDownload = () => {
-        if (!canvasRef.current) return
+        if (!canvasRef.current || !processedData) return
 
         // Create a temporary canvas with higher resolution
         const tempCanvas = document.createElement('canvas')
@@ -341,12 +352,18 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
         tempCtx.fillStyle = '#ffffff'
         tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height)
 
-        // Apply transformations
+        // Apply transformations - center on root node for the download
         tempCtx.save()
-        tempCtx.translate(tempCanvas.width / 2, tempCanvas.height / 5)
+        const rootX = processedData.x || 0
+        const rootY = processedData.y || 0
+        const rootWidth = processedData.width || NODE_WIDTH
+
+        tempCtx.translate(
+            tempCanvas.width / 2 - (rootX + rootWidth / 2) * scale,
+            tempCanvas.height / 5 - rootY * scale
+        )
         tempCtx.scale(scale, scale)
 
-        // Redraw on the high-resolution canvas (similar to the drawing code above)
         const drawNode = (node: MindMapNode) => {
             if (!tempCtx || !node) return
 
