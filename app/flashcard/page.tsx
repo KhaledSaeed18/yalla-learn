@@ -80,13 +80,13 @@ export default function FlashcardPage() {
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold text-primary">Flashcard Generator</CardTitle>
                     <CardDescription>
-                        Enter a topic or a list of 'Term: Definition' pairs (one per line) to generate flashcards using AI.
+                        Enter a topic (e.g., "Photosynthesis") or paste your own terms and definitions (one per line, like "Term: Definition") to generate flashcards using AI.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <Textarea
                         id="topicInput"
-                        placeholder="e.g., Ancient Rome, JavaScript Basics, or Term: Definition pairs..."
+                        placeholder="Enter a topic like 'World Capitals' or paste your list:&#10;Ottawa: Capital of Canada&#10;Paris: Capital of France&#10;Tokyo: Capital of Japan"
                         value={topic}
                         onChange={(e) => setTopic(e.target.value)}
                         className="min-h-[120px] resize-y"
