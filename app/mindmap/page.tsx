@@ -55,8 +55,8 @@ export default function MindMapPage() {
     }
 
     return (
-        <div className="flex flex-col h-dvh">
-            <header className="border-b p-4 bg-white">
+        <main className="container px-4 mx-auto my-4 ">
+            <header className="border-b p-4">
                 <h1 className="text-2xl font-bold">Mind Map Generator</h1>
             </header>
 
@@ -83,7 +83,7 @@ export default function MindMapPage() {
 
                 {error && <div className="p-4 bg-red-50 text-red-700 rounded-md">{error}</div>}
 
-                <div className="flex-1 border h-dvh rounded-md bg-white overflow-hidden">
+                <div className="flex-1 border h-dvh rounded-md overflow-hidden">
                     {mindMapData ? (
                         <MindMapCanvas data={mindMapData} />
                     ) : (
@@ -93,6 +93,6 @@ export default function MindMapPage() {
                     )}
                 </div>
             </div>
-        </div>
+        </main>
     )
 }
