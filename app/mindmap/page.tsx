@@ -55,44 +55,67 @@ export default function MindMapPage() {
     }
 
     return (
-        <main className="container px-4 mx-auto my-4 ">
-            <header className="border-b p-4">
+        <div className="flex flex-col container mx-auto px-4 my-4">
+            <div className="mb-4">
                 <h1 className="text-2xl font-bold">Mind Map Generator</h1>
-            </header>
+                <p className="text-muted-foreground mt-1">Create insightful mind maps from any topic</p>
+            </div>
 
-            <div className="p-4 flex flex-col gap-4">
-                <div className="flex gap-2">
-                    <Input
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                        placeholder="Enter a topic for your mind map..."
-                        className="flex-1"
-                        disabled={loading}
-                    />
-                    <Button onClick={generateMindMap} disabled={loading || !prompt.trim()}>
-                        {loading ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Generating...
-                            </>
-                        ) : (
-                            "Generate Mind Map"
-                        )}
-                    </Button>
+            <div className="flex-1 flex flex-col gap-4">
+                <div className="p-4 rounded-lg shadow-sm border">
+                    <div className="flex gap-3 items-center">
+                        <Input
+                            value={prompt}
+                            onChange={(e) => setPrompt(e.target.value)}
+                            placeholder="Enter a topic for your mind map..."
+                            className="flex-1"
+                            disabled={loading}
+                            onKeyDown={(e) => e.key === 'Enter' && !loading && prompt.trim() && generateMindMap()}
+                        />
+                        <Button
+                            onClick={generateMindMap}
+                            disabled={loading || !prompt.trim()}
+                            className="min-w-[140px]"
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Generating...
+                                </>
+                            ) : (
+                                "Generate Mind Map"
+                            )}
+                        </Button>
+                    </div>
+
+                    {error && (
+                        <div className="mt-3 p-3 bg-destructive/10 text-destructive rounded-md text-sm">
+                            {error}
+                        </div>
+                    )}
                 </div>
 
-                {error && <div className="p-4 bg-red-50 text-red-700 rounded-md">{error}</div>}
-
-                <div className="flex-1 border h-dvh rounded-md overflow-hidden">
+                <div className="rounded-lg shadow-sm border h-[70dvh] overflow-hidden">
                     {mindMapData ? (
                         <MindMapCanvas data={mindMapData} />
                     ) : (
-                        <div className="h-full flex items-center justify-center text-gray-400">
-                            {loading ? "Generating mind map..." : 'Enter a topic and click "Generate Mind Map" to start'}
+                        <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
+                            {loading ? (
+                                <>
+                                    <Loader2 className="h-8 w-8 animate-spin mb-4" />
+                                    <p>Generating your mind map...</p>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="text-6xl mb-4">🧠</div>
+                                    <p>Enter a topic and click "Generate Mind Map" to start</p>
+                                    <p className="text-sm mt-2">Try topics like "Artificial Intelligence", "Climate Change", or "Web Development"</p>
+                                </>
+                            )}
                         </div>
                     )}
                 </div>
             </div>
-        </main>
+        </div>
     )
 }
