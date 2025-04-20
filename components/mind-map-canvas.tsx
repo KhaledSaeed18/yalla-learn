@@ -25,8 +25,9 @@ interface MindMapCanvasProps {
 }
 
 const NODE_HEIGHT = 40
+const NODE_WIDTH = 180
 const NODE_PADDING = 16
-const LEVEL_GAP = 160
+const LEVEL_GAP = 100
 const SIBLING_GAP = 30
 const NODE_BORDER_RADIUS = 8
 
@@ -54,7 +55,7 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
             ctx.font = "14px Inter, sans-serif"
             const textWidth = ctx.measureText(node.text).width
 
-            node.width = Math.max(textWidth + NODE_PADDING * 2, 100)
+            node.width = Math.max(textWidth + NODE_PADDING * 2, NODE_WIDTH)
             node.height = NODE_HEIGHT
 
             if (node.children) {
@@ -64,36 +65,36 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
             return node
         }
 
-        // Calculate node positions
+        // Calculate node positions for vertical layout
         const calculateNodePositions = (
             node: MindMapNode,
             level: number,
-            startY: number,
-        ): { node: MindMapNode; height: number } => {
+            startX: number,
+        ): { node: MindMapNode; width: number } => {
             if (!node.children || node.children.length === 0) {
-                node.x = level * LEVEL_GAP
-                node.y = startY
-                return { node, height: NODE_HEIGHT }
+                node.y = level * LEVEL_GAP
+                node.x = startX
+                return { node, width: node.width || NODE_WIDTH }
             }
 
-            let totalHeight = 0
+            let totalWidth = 0
             const processedChildren = []
 
             for (const child of node.children) {
-                const { node: processedChild, height } = calculateNodePositions(child, level + 1, startY + totalHeight)
+                const { node: processedChild, width } = calculateNodePositions(child, level + 1, startX + totalWidth)
                 processedChildren.push(processedChild)
-                totalHeight += height + SIBLING_GAP
+                totalWidth += width + SIBLING_GAP
             }
 
             // Remove the last sibling gap
-            totalHeight -= SIBLING_GAP
+            totalWidth -= SIBLING_GAP
 
             // Position the parent node
-            node.x = level * LEVEL_GAP
-            node.y = startY + totalHeight / 2 - NODE_HEIGHT / 2
+            node.y = level * LEVEL_GAP
+            node.x = startX + totalWidth / 2 - (node.width || NODE_WIDTH) / 2
             node.children = processedChildren
 
-            return { node, height: totalHeight }
+            return { node, width: totalWidth }
         }
 
         const processedRoot = calculateNodeDimensions(root)
@@ -129,7 +130,7 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
 
         // Apply transformations
         ctx.save()
-        ctx.translate(canvas.width / (2 * window.devicePixelRatio) + offset.x, canvas.height / (3 * window.devicePixelRatio) + offset.y)
+        ctx.translate(canvas.width / (2 * window.devicePixelRatio) + offset.x, canvas.height / (5 * window.devicePixelRatio) + offset.y)
         ctx.scale(scale, scale)
 
         // Draw function for nodes and connections
@@ -140,16 +141,16 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
             if (node.children && node.children.length > 0) {
                 for (const child of node.children) {
                     if (node.x !== undefined && node.y !== undefined && child.x !== undefined && child.y !== undefined) {
-                        // Draw curve connection
-                        const startX = node.x + (node.width || 0)
-                        const startY = node.y + NODE_HEIGHT / 2
-                        const endX = child.x
-                        const endY = child.y + NODE_HEIGHT / 2
-                        const controlX = startX + (endX - startX) / 2
+                        // Draw curve connection for vertical layout
+                        const startX = node.x + (node.width || 0) / 2
+                        const startY = node.y + NODE_HEIGHT
+                        const endX = child.x + (child.width || 0) / 2
+                        const endY = child.y
+                        const controlY = startY + (endY - startY) / 2
 
                         ctx.beginPath()
                         ctx.moveTo(startX, startY)
-                        ctx.bezierCurveTo(controlX, startY, controlX, endY, endX, endY)
+                        ctx.bezierCurveTo(startX, controlY, endX, controlY, endX, endY)
 
                         const gradient = ctx.createLinearGradient(startX, startY, endX, endY)
                         gradient.addColorStop(0, node === processedData ? '#3b82f6' : '#94a3b8')
@@ -195,7 +196,7 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
 
                 // Draw rounded rectangle
                 ctx.beginPath()
-                ctx.roundRect(node.x, node.y, node.width || 100, NODE_HEIGHT, NODE_BORDER_RADIUS)
+                ctx.roundRect(node.x, node.y, node.width || NODE_WIDTH, NODE_HEIGHT, NODE_BORDER_RADIUS)
                 ctx.fill()
                 ctx.shadowColor = 'transparent'
                 ctx.stroke()
@@ -207,7 +208,7 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
                 ctx.textBaseline = "middle"
 
                 // Truncate text if too long
-                const maxTextWidth = (node.width || 100) - NODE_PADDING * 2
+                const maxTextWidth = (node.width || NODE_WIDTH) - NODE_PADDING * 2
                 let nodeText = node.text
                 let textWidth = ctx.measureText(nodeText).width
 
@@ -220,7 +221,7 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
                     nodeText = nodeText.slice(0, i) + ellipsis
                 }
 
-                ctx.fillText(nodeText, node.x + (node.width || 100) / 2, node.y + NODE_HEIGHT / 2)
+                ctx.fillText(nodeText, node.x + (node.width || NODE_WIDTH) / 2, node.y + NODE_HEIGHT / 2)
             }
         }
 
@@ -274,14 +275,14 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
 
         const rect = canvasRef.current.getBoundingClientRect()
         const x = (e.clientX - rect.left - (canvasRef.current.width / (2 * window.devicePixelRatio) + offset.x)) / scale
-        const y = (e.clientY - rect.top - (canvasRef.current.height / (3 * window.devicePixelRatio) + offset.y)) / scale
+        const y = (e.clientY - rect.top - (canvasRef.current.height / (5 * window.devicePixelRatio) + offset.y)) / scale
 
         const isInNode = (node: MindMapNode): boolean => {
             if (node.x === undefined || node.y === undefined) return false
 
             return (
                 x >= node.x &&
-                x <= node.x + (node.width || 100) &&
+                x <= node.x + (node.width || NODE_WIDTH) &&
                 y >= node.y &&
                 y <= node.y + NODE_HEIGHT
             )
@@ -342,7 +343,7 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
 
         // Apply transformations
         tempCtx.save()
-        tempCtx.translate(tempCanvas.width / 2, tempCanvas.height / 3)
+        tempCtx.translate(tempCanvas.width / 2, tempCanvas.height / 5)
         tempCtx.scale(scale, scale)
 
         // Redraw on the high-resolution canvas (similar to the drawing code above)
@@ -353,16 +354,16 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
             if (node.children && node.children.length > 0) {
                 for (const child of node.children) {
                     if (node.x !== undefined && node.y !== undefined && child.x !== undefined && child.y !== undefined) {
-                        // Draw curve connection
-                        const startX = node.x + (node.width || 0)
-                        const startY = node.y + NODE_HEIGHT / 2
-                        const endX = child.x
-                        const endY = child.y + NODE_HEIGHT / 2
-                        const controlX = startX + (endX - startX) / 2
+                        // Draw curve connection for vertical layout
+                        const startX = node.x + (node.width || 0) / 2
+                        const startY = node.y + NODE_HEIGHT
+                        const endX = child.x + (child.width || 0) / 2
+                        const endY = child.y
+                        const controlY = startY + (endY - startY) / 2
 
                         tempCtx.beginPath()
                         tempCtx.moveTo(startX, startY)
-                        tempCtx.bezierCurveTo(controlX, startY, controlX, endY, endX, endY)
+                        tempCtx.bezierCurveTo(startX, controlY, endX, controlY, endX, endY)
 
                         const gradient = tempCtx.createLinearGradient(startX, startY, endX, endY)
                         gradient.addColorStop(0, node === processedData ? '#3b82f6' : '#94a3b8')
@@ -404,7 +405,7 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
 
                 // Draw rounded rectangle
                 tempCtx.beginPath()
-                tempCtx.roundRect(node.x, node.y, node.width || 100, NODE_HEIGHT, NODE_BORDER_RADIUS)
+                tempCtx.roundRect(node.x, node.y, node.width || NODE_WIDTH, NODE_HEIGHT, NODE_BORDER_RADIUS)
                 tempCtx.fill()
                 tempCtx.shadowColor = 'transparent'
                 tempCtx.stroke()
@@ -416,7 +417,7 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
                 tempCtx.textBaseline = "middle"
 
                 // Truncate text if too long
-                const maxTextWidth = (node.width || 100) - NODE_PADDING * 2
+                const maxTextWidth = (node.width || NODE_WIDTH) - NODE_PADDING * 2
                 let nodeText = node.text
                 let textWidth = tempCtx.measureText(nodeText).width
 
@@ -429,7 +430,7 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
                     nodeText = nodeText.slice(0, i) + ellipsis
                 }
 
-                tempCtx.fillText(nodeText, node.x + (node.width || 100) / 2, node.y + NODE_HEIGHT / 2)
+                tempCtx.fillText(nodeText, node.x + (node.width || NODE_WIDTH) / 2, node.y + NODE_HEIGHT / 2)
             }
         }
 

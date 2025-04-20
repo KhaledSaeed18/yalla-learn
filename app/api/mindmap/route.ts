@@ -50,7 +50,7 @@ export async function POST(req: Request) {
             ]
         }
         }
-        Ensure the mind map is comprehensive, well-structured, and logical. The JSON should be valid and properly nested.
+        Ensure the mind map is comprehensive, well-structured, and logical, designed to flow from top to bottom rather than left to right. The JSON should be valid and properly nested.
     `;
 
         const response = await generateText({
