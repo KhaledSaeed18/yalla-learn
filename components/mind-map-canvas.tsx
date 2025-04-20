@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useRef, useEffect, useState } from "react"
-import { ZoomIn, ZoomOut, MoveHorizontal, RefreshCw, Download } from "lucide-react"
+import { ZoomIn, ZoomOut, RefreshCw, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
@@ -41,13 +41,11 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
     const [processedData, setProcessedData] = useState<MindMapNode | null>(null)
     const [hoveredNode, setHoveredNode] = useState<MindMapNode | null>(null)
 
-    // Process the data to calculate positions
     useEffect(() => {
         if (!data?.root) return
 
         const root = { ...data.root }
 
-        // Calculate node dimensions
         const calculateNodeDimensions = (node: MindMapNode) => {
             const ctx = document.createElement("canvas").getContext("2d")
             if (!ctx) return node
@@ -65,7 +63,6 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
             return node
         }
 
-        // Calculate node positions for vertical layout
         const calculateNodePositions = (
             node: MindMapNode,
             level: number,
@@ -86,10 +83,8 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
                 totalWidth += width + SIBLING_GAP
             }
 
-            // Remove the last sibling gap
             totalWidth -= SIBLING_GAP
 
-            // Position the parent node
             node.y = level * LEVEL_GAP
             node.x = startX + totalWidth / 2 - (node.width || NODE_WIDTH) / 2
             node.children = processedChildren
@@ -102,12 +97,10 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
 
         setProcessedData(positionedRoot)
 
-        // Center the mind map on the root node
         setOffset({ x: 0, y: 0 })
         setScale(0.9)
     }, [data])
 
-    // Draw the mind map
     useEffect(() => {
         if (!canvasRef.current || !processedData) return
 
@@ -115,7 +108,6 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
         const ctx = canvas.getContext("2d")
         if (!ctx) return
 
-        // Set canvas dimensions
         const container = containerRef.current
         if (container) {
             canvas.width = container.clientWidth * window.devicePixelRatio
@@ -125,10 +117,8 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
             ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
         }
 
-        // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-        // Apply transformations - center on root node
         ctx.save()
         const rootX = processedData.x || 0
         const rootY = processedData.y || 0
@@ -140,15 +130,12 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
         )
         ctx.scale(scale, scale)
 
-        // Draw function for nodes and connections
         const drawNode = (node: MindMapNode) => {
             if (!ctx) return
 
-            // Draw connections to children
             if (node.children && node.children.length > 0) {
                 for (const child of node.children) {
                     if (node.x !== undefined && node.y !== undefined && child.x !== undefined && child.y !== undefined) {
-                        // Draw curve connection for vertical layout
                         const startX = node.x + (node.width || 0) / 2
                         const startY = node.y + NODE_HEIGHT
                         const endX = child.x + (child.width || 0) / 2
@@ -171,16 +158,10 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
                     drawNode(child)
                 }
             }
-
-            // Draw node
-            if (node.x !== undefined && node.y !== undefined) {
-                // Node shadow
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.1)'
+            if (node.x !== undefined && node.y !== undefined) {                ctx.shadowColor = 'rgba(0, 0, 0, 0.1)'
                 ctx.shadowBlur = 5
                 ctx.shadowOffsetX = 2
                 ctx.shadowOffsetY = 2
-
-                // Node background
                 let bgColor, borderColor, textColor
 
                 if (node === hoveredNode) {
@@ -201,20 +182,17 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
                 ctx.strokeStyle = borderColor
                 ctx.lineWidth = 2
 
-                // Draw rounded rectangle
                 ctx.beginPath()
                 ctx.roundRect(node.x, node.y, node.width || NODE_WIDTH, NODE_HEIGHT, NODE_BORDER_RADIUS)
                 ctx.fill()
                 ctx.shadowColor = 'transparent'
                 ctx.stroke()
 
-                // Node text
                 ctx.fillStyle = textColor
                 ctx.font = "14px Inter, system-ui, sans-serif"
                 ctx.textAlign = "center"
                 ctx.textBaseline = "middle"
 
-                // Truncate text if too long
                 const maxTextWidth = (node.width || NODE_WIDTH) - NODE_PADDING * 2
                 let nodeText = node.text
                 let textWidth = ctx.measureText(nodeText).width
@@ -237,7 +215,6 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
         ctx.restore()
     }, [processedData, scale, offset, hoveredNode])
 
-    // Handle window resize
     useEffect(() => {
         const handleResize = () => {
             if (!canvasRef.current || !containerRef.current) return
@@ -252,7 +229,6 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
         return () => window.removeEventListener("resize", handleResize)
     }, [])
 
-    // Handle mouse events for dragging
     const handleMouseDown = (e: React.MouseEvent) => {
         setIsDragging(true)
         setDragStart({ x: e.clientX, y: e.clientY })
@@ -276,7 +252,6 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
         setIsDragging(false)
     }
 
-    // Find node under mouse cursor
     const handleMouseMoveForHover = (e: React.MouseEvent) => {
         if (isDragging || !processedData || !canvasRef.current) return
 
@@ -315,13 +290,11 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
         const hoveredNode = findHoveredNode(processedData)
         setHoveredNode(hoveredNode)
 
-        // Change cursor when over a node
         if (canvasRef.current) {
             canvasRef.current.style.cursor = hoveredNode ? 'pointer' : isDragging ? 'grabbing' : 'grab'
         }
     }
 
-    // Handle zoom
     const handleZoomIn = () => {
         setScale((prev) => Math.min(prev + 0.1, 2))
     }
@@ -335,24 +308,19 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
         setOffset({ x: 0, y: 0 })
     }
 
-    // Handle download
     const handleDownload = () => {
         if (!canvasRef.current || !processedData) return
 
-        // Create a temporary canvas with higher resolution
         const tempCanvas = document.createElement('canvas')
         const tempCtx = tempCanvas.getContext('2d')
         if (!tempCtx) return
 
-        // Set the temporary canvas size
         tempCanvas.width = 1920
         tempCanvas.height = 1080
 
-        // Draw the mind map to this canvas
         tempCtx.fillStyle = '#ffffff'
         tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height)
 
-        // Apply transformations - center on root node for the download
         tempCtx.save()
         const rootX = processedData.x || 0
         const rootY = processedData.y || 0
@@ -367,11 +335,9 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
         const drawNode = (node: MindMapNode) => {
             if (!tempCtx || !node) return
 
-            // Draw connections to children
             if (node.children && node.children.length > 0) {
                 for (const child of node.children) {
                     if (node.x !== undefined && node.y !== undefined && child.x !== undefined && child.y !== undefined) {
-                        // Draw curve connection for vertical layout
                         const startX = node.x + (node.width || 0) / 2
                         const startY = node.y + NODE_HEIGHT
                         const endX = child.x + (child.width || 0) / 2
@@ -395,15 +361,12 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
                 }
             }
 
-            // Draw node
             if (node.x !== undefined && node.y !== undefined) {
-                // Node shadow
                 tempCtx.shadowColor = 'rgba(0, 0, 0, 0.1)'
                 tempCtx.shadowBlur = 5
                 tempCtx.shadowOffsetX = 2
                 tempCtx.shadowOffsetY = 2
 
-                // Node background
                 let bgColor, borderColor, textColor
 
                 if (node === processedData) {
@@ -420,20 +383,17 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
                 tempCtx.strokeStyle = borderColor
                 tempCtx.lineWidth = 2
 
-                // Draw rounded rectangle
                 tempCtx.beginPath()
                 tempCtx.roundRect(node.x, node.y, node.width || NODE_WIDTH, NODE_HEIGHT, NODE_BORDER_RADIUS)
                 tempCtx.fill()
                 tempCtx.shadowColor = 'transparent'
                 tempCtx.stroke()
 
-                // Node text
                 tempCtx.fillStyle = textColor
                 tempCtx.font = "14px Inter, system-ui, sans-serif"
                 tempCtx.textAlign = "center"
                 tempCtx.textBaseline = "middle"
 
-                // Truncate text if too long
                 const maxTextWidth = (node.width || NODE_WIDTH) - NODE_PADDING * 2
                 let nodeText = node.text
                 let textWidth = tempCtx.measureText(nodeText).width
@@ -457,7 +417,6 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
 
         tempCtx.restore()
 
-        // Convert to data URL and trigger download
         const dataUrl = tempCanvas.toDataURL('image/png')
         const link = document.createElement('a')
         link.download = 'mindmap.png'

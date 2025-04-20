@@ -25,7 +25,6 @@ export async function POST(req: Request) {
             });
         }
 
-        // Enhance the prompt to get a structured response suitable for mind maps
         const enhancedPrompt = `
         Create a structured mind map for the following topic: "${prompt}"
         Format the result as a JSON object with the following structure:
@@ -58,21 +57,15 @@ export async function POST(req: Request) {
             prompt: enhancedPrompt,
         });
 
-        // Try to parse the response as JSON
         try {
-            // Check if the response is already a JSON object with a 'text' field
             let jsonContent: string | any = response;
 
-            // Handle case where response is an object with a text property containing the JSON
             if (typeof response === 'object' && response !== null && 'text' in response) {
                 jsonContent = response.text;
             }
 
-            // If we're working with a string, extract JSON content if embedded in text
             if (typeof jsonContent === 'string') {
-                // First, try to match JSON code blocks (```json ... ```)
                 const jsonMatch = jsonContent.match(/```json\s*([\s\S]*?)\s*```/) ||
-                    // Then try to match any JSON-like structure with "root"
                     jsonContent.match(/\{[\s\S]*"root"[\s\S]*\}/);
 
                 if (jsonMatch) {
@@ -80,14 +73,12 @@ export async function POST(req: Request) {
                 }
             }
 
-            // Ensure we're working with a string before attempting to parse
             if (typeof jsonContent !== 'string') {
                 jsonContent = JSON.stringify(jsonContent);
             }
 
             const parsedResponse = JSON.parse(jsonContent.trim());
 
-            // Verify the structure has the expected format with a "root" property
             if (!parsedResponse.root) {
                 throw new Error("Invalid mind map structure - missing root node");
             }
@@ -96,17 +87,6 @@ export async function POST(req: Request) {
                 headers: { 'Content-Type': 'application/json' }
             });
         } catch (parseError) {
-            console.error('Failed to parse AI response as JSON:', parseError);
-
-            // For debugging purposes, log the response structure
-            console.log('Response type:', typeof response);
-            console.log('Response preview:',
-                typeof response === 'string'
-                    ? (response as string).substring(0, 200)
-                    : JSON.stringify(response).substring(0, 200)
-            );
-
-            // If the response is an object with a valid root structure already, try to use it directly
             if (typeof response === 'object' && response !== null &&
                 'text' in response && typeof response.text === 'string') {
                 try {
@@ -121,7 +101,6 @@ export async function POST(req: Request) {
                 }
             }
 
-            // Return the raw text if parsing fails
             return new Response(JSON.stringify({
                 error: 'Failed to generate structured mind map',
                 rawResponse: response
@@ -131,7 +110,6 @@ export async function POST(req: Request) {
             });
         }
     } catch (error) {
-        console.error('Error generating mind map:', error);
         const errorMessage = error instanceof Error
             ? error.message
             : 'An unknown error occurred while processing your request';
