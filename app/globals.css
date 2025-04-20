@@ -428,3 +428,89 @@ button {
   font-size: 1.125rem;
   line-height: 1.75rem;
 }
+
+/* Flashcard Styles */
+.flashcards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  /* Equivalent to gap-6 */
+  margin-top: 2rem;
+  /* Equivalent to mt-8 */
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.flashcard {
+  background-color: transparent;
+  width: 220px;
+  /* Adjust as needed */
+  height: 150px;
+  /* Adjust as needed */
+  border: none;
+  border-radius: 0.625rem;
+  /* ~10px */
+  cursor: pointer;
+  perspective: 1000px;
+  box-shadow: none;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  @apply shadow-sm rounded-lg;
+  /* Use Tailwind for shadow and rounding */
+}
+
+.flashcard.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  /* Safari */
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  /* Equivalent to p-4 */
+  box-sizing: border-box;
+  @apply rounded-lg border bg-card text-card-foreground;
+  /* Use shadcn/ui card styles */
+}
+
+.flashcard-back {
+  transform: rotateY(180deg);
+}
+
+.flashcard:hover .flashcard-inner {
+  @apply shadow-md;
+  /* Increase shadow on hover */
+}
+
+.flashcard:hover .flashcard-front,
+.flashcard:hover .flashcard-back {
+  @apply border-primary;
+  /* Highlight border on hover */
+}
+
+.term {
+  @apply text-lg font-medium;
+  /* Tailwind classes for term */
+}
+
+.definition {
+  @apply text-sm text-muted-foreground;
+  /* Tailwind classes for definition */
+  line-height: 1.4;
+}
