@@ -75,7 +75,7 @@ export default function FlashcardPage() {
     }
 
     return (
-        <div className="container mx-auto md:min-h-[70dvh] flex items-center justify-center py-4 md:py-0 px-4">
+        <div className="container mx-auto py-4 px-4">
             <Card className="w-full">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold text-primary">Flashcard Generator</CardTitle>
@@ -122,10 +122,10 @@ export default function FlashcardPage() {
                                         onClick={() => toggleFlip(index)}
                                     >
                                         <div className="flashcard-inner">
-                                            <div className="flashcard-front">
-                                                <span className="term">{card.term}</span>
+                                            <div className="flashcard-front bg-card text-card-foreground border rounded-lg p-4 flex items-center justify-center text-center">
+                                                <span className="term font-semibold">{card.term}</span>
                                             </div>
-                                            <div className="flashcard-back">
+                                            <div className="flashcard-back bg-primary text-primary-foreground border border-primary rounded-lg p-4 flex items-center justify-center text-center">
                                                 <span className="definition">{card.definition}</span>
                                             </div>
                                         </div>
