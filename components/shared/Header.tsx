@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
-import { Menu, LogOut, LayoutDashboard, ChevronDown, FileImage, Image, MessageSquare, Network, Languages, Sparkles, FileText } from "lucide-react"
+import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
@@ -63,6 +63,12 @@ export function Header() {
                     href: "/mindmap",
                     description: "Turn ideas into clear, visual mindmaps in seconds with AI.",
                     icon: <Network className="size-5 mr-2 text-primary" />
+                },
+                {
+                    title: "Flashcard Generation",
+                    href: "/flashcard",
+                    description: "Generate flashcards from any text or topic for effective learning.",
+                    icon: <SquareMousePointer className="size-5 mr-2 text-primary" />
                 },
                 {
                     title: "Translation",
