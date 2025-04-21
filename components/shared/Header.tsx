@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
-import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer } from "lucide-react"
+import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer, BrainCircuit } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
@@ -98,7 +98,10 @@ export function Header() {
             <div className="container mx-auto flex px-4 h-16 items-center">
                 {/* Logo */}
                 <Link href="/" className="flex items-center space-x-2">
-                    <span className="text-xl font-bold hover:scale-105">Yalla Learn</span>
+                    <span className="text-xl flex justify-center items-center pag-2 font-bold hover:scale-105">
+                        <BrainCircuit className="h-8 w-8 text-primary" />
+                        Yalla Learn
+                    </span>
                 </Link>
 
                 {/* Desktop Navigation Menu */}

@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Github, Twitter, Linkedin } from "lucide-react"
+import { Github, Twitter, Linkedin, BrainCircuit } from "lucide-react"
 
 export function Footer() {
     return (
@@ -9,11 +9,11 @@ export function Footer() {
                     {/* Logo and description */}
                     <div className="space-y-4">
                         <div className="flex items-center space-x-2">
-                            <div className="h-8 w-8 rounded-full bg-primary" />
-                            <span className="text-xl font-bold">Senior Project</span>
+                            <BrainCircuit className="h-8 w-8 text-primary" />
+                            <span className="text-xl font-bold">Yalla Learn</span>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                            A comprehensive platform for managing and showcasing senior projects.
+                            Your sidekick for studying, collaborating, and planning your future, all in one place.
                         </p>
                     </div>
 
@@ -95,7 +95,7 @@ export function Footer() {
                 <div className="mt-8 border-t pt-8">
                     <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
                         <p className="text-xs text-muted-foreground">
-                            © {new Date().getFullYear()} Senior Project. All rights reserved.
+                            © {new Date().getFullYear()} Yalla Learn. All rights reserved.
                         </p>
                         <div className="flex space-x-4 text-xs text-muted-foreground">
                             <Link href="/privacy" className="hover:text-foreground transition-colors">
