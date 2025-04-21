@@ -31,7 +31,7 @@ export function ColorThemeToggle() {
                             >
                                 <div className="relative">
                                     <Palette className="h-[1.2rem] w-[1.2rem]" />
-                                    <div 
+                                    <div
                                         className={`absolute bottom-0 right-0 h-1.5 w-1.5 rounded-full ${getColorForTheme(theme)}`}
                                     />
                                 </div>
@@ -73,6 +73,10 @@ export function ColorThemeToggle() {
 
 function getColorForTheme(theme: string): string {
     switch (theme) {
+        case "default":
+            return "bg-[oklch(0.141_0.005_285.823)]"
+        case "purple":
+            return "bg-[oklch(0.627_0.265_303.9)]"
         case "blue":
             return "bg-[oklch(0.623_0.214_259.815)]"
         case "red":
@@ -86,6 +90,6 @@ function getColorForTheme(theme: string): string {
         case "yellow":
             return "bg-[oklch(0.795_0.184_86.047)]"
         default:
-            return "bg-[oklch(0.623_0.214_259.815)]"
+            return "bg-[oklch(0.141_0.005_285.823)]"
     }
 }

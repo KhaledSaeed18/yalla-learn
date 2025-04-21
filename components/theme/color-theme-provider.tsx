@@ -3,7 +3,7 @@
 import * as React from "react"
 import { createContext, useContext, useEffect, useState, useCallback } from "react"
 
-type ColorTheme = "blue" | "red" | "orange" | "rose" | "green" | "yellow"
+type ColorTheme = "default" | "purple" | "blue" | "red" | "orange" | "rose" | "green" | "yellow"
 
 interface ColorThemeProviderProps {
     children: React.ReactNode
@@ -20,12 +20,12 @@ const ColorThemeContext = createContext<ColorThemeContextType | undefined>(undef
 
 export function ColorThemeProvider({
     children,
-    defaultTheme = "blue",
+    defaultTheme = "default",
 }: ColorThemeProviderProps) {
     const [theme, setTheme] = useState<ColorTheme>(defaultTheme)
     const [mounted, setMounted] = useState(false)
 
-    const themes: ColorTheme[] = ["blue", "red", "orange", "rose", "green", "yellow"]
+    const themes: ColorTheme[] = ["default", "purple", "blue", "red", "orange", "rose", "green", "yellow"]
 
     useEffect(() => {
         const savedTheme = localStorage.getItem("color-theme") as ColorTheme | null
@@ -33,7 +33,7 @@ export function ColorThemeProvider({
             setTheme(savedTheme)
         }
         setMounted(true)
-    }, []) 
+    }, [])
 
     useEffect(() => {
         if (!mounted) return;
@@ -41,7 +41,7 @@ export function ColorThemeProvider({
         document.documentElement.classList.remove(...themes)
         document.documentElement.classList.add(theme)
         localStorage.setItem("color-theme", theme)
-    }, [theme, mounted]) 
+    }, [theme, mounted])
 
     const setThemeCallback = useCallback((newTheme: ColorTheme) => {
         setTheme(newTheme)
