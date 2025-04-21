@@ -1,23 +1,8 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MotionValue, motion, useScroll, useTransform } from "motion/react";
 import { cn } from "@/lib/utils";
-import {
-  IconBrightnessDown,
-  IconBrightnessUp,
-  IconCaretRightFilled,
-  IconCaretUpFilled,
-  IconChevronUp,
-  IconMicrophone,
-  IconMoon,
-  IconPlayerSkipForward,
-  IconPlayerTrackNext,
-  IconPlayerTrackPrev,
-  IconTable,
-  IconVolume,
-  IconVolume2,
-  IconVolume3,
-} from "@tabler/icons-react";
+import { IconBrightnessDown, IconBrightnessUp, IconCaretRightFilled, IconCaretUpFilled, IconChevronUp, IconMicrophone, IconMoon, IconPlayerSkipForward, IconPlayerTrackNext, IconPlayerTrackPrev, IconTable, IconVolume, IconVolume2, IconVolume3 } from "@tabler/icons-react";
 import { IconSearch } from "@tabler/icons-react";
 import { IconWorld } from "@tabler/icons-react";
 import { IconCommand } from "@tabler/icons-react";
