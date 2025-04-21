@@ -98,7 +98,7 @@ export function Header() {
             <div className="container mx-auto flex px-4 h-16 items-center">
                 {/* Logo */}
                 <Link href="/" className="flex items-center space-x-2">
-                    <span className="text-xl font-bold">Logo</span>
+                    <span className="text-xl font-bold hover:scale-105">Yalla Learn</span>
                 </Link>
 
                 {/* Desktop Navigation Menu */}
