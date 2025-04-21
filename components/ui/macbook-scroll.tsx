@@ -55,7 +55,7 @@ export const MacbookScroll = ({
   return (
     <div
       ref={ref}
-      className="flex min-h-[140vh] shrink-0 scale-[0.35] transform flex-col items-center justify-start py-0 [perspective:800px] sm:scale-50 md:scale-100 md:py-28"
+      className="flex min-h-[140vh] shrink-0 scale-[0.35] transform flex-col items-center justify-start py-0 [perspective:800px] sm:scale-50 md:scale-100 md:py-12"
     >
       <motion.h2
         style={{
@@ -64,11 +64,6 @@ export const MacbookScroll = ({
         }}
         className="mb-10 text-center text-3xl font-bold text-neutral-800 dark:text-white"
       >
-        {title || (
-          <span>
-            Yalla Learn
-          </span>
-        )}
       </motion.h2>
       {/* Lid */}
       <Lid
@@ -156,7 +151,7 @@ export const Lid = ({
           src="/images/logo-text.png"
           alt="Yalla Learn"
           fill
-          className="absolute inset-0 rounded-lg object-cover object-left-top"
+          className="absolute inset-0 rounded-lg object-cover object-left-top border-2 border-muted"
         />
       </motion.div>
     </div>
