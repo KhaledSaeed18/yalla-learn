@@ -167,8 +167,8 @@ export const Lid = ({
       >
         <div className="absolute inset-0 rounded-lg bg-[#272729]" />
         <img
-          src={src as string}
-          alt="aceternity logo"
+          src='../../public/images/yalla-learn-high-resolution-logo.png'
+          alt="Yalla Learn"
           className="absolute inset-0 h-full w-full rounded-lg object-cover object-left-top"
         />
       </motion.div>
