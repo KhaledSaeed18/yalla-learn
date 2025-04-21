@@ -11,6 +11,7 @@ import { IconCommand } from "@tabler/icons-react";
 import { IconCaretLeftFilled } from "@tabler/icons-react";
 import { IconCaretDownFilled } from "@tabler/icons-react";
 import { BrainCircuit } from "lucide-react";
+import { useTheme } from "next-themes";
 
 export const MacbookScroll = ({
   src,
@@ -95,7 +96,7 @@ export const MacbookScroll = ({
         {showGradient && (
           <div className="absolute inset-x-0 bottom-0 z-50 h-40 w-full bg-gradient-to-t from-white via-white to-transparent dark:from-black dark:via-black"></div>
         )}
-        {badge && <div className="absolute bottom-4 left-4">{badge}</div>}
+        {badge && <div className="absolute bottom-4 left-4 text-primary">{badge}</div>}
       </div>
     </div>
   );
@@ -114,6 +115,17 @@ export const Lid = ({
   translate: MotionValue<number>;
   src?: string;
 }) => {
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const logoSrc = mounted && (theme === 'dark' || resolvedTheme === 'dark')
+    ? "/images/logo-text-white.png"
+    : "/images/logo-text-black.png";
+
   return (
     <div className="relative [perspective:800px]">
       <div
@@ -130,7 +142,7 @@ export const Lid = ({
           }}
           className="absolute inset-0 flex items-center justify-center rounded-lg bg-[#010101]"
         >
-          <span className="text-white">
+          <span className="text-primary">
             <BrainCircuit />
           </span>
         </div>
@@ -147,12 +159,14 @@ export const Lid = ({
         className="absolute inset-0 h-96 w-[32rem] rounded-2xl bg-[#010101] p-2"
       >
         <div className="absolute inset-0 rounded-lg bg-[#272729]" />
-        <Image
-          src="/images/logo-text.png"
-          alt="Yalla Learn"
-          fill
-          className="absolute inset-0 rounded-lg object-cover object-left-top border-2 border-muted"
-        />
+        {mounted && (
+          <Image
+            src={logoSrc}
+            alt="Yalla Learn"
+            fill
+            className="absolute inset-0 rounded-lg object-cover object-left-top border-none"
+          />
+        )}
       </motion.div>
     </div>
   );
