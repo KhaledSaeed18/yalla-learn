@@ -152,7 +152,7 @@ export const Lid = ({
       >
         <div className="absolute inset-0 rounded-lg bg-[#272729]" />
         <Image
-          src="/images/yalla-learn-high-resolution-logo.png"
+          src="/images/logo-text.png"
           alt="Yalla Learn"
           fill
           className="absolute inset-0 rounded-lg object-cover object-left-top"
