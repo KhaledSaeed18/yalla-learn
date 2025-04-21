@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { MotionValue, motion, useScroll, useTransform } from "motion/react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { IconBrightnessDown, IconBrightnessUp, IconCaretRightFilled, IconCaretUpFilled, IconChevronUp, IconMicrophone, IconMoon, IconPlayerSkipForward, IconPlayerTrackNext, IconPlayerTrackPrev, IconTable, IconVolume, IconVolume2, IconVolume3 } from "@tabler/icons-react";
 import { IconSearch } from "@tabler/icons-react";
@@ -9,7 +10,6 @@ import { IconCommand } from "@tabler/icons-react";
 import { IconCaretLeftFilled } from "@tabler/icons-react";
 import { IconCaretDownFilled } from "@tabler/icons-react";
 import { Badge } from "lucide-react";
-
 
 export const MacbookScroll = ({
   src,
@@ -151,10 +151,11 @@ export const Lid = ({
         className="absolute inset-0 h-96 w-[32rem] rounded-2xl bg-[#010101] p-2"
       >
         <div className="absolute inset-0 rounded-lg bg-[#272729]" />
-        <img
-          src='../../public/images/yalla-learn-high-resolution-logo.png'
+        <Image
+          src="/images/yalla-learn-high-resolution-logo.png"
           alt="Yalla Learn"
-          className="absolute inset-0 h-full w-full rounded-lg object-cover object-left-top"
+          fill
+          className="absolute inset-0 rounded-lg object-cover object-left-top"
         />
       </motion.div>
     </div>
