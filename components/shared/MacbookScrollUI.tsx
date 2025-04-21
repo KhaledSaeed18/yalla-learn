@@ -1,7 +1,7 @@
 import React from "react";
 import { MacbookScroll } from "@/components/ui/macbook-scroll";
 import Link from "next/link";
-import { Badge } from "lucide-react";
+import { BrainCircuit } from "lucide-react";
 
 export function MacbookScrollUi() {
     return (
@@ -14,7 +14,7 @@ export function MacbookScrollUi() {
                 }
                 badge={
                     <Link href={'/'}>
-                        <Badge className="w-6 h-6" />
+                        <BrainCircuit className="w-6 h-6" />
                     </Link>
                 }
                 showGradient={false}

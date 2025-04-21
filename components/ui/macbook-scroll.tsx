@@ -10,7 +10,7 @@ import { IconWorld } from "@tabler/icons-react";
 import { IconCommand } from "@tabler/icons-react";
 import { IconCaretLeftFilled } from "@tabler/icons-react";
 import { IconCaretDownFilled } from "@tabler/icons-react";
-import { Badge } from "lucide-react";
+import { BrainCircuit } from "lucide-react";
 
 export const MacbookScroll = ({
   src,
@@ -136,7 +136,7 @@ export const Lid = ({
           className="absolute inset-0 flex items-center justify-center rounded-lg bg-[#010101]"
         >
           <span className="text-white">
-            <Badge />
+            <BrainCircuit />
           </span>
         </div>
       </div>
