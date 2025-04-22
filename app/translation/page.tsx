@@ -290,7 +290,7 @@ const Translation = () => {
                     </h1>
                     <p className="text-muted-foreground">
                         Translate your text to any of{" "}
-                        <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full bg-primary text-white shadow-sm transition-all duration-300 hover:shadow-md transform hover:scale-105 hover:cursor-pointer">
+                        <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full bg-primary dark:text-black text-white shadow-sm transition-all duration-300 hover:shadow-md transform hover:scale-105 hover:cursor-pointer">
                             {languageOptions.length}
                         </span>
                         {" "}supported languages
