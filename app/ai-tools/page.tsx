@@ -1,3 +1,4 @@
+import { AnimatedBeamMultipleOutputUI } from "@/components/shared/AnimatedBeamMultipleOutputUI"
 import { AnimatedBeamUI } from "@/components/shared/AnimatedBeamUI"
 
 const page = () => {
@@ -5,6 +6,9 @@ const page = () => {
         <main className="flex flex-col w-full container px-4 mx-auto">
             <div className="p-4">
                 <AnimatedBeamUI />
+            </div>
+            <div className="p-4">
+                <AnimatedBeamMultipleOutputUI/>
             </div>
         </main>
     )
