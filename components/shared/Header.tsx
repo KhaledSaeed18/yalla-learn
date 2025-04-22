@@ -18,7 +18,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { toast } from "sonner"
 import { logout } from "@/lib/auth/logout"
 import { ColorThemeToggle } from "../theme/color-theme-toggle"
-import { title } from "process"
 
 export function Header() {
     const [isOpen, setIsOpen] = useState(false)
@@ -47,15 +46,19 @@ export function Header() {
     >(({ className, title, icon, children, ...props }, ref) => {
         return (
             <li>
-                <NavigationMenuLink asChild>
+                <NavigationMenuLink asChild className="transition-colors hover:bg-accent focus:bg-accent focus:text-accent-foreground">
                     <a
                         ref={ref}
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none group"
                         {...props}
                     >
                         <div className="text-sm font-medium leading-none flex items-center">
-                            {icon}
-                            {title}
+                            <span className="transition-transform duration-300 group-hover:scale-105">
+                                {icon}
+                            </span>
+                            <span className="transition-colors duration-300 group-hover:text-primary">
+                                {title}
+                            </span>
                         </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                             {children}
@@ -149,12 +152,20 @@ export function Header() {
                                             </NavigationMenuTrigger>
                                             <NavigationMenuContent>
                                                 <div className="flex">
-                                                    <Link href={item.href} className="w-1/3 p-4 bg-accent text-accent-foreground flex flex-col gap-2 justify-end">
-                                                        <div className="">
+                                                    <Link
+                                                        href={item.href}
+                                                        className="w-1/3 p-4 bg-accent text-accent-foreground flex flex-col gap-2 justify-end rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg hover:bg-accent/90 relative overflow-hidden group"
+                                                    >
+                                                        <div className="transition-transform duration-300 group-hover:translate-y-1">
                                                             {item.descriptionIcon}
                                                         </div>
-                                                        <h3 className="text-lg font-bold">{item.title}</h3>
-                                                        <p className="text-sm">{item.description}</p>
+                                                        <h3 className="text-lg font-bold transition-colors duration-300 group-hover:text-primary">
+                                                            {item.title}
+                                                        </h3>
+                                                        <p className="text-sm transition-opacity duration-300 group-hover:opacity-90">
+                                                            {item.description}
+                                                        </p>
+                                                        <div className="absolute bottom-0 left-0 w-full h-1 bg-primary transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"></div>
                                                     </Link>
                                                     <ul className="grid w-2/3 gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                                                         {item.content.map((subItem) => (
