@@ -48,31 +48,31 @@ export function Header() {
             content: [
                 {
                     title: "PDF AI Chat",
-                    href: "/pdf",
+                    href: "/ai-tools/pdf",
                     description: "Chat with PDFs - summarize, search and extract info instantly using AI.",
                     icon: <FileText className="size-5 mr-2 text-primary" />
                 },
                 {
                     title: "Image AI Chat",
-                    href: "/image",
+                    href: "/ai-tools/image",
                     description: "Upload an image and chat with AI to explore, analyze, and understand it.",
                     icon: <Image className="size-5 mr-2 text-primary" />
                 },
                 {
                     title: "Mindmap Creation",
-                    href: "/mindmap",
+                    href: "/ai-tools/mindmap",
                     description: "Turn ideas into clear, visual mindmaps in seconds with AI.",
                     icon: <Network className="size-5 mr-2 text-primary" />
                 },
                 {
                     title: "Flashcard Generation",
-                    href: "/flashcard",
+                    href: "/ai-tools/flashcard",
                     description: "Generate flashcards from any text or topic for effective learning.",
                     icon: <SquareMousePointer className="size-5 mr-2 text-primary" />
                 },
                 {
                     title: "Translation",
-                    href: "/translation",
+                    href: "/ai-tools/translation",
                     description: "Translate text into 130+ languages instantly and accurately.",
                     icon: <Languages className="size-5 mr-2 text-primary" />
                 }
