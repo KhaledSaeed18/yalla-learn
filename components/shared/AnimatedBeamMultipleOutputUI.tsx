@@ -1,7 +1,6 @@
 "use client";
 
 import React, { forwardRef, useRef } from "react";
-
 import { cn } from "@/lib/utils";
 import { AnimatedBeam } from "@/components/magicui/animated-beam";
 import { BrainCircuit, FileText, Image, Languages, Network, SquareMousePointer } from "lucide-react";
@@ -14,7 +13,7 @@ const Circle = forwardRef<
         <div
             ref={ref}
             className={cn(
-                "z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white p-3",
+                "z-10 flex size-12 items-center justify-center rounded-full border-2 border-primary bg-white p-3",
                 className,
             )}
         >
@@ -55,7 +54,7 @@ export function AnimatedBeamMultipleOutputUI({
                 </div>
                 <div className="flex flex-col justify-center">
                     <Circle ref={div6Ref} className="size-16">
-                        <BrainCircuit className="text-primary" />
+                        <BrainCircuit className="text-black" />
                     </Circle>
                 </div>
                 <div className="flex flex-col justify-center gap-2">
