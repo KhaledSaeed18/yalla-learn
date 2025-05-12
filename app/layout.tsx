@@ -21,9 +21,50 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Senior Project",
-  description: "Senior Project",
-  keywords: ["senior project"],
+  title: "Yalla Learn",
+  description: "A collaborative platform for students combining productivity and AI-powered tools for learning, organization, and teamwork with marketplace features",
+  keywords: ["education", "student platform", "productivity", "AI tools", "marketplace", "collaboration", "gig services", "expense tracking"],
+  metadataBase: new URL('https://yalla-learn.me'),
+  authors: [
+    { name: 'Yalla Learn Team' }
+  ],
+  creator: 'Yalla Learn',
+  publisher: 'Yalla Learn',
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://yalla-learn.me',
+    title: 'Yalla Learn',
+    description: 'All-in-one platform for students: productivity tools, AI learning assistance, marketplace, and expense tracking',
+    siteName: 'Yalla Learn',
+    images: [
+      {
+        url: '/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Yalla Learn - Student Collaboration Platform',
+      }
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Yalla Learn',
+    description: 'All-in-one platform for students: productivity tools, AI learning assistance, marketplace, and expense tracking',
+    images: ['/images/twitter-image.jpg'],
+    creator: '@yallalearn',
+    site: '@yallalearn',
+  },
+  appleWebApp: {
+    title: 'Yalla Learn',
+    statusBarStyle: 'black-translucent',
+    capable: true,
+  },
+  applicationName: 'Yalla Learn',
+  category: 'education',
 };
 
 export default function RootLayout({
@@ -38,24 +79,23 @@ export default function RootLayout({
       >
         <ReduxProvider>
           <QueryProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <ColorThemeProvider defaultTheme="blue">
-                  <FontSizeProvider defaultSize="medium">
-                    <HeaderWrapper />
-                    <main>
-                      {children}
-                    </main>
-                    <FooterWrapper />
-                    <ThemeAwareToaster />
-                  </FontSizeProvider>
-                </ColorThemeProvider>
-                <ThemeAwareToaster />
-              </ThemeProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <ColorThemeProvider defaultTheme="blue">
+                <FontSizeProvider defaultSize="medium">
+                  <HeaderWrapper />
+                  <main>
+                    {children}
+                  </main>
+                  <FooterWrapper />
+                  <ThemeAwareToaster />
+                </FontSizeProvider>
+              </ColorThemeProvider>
+            </ThemeProvider>
           </QueryProvider>
         </ReduxProvider>
       </body>
