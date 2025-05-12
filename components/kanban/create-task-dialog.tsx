@@ -2,7 +2,6 @@
 
 import type React from "react"
 import { useState } from "react"
-import { v4 as uuidv4 } from "uuid"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,18 +10,16 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, X } from "lucide-react"
+import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
-import type { Column, Task, Priority } from "@/lib/kanban/types"
+import { KanbanColumn, TaskPriority } from "@/types/kanban/kanban.types"
 
 interface CreateTaskDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onCreateTask: (task: Task) => void
-  column: Column
-  existingTags: string[]
+  onCreateTask: (title: string, description: string | null, priority: TaskPriority, dueDate: string | null) => void
+  column: KanbanColumn
 }
 
 export default function CreateTaskDialog({
@@ -30,59 +27,31 @@ export default function CreateTaskDialog({
   onOpenChange,
   onCreateTask,
   column,
-  existingTags,
 }: CreateTaskDialogProps) {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
-  const [priority, setPriority] = useState<Priority>("medium")
+  const [priority, setPriority] = useState<TaskPriority>("MEDIUM")
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined)
-  const [tags, setTags] = useState<string[]>([])
-  const [newTag, setNewTag] = useState("")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!title.trim()) return
 
-    const newTask: Task = {
-      id: uuidv4(),
-      title: title.trim(),
-      description: description.trim(),
+    onCreateTask(
+      title.trim(),
+      description.trim() || null,
       priority,
-      dueDate: dueDate ? dueDate.toISOString() : undefined,
-      tags,
-      listId: column.id,
-      createdAt: new Date().toISOString(),
-    }
-
-    onCreateTask(newTask)
+      dueDate ? dueDate.toISOString() : null
+    )
     resetForm()
   }
 
   const resetForm = () => {
     setTitle("")
     setDescription("")
-    setPriority("medium")
+    setPriority("MEDIUM")
     setDueDate(undefined)
-    setTags([])
-    setNewTag("")
-  }
-
-  const handleAddTag = () => {
-    if (newTag.trim() && !tags.includes(newTag.trim())) {
-      setTags([...tags, newTag.trim()])
-      setNewTag("")
-    }
-  }
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove))
-  }
-
-  const handleSelectExistingTag = (tag: string) => {
-    if (!tags.includes(tag)) {
-      setTags([...tags, tag])
-    }
   }
 
   return (
@@ -118,15 +87,15 @@ export default function CreateTaskDialog({
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="priority">Priority</Label>
-                <Select value={priority} onValueChange={(value) => setPriority(value as Priority)}>
+                <Select value={priority} onValueChange={(value) => setPriority(value as TaskPriority)}>
                   <SelectTrigger id="priority">
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
+                    <SelectItem value="LOW">Low</SelectItem>
+                    <SelectItem value="MEDIUM">Medium</SelectItem>
+                    <SelectItem value="HIGH">High</SelectItem>
+                    <SelectItem value="URGENT">Urgent</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -148,55 +117,6 @@ export default function CreateTaskDialog({
                   </PopoverContent>
                 </Popover>
               </div>
-            </div>
-
-            <div className="grid gap-2">
-              <Label>Tags</Label>
-              <div className="flex flex-wrap gap-1 mb-2">
-                {tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                    {tag}
-                    <X className="h-3 w-3 cursor-pointer" onClick={() => handleRemoveTag(tag)} />
-                  </Badge>
-                ))}
-              </div>
-
-              <div className="flex gap-2">
-                <Input
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  placeholder="Add a tag..."
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault()
-                      handleAddTag()
-                    }
-                  }}
-                />
-                <Button type="button" onClick={handleAddTag} disabled={!newTag.trim()}>
-                  Add
-                </Button>
-              </div>
-
-              {existingTags.length > 0 && (
-                <div className="mt-2">
-                  <Label className="text-xs">Existing Tags</Label>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {existingTags
-                      .filter((tag) => !tags.includes(tag))
-                      .map((tag) => (
-                        <Badge
-                          key={tag}
-                          variant="outline"
-                          className="cursor-pointer"
-                          onClick={() => handleSelectExistingTag(tag)}
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
           <DialogFooter>

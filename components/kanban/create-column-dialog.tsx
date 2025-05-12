@@ -1,19 +1,16 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { v4 as uuidv4 } from "uuid"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import type { Column } from "@/lib/kanban/types"
 
 interface CreateColumnDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onCreateColumn: (column: Column) => void
+  onCreateColumn: (title: string, isDefault?: boolean) => void
   boardId: string
 }
 
@@ -25,15 +22,7 @@ export default function CreateColumnDialog({ open, onOpenChange, onCreateColumn,
 
     if (!title.trim()) return
 
-    const newColumn: Column = {
-      id: uuidv4(),
-      title: title.trim(),
-      tasks: [],
-      boardId,
-      isDefault: false,
-    }
-
-    onCreateColumn(newColumn)
+    onCreateColumn(title.trim(), false)
     setTitle("")
   }
 

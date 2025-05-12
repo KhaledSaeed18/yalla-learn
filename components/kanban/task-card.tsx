@@ -1,14 +1,22 @@
 "use client"
 
 import { useDrag } from "react-dnd"
-import { Calendar, Tag } from "lucide-react"
+import { Calendar } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { type Task, priorityColors } from "@/lib/kanban/types"
 import { formatDate } from "@/lib/kanban/utils"
 import { useRef } from "react"
+import { KanbanTask, TaskPriority } from "@/types/kanban/kanban.types"
+
+// Priority color mapping
+const priorityColors: Record<TaskPriority, string> = {
+  LOW: "#22c55e", // green-500
+  MEDIUM: "#3b82f6", // blue-500
+  HIGH: "#f97316", // orange-500
+  URGENT: "#ef4444", // red-500
+}
 
 interface TaskCardProps {
-  task: Task
+  task: KanbanTask
   onClick: () => void
 }
 
@@ -16,7 +24,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [{ isDragging }, drag] = useDrag({
     type: "TASK",
-    item: { id: task.id, columnId: task.listId },
+    item: { id: task.id, columnId: task.columnId },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -34,15 +42,6 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
       <h4 className="font-medium text-sm mb-1">{task.title}</h4>
 
       {task.description && <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{task.description}</p>}
-
-      <div className="flex flex-wrap gap-1 mb-2">
-        {task.tags.map((tag) => (
-          <Badge key={tag} variant="secondary" className="text-xs px-1 py-0">
-            <Tag className="h-3 w-3 mr-1" />
-            {tag}
-          </Badge>
-        ))}
-      </div>
 
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         {task.dueDate && (

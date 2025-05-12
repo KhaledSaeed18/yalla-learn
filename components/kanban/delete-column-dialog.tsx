@@ -9,18 +9,16 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import type { Column } from "@/lib/kanban/types"
+import { KanbanColumn } from "@/types/kanban/kanban.types"
 
 interface DeleteColumnDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  column: Column | null
+  column: KanbanColumn
   onConfirmDelete: (columnId: string) => void
 }
 
 export default function DeleteColumnDialog({ open, onOpenChange, column, onConfirmDelete }: DeleteColumnDialogProps) {
-  if (!column) return null
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">

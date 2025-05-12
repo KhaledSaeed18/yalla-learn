@@ -1,11 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
-import { Plus, Filter, Search } from "lucide-react"
+import { Plus, CircleX, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import BoardColumn from "./board-column"
 import CreateBoardDialog from "./create-board-dialog"
@@ -13,198 +12,168 @@ import CreateColumnDialog from "./create-column-dialog"
 import TaskDetailsDialog from "./task-details-dialog"
 import CreateTaskDialog from "./create-task-dialog"
 import DeleteColumnDialog from "./delete-column-dialog"
-import type { Board, Column, Task, Priority } from "@/lib/kanban/types"
-import { generateSampleData } from "@/lib/kanban/sample-data"
+import { useGetBoards, useGetBoard, useCreateBoard, useDeleteBoard, useCreateColumn, useDeleteColumn, useCreateTask, useDeleteTask } from "@/hooks/kanban/useKanban"
+import { Skeleton } from "@/components/ui/skeleton"
+import { KanbanTask, TaskPriority } from "@/types/kanban/kanban.types"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function KanbanBoard() {
-  const [boards, setBoards] = useState<Board[]>([])
-  const [selectedBoard, setSelectedBoard] = useState<Board | null>(null)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [filterPriority, setFilterPriority] = useState<Priority | "all">("all")
-  const [filterTag, setFilterTag] = useState<string | "all">("all")
+  // State for UI controls
   const [showCreateBoard, setShowCreateBoard] = useState(false)
   const [showCreateColumn, setShowCreateColumn] = useState(false)
   const [showCreateTask, setShowCreateTask] = useState(false)
-  const [selectedColumn, setSelectedColumn] = useState<Column | null>(null)
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [showTaskDetails, setShowTaskDetails] = useState(false)
-  const [allTags, setAllTags] = useState<string[]>([])
   const [showDeleteColumn, setShowDeleteColumn] = useState(false)
-  const [columnToDelete, setColumnToDelete] = useState<Column | null>(null)
+  const [selectedBoardId, setSelectedBoardId] = useState<string>("")
+  const [selectedColumnId, setSelectedColumnId] = useState<string>("")
+  const [selectedTaskId, setSelectedTaskId] = useState<string>("")
+  const [filterPriority, setFilterPriority] = useState<TaskPriority | "ALL">("ALL")
 
-  useEffect(() => {
-    const sampleData = generateSampleData()
-    setBoards(sampleData)
-    setSelectedBoard(sampleData[0])
+  // React Query hooks
+  const { data: boards, isLoading: isBoardsLoading, error: boardsError } = useGetBoards()
+  const {
+    data: activeBoard,
+    isLoading: isBoardLoading,
+    error: boardError
+  } = useGetBoard(selectedBoardId)
 
-    const tags = new Set<string>()
-    sampleData.forEach((board) => {
-      board.columns.forEach((column) => {
-        column.tasks.forEach((task) => {
-          task.tags.forEach((tag) => tags.add(tag))
-        })
-      })
-    })
-    setAllTags(Array.from(tags))
-  }, [])
+  const createBoardMutation = useCreateBoard()
+  const deleteBoardMutation = useDeleteBoard()
+  const createColumnMutation = useCreateColumn()
+  const deleteColumnMutation = useDeleteColumn()
+  const createTaskMutation = useCreateTask()
+  const deleteTaskMutation = useDeleteTask()
 
-  const handleCreateBoard = (newBoard: Board) => {
-    setBoards([...boards, newBoard])
-    setSelectedBoard(newBoard)
-    setShowCreateBoard(false)
-  }
+  // Helper to find the selected column
+  const selectedColumn = activeBoard?.columns.find(column => column.id === selectedColumnId) || null
 
-  const handleCreateColumn = (newColumn: Column) => {
-    if (!selectedBoard) return
+  // Helper to find the selected task
+  const selectedTask = selectedColumn?.tasks.find(task => task.id === selectedTaskId) || null
 
-    const updatedBoard = {
-      ...selectedBoard,
-      columns: [...selectedBoard.columns, newColumn],
-    }
-
-    setBoards(boards.map((board) => (board.id === selectedBoard.id ? updatedBoard : board)))
-
-    setSelectedBoard(updatedBoard)
-    setShowCreateColumn(false)
-  }
-
-  const handleCreateTask = (newTask: Task) => {
-    if (!selectedBoard || !selectedColumn) return
-
-    const newTags = newTask.tags.filter((tag) => !allTags.includes(tag))
-    if (newTags.length > 0) {
-      setAllTags([...allTags, ...newTags])
-    }
-
-    const updatedColumns = selectedBoard.columns.map((column) => {
-      if (column.id === selectedColumn.id) {
-        return {
-          ...column,
-          tasks: [...column.tasks, newTask],
+  // Function to handle creating a new board
+  const handleCreateBoard = (title: string) => {
+    createBoardMutation.mutate(
+      { title },
+      {
+        onSuccess: (response) => {
+          // Select the newly created board
+          setSelectedBoardId(response.data.board.id)
+          setShowCreateBoard(false)
         }
       }
-      return column
-    })
-
-    const updatedBoard = {
-      ...selectedBoard,
-      columns: updatedColumns,
-    }
-
-    setBoards(boards.map((board) => (board.id === selectedBoard.id ? updatedBoard : board)))
-
-    setSelectedBoard(updatedBoard)
-    setShowCreateTask(false)
+    )
   }
 
+  // Function to handle creating a new column
+  const handleCreateColumn = (title: string, isDefault: boolean = false) => {
+    if (!selectedBoardId) return
+
+    createColumnMutation.mutate(
+      {
+        boardId: selectedBoardId,
+        columnData: {
+          title,
+          isDefault
+        }
+      },
+      {
+        onSuccess: () => {
+          setShowCreateColumn(false)
+        }
+      }
+    )
+  }
+
+  // Function to handle creating a new task
+  const handleCreateTask = (title: string, description: string | null, priority: TaskPriority, dueDate: string | null) => {
+    if (!selectedBoardId || !selectedColumnId) return
+
+    createTaskMutation.mutate(
+      {
+        columnId: selectedColumnId,
+        taskData: {
+          title,
+          description,
+          priority,
+          dueDate
+        },
+        boardId: selectedBoardId
+      },
+      {
+        onSuccess: () => {
+          setShowCreateTask(false)
+        }
+      }
+    )
+  }
+
+  // Function to handle moving a task between columns
   const handleMoveTask = (taskId: string, sourceColumnId: string, targetColumnId: string) => {
-    if (!selectedBoard) return
-
-    let movedTask: Task | null = null
-
-    const updatedColumns = selectedBoard.columns.map((column) => {
-      if (column.id === sourceColumnId) {
-        const taskIndex = column.tasks.findIndex((task) => task.id === taskId)
-        if (taskIndex !== -1) {
-          movedTask = column.tasks[taskIndex]
-          return {
-            ...column,
-            tasks: column.tasks.filter((task) => task.id !== taskId),
-          }
-        }
-      }
-      return column
-    })
-
-    if (!movedTask) return
-
-    const finalColumns = updatedColumns.map((column) => {
-      if (column.id === targetColumnId && movedTask) {
-        return {
-          ...column,
-          tasks: [...column.tasks, { ...movedTask, listId: targetColumnId }],
-        }
-      }
-      return column
-    })
-
-    const updatedBoard = {
-      ...selectedBoard,
-      columns: finalColumns,
-    }
-
-    setBoards(boards.map((board) => (board.id === selectedBoard.id ? updatedBoard : board)))
-
-    setSelectedBoard(updatedBoard)
+    // This would need a backend API endpoint to move tasks
+    // For now, we'll implement a simple client-side solution
+    console.log("Moving task", taskId, "from", sourceColumnId, "to", targetColumnId)
   }
 
-  const handleUpdateTask = (updatedTask: Task) => {
-    if (!selectedBoard) return
-
-    const newTags = updatedTask.tags.filter((tag) => !allTags.includes(tag))
-    if (newTags.length > 0) {
-      setAllTags([...allTags, ...newTags])
-    }
-
-    const updatedColumns = selectedBoard.columns.map((column) => {
-      if (column.id === updatedTask.listId) {
-        return {
-          ...column,
-          tasks: column.tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task)),
-        }
-      }
-      return column
-    })
-
-    const updatedBoard = {
-      ...selectedBoard,
-      columns: updatedColumns,
-    }
-
-    setBoards(boards.map((board) => (board.id === selectedBoard.id ? updatedBoard : board)))
-
-    setSelectedBoard(updatedBoard)
-    setSelectedTask(null)
-    setShowTaskDetails(false)
-  }
-
+  // Function to handle deleting a task
   const handleDeleteTask = (taskId: string) => {
-    if (!selectedBoard) return
+    if (!selectedBoardId) return
 
-    const updatedColumns = selectedBoard.columns.map((column) => ({
-      ...column,
-      tasks: column.tasks.filter((task) => task.id !== taskId),
-    }))
-
-    const updatedBoard = {
-      ...selectedBoard,
-      columns: updatedColumns,
-    }
-
-    setBoards(boards.map((board) => (board.id === selectedBoard.id ? updatedBoard : board)))
-
-    setSelectedBoard(updatedBoard)
-    setSelectedTask(null)
-    setShowTaskDetails(false)
+    deleteTaskMutation.mutate(
+      {
+        id: taskId,
+        boardId: selectedBoardId
+      },
+      {
+        onSuccess: () => {
+          setSelectedTaskId("")
+          setShowTaskDetails(false)
+        }
+      }
+    )
   }
 
+  // Function to handle deleting a column
+  const handleDeleteColumn = (columnId: string) => {
+    if (!selectedBoardId) return
+
+    const column = activeBoard?.columns.find(col => col.id === columnId)
+    if (!column) return
+
+    if (column.isDefault) return  // Cannot delete default columns
+    if (column.tasks.length > 0) return  // Cannot delete columns with tasks
+
+    setSelectedColumnId(columnId)
+    setShowDeleteColumn(true)
+  }
+
+  // Function to confirm column deletion
+  const confirmDeleteColumn = (columnId: string) => {
+    if (!selectedBoardId) return
+
+    deleteColumnMutation.mutate(
+      {
+        columnId,
+        boardId: selectedBoardId
+      },
+      {
+        onSuccess: () => {
+          setSelectedColumnId("")
+          setShowDeleteColumn(false)
+        }
+      }
+    )
+  }
+
+  // Function to get filtered tasks
   const getFilteredTasks = () => {
-    if (!selectedBoard) return []
+    if (!activeBoard) return []
 
-    const filteredTasks: Task[] = []
+    let filteredTasks: KanbanTask[] = []
 
-    selectedBoard.columns.forEach((column) => {
+    activeBoard.columns.forEach((column) => {
       column.tasks.forEach((task) => {
-        const matchesSearch =
-          searchQuery === "" ||
-          task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          task.description.toLowerCase().includes(searchQuery.toLowerCase())
-
-        const matchesPriority = filterPriority === "all" || task.priority === filterPriority
-
-        const matchesTag = filterTag === "all" || task.tags.includes(filterTag)
-
-        if (matchesSearch && matchesPriority && matchesTag) {
+        const matchesPriority = filterPriority === "ALL" || task.priority === filterPriority
+        if (matchesPriority) {
           filteredTasks.push(task)
         }
       })
@@ -213,50 +182,58 @@ export default function KanbanBoard() {
     return filteredTasks
   }
 
-  const getCompletionPercentage = () => {
-    if (!selectedBoard) return 0
-
-    let totalTasks = 0
-    let completedTasks = 0
-
-    selectedBoard.columns.forEach((column) => {
-      totalTasks += column.tasks.length
-      if (column.title.toLowerCase() === "done") {
-        completedTasks += column.tasks.length
-      }
-    })
-
-    return totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100)
+  // Render loading state
+  if (isBoardsLoading) {
+    return (
+      <div className="flex flex-col space-y-4">
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-10 w-[250px]" />
+          <Skeleton className="h-10 w-[150px]" />
+        </div>
+        <div className="flex space-x-4 overflow-x-auto pb-4">
+          <Skeleton className="h-[500px] w-[300px] flex-shrink-0" />
+          <Skeleton className="h-[500px] w-[300px] flex-shrink-0" />
+          <Skeleton className="h-[500px] w-[300px] flex-shrink-0" />
+        </div>
+      </div>
+    )
   }
 
-  const handleDeleteColumn = (columnId: string) => {
-    if (!selectedBoard) return
-
-    const column = selectedBoard.columns.find((col) => col.id === columnId)
-    if (!column) return
-
-    if (column.isDefault) return
-
-    if (column.tasks.length > 0) return
-
-    setColumnToDelete(column)
-    setShowDeleteColumn(true)
+  // Render error state
+  if (boardsError) {
+    return (
+      <Alert variant="destructive" className="mb-4">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>
+          Failed to load Kanban boards. Please try again later.
+        </AlertDescription>
+      </Alert>
+    )
   }
 
-  const confirmDeleteColumn = (columnId: string) => {
-    if (!selectedBoard) return
+  // Render empty state
+  if (!boards || boards.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10">
+        <CircleX className="h-16 w-16 text-muted-foreground mb-4" />
+        <h2 className="text-2xl font-bold mb-2">No Boards Found</h2>
+        <p className="text-muted-foreground mb-6">Get started by creating your first board.</p>
+        <Button onClick={() => setShowCreateBoard(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Create Board
+        </Button>
 
-    const updatedColumns = selectedBoard.columns.filter((column) => column.id !== columnId)
-
-    const updatedBoard = {
-      ...selectedBoard,
-      columns: updatedColumns,
-    }
-
-    setBoards(boards.map((board) => (board.id === selectedBoard.id ? updatedBoard : board)))
-
-    setSelectedBoard(updatedBoard)
-    setColumnToDelete(null)
+        {/* Create board dialog */}
+        {showCreateBoard && (
+          <CreateBoardDialog
+            open={showCreateBoard}
+            onOpenChange={setShowCreateBoard}
+            onCreateBoard={handleCreateBoard}
+          />
+        )}
+      </div>
+    )
   }
 
   return (
@@ -265,15 +242,10 @@ export default function KanbanBoard() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div className="flex items-center gap-2">
             <Select
-              value={selectedBoard?.id || ""}
+              value={selectedBoardId}
               onValueChange={(value) => {
-                const board = boards.find((b) => b.id === value)
-                if (board) {
-                  setSelectedBoard(board)
-                  setSearchQuery("")
-                  setFilterPriority("all")
-                  setFilterTag("all")
-                }
+                setSelectedBoardId(value)
+                setFilterPriority("ALL")
               }}
             >
               <SelectTrigger className="w-[180px]">
@@ -293,62 +265,48 @@ export default function KanbanBoard() {
             </Button>
           </div>
 
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-2 w-full md:w-auto">
-            <div className="relative w-full md:w-auto">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search tasks..."
-                className="pl-8 w-full md:w-[200px]"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-
-            <div className="flex items-center gap-2 w-full md:w-auto">
-              <Select value={filterPriority} onValueChange={(value) => setFilterPriority(value as Priority | "all")}>
-                <SelectTrigger className="w-full md:w-[130px]">
-                  <Filter className="h-4 w-4 mr-1" />
-                  <SelectValue placeholder="Priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Priorities</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={filterTag} onValueChange={(value) => setFilterTag(value)}>
-                <SelectTrigger className="w-full md:w-[130px]">
-                  <Filter className="h-4 w-4 mr-1" />
-                  <SelectValue placeholder="Tag" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Tags</SelectItem>
-                  {allTags.map((tag) => (
-                    <SelectItem key={tag} value={tag}>
-                      {tag}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <Select
+              value={filterPriority}
+              onValueChange={(value) => setFilterPriority(value as TaskPriority | "ALL")}
+            >
+              <SelectTrigger className="w-full md:w-[130px]">
+                <SelectValue placeholder="Priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All Priorities</SelectItem>
+                <SelectItem value="LOW">Low</SelectItem>
+                <SelectItem value="MEDIUM">Medium</SelectItem>
+                <SelectItem value="HIGH">High</SelectItem>
+                <SelectItem value="URGENT">Urgent</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        {selectedBoard && (
+        {isBoardLoading && (
+          <div className="flex space-x-4 overflow-x-auto pb-4">
+            <Skeleton className="h-[500px] w-[300px] flex-shrink-0" />
+            <Skeleton className="h-[500px] w-[300px] flex-shrink-0" />
+            <Skeleton className="h-[500px] w-[300px] flex-shrink-0" />
+          </div>
+        )}
+
+        {boardError && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              Failed to load board details. Please try again later.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {activeBoard && !isBoardLoading && (
           <>
             <div className="flex items-center justify-between mb-4">
-              <h1 className="text-2xl font-bold">{selectedBoard.title}</h1>
+              <h1 className="text-2xl font-bold">{activeBoard.title}</h1>
               <div className="flex items-center gap-2">
-                <div className="text-sm text-muted-foreground">Completion: {getCompletionPercentage()}%</div>
-                <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-green-500 rounded-full"
-                    style={{ width: `${getCompletionPercentage()}%` }}
-                  ></div>
-                </div>
                 <Button variant="outline" size="sm" onClick={() => setShowCreateColumn(true)}>
                   <Plus className="h-4 w-4 mr-1" />
                   Add Column
@@ -356,50 +314,66 @@ export default function KanbanBoard() {
               </div>
             </div>
 
-            <div className="flex overflow-x-auto pb-4 gap-4">
-              {selectedBoard.columns.map((column) => (
-                <BoardColumn
-                  key={column.id}
-                  column={column}
-                  onMoveTask={handleMoveTask}
-                  onTaskClick={(task) => {
-                    setSelectedTask(task)
-                    setShowTaskDetails(true)
-                  }}
-                  onAddTask={() => {
-                    setSelectedColumn(column)
-                    setShowCreateTask(true)
-                  }}
-                  onDeleteColumn={handleDeleteColumn}
-                  filteredTasks={getFilteredTasks()}
-                  isFiltering={searchQuery !== "" || filterPriority !== "all" || filterTag !== "all"}
-                />
-              ))}
-            </div>
+            {activeBoard.columns.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-10 border-2 border-dashed rounded-lg p-6">
+                <h3 className="text-xl font-semibold mb-2">No Columns Yet</h3>
+                <p className="text-muted-foreground mb-4">Create columns to organize your tasks</p>
+                <Button onClick={() => setShowCreateColumn(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Column
+                </Button>
+              </div>
+            ) : (
+              <div className="flex overflow-x-auto pb-4 gap-4">
+                {activeBoard.columns.map((column) => (
+                  <BoardColumn
+                    key={column.id}
+                    column={column}
+                    onMoveTask={handleMoveTask}
+                    onTaskClick={(task) => {
+                      setSelectedTaskId(task.id)
+                      setSelectedColumnId(column.id)
+                      setShowTaskDetails(true)
+                    }}
+                    onAddTask={() => {
+                      setSelectedColumnId(column.id)
+                      setShowCreateTask(true)
+                    }}
+                    onDeleteColumn={handleDeleteColumn}
+                    filteredTasks={getFilteredTasks()}
+                    isFiltering={filterPriority !== "ALL"}
+                  />
+                ))}
+              </div>
+            )}
           </>
         )}
       </div>
 
+      {/* Dialogs */}
       {showCreateBoard && (
-        <CreateBoardDialog open={showCreateBoard} onOpenChange={setShowCreateBoard} onCreateBoard={handleCreateBoard} />
+        <CreateBoardDialog
+          open={showCreateBoard}
+          onOpenChange={setShowCreateBoard}
+          onCreateBoard={handleCreateBoard}
+        />
       )}
 
-      {showCreateColumn && selectedBoard && (
+      {showCreateColumn && selectedBoardId && (
         <CreateColumnDialog
           open={showCreateColumn}
           onOpenChange={setShowCreateColumn}
           onCreateColumn={handleCreateColumn}
-          boardId={selectedBoard.id}
+          boardId={selectedBoardId}
         />
       )}
 
-      {showCreateTask && selectedColumn && (
+      {showCreateTask && selectedColumnId && (
         <CreateTaskDialog
           open={showCreateTask}
           onOpenChange={setShowCreateTask}
           onCreateTask={handleCreateTask}
-          column={selectedColumn}
-          existingTags={allTags}
+          column={selectedColumn!}
         />
       )}
 
@@ -408,18 +382,16 @@ export default function KanbanBoard() {
           open={showTaskDetails}
           onOpenChange={setShowTaskDetails}
           task={selectedTask}
-          columns={selectedBoard?.columns || []}
-          onUpdateTask={handleUpdateTask}
+          columns={activeBoard?.columns || []}
           onDeleteTask={handleDeleteTask}
-          existingTags={allTags}
         />
       )}
 
-      {showDeleteColumn && columnToDelete && (
+      {showDeleteColumn && selectedColumnId && (
         <DeleteColumnDialog
           open={showDeleteColumn}
           onOpenChange={setShowDeleteColumn}
-          column={columnToDelete}
+          column={selectedColumn!}
           onConfirmDelete={confirmDeleteColumn}
         />
       )}

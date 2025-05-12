@@ -1,19 +1,16 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { v4 as uuidv4 } from "uuid"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import type { Board } from "@/lib/kanban/types"
 
 interface CreateBoardDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onCreateBoard: (board: Board) => void
+  onCreateBoard: (title: string) => void
 }
 
 export default function CreateBoardDialog({ open, onOpenChange, onCreateBoard }: CreateBoardDialogProps) {
@@ -24,40 +21,7 @@ export default function CreateBoardDialog({ open, onOpenChange, onCreateBoard }:
 
     if (!title.trim()) return
 
-    const newBoard: Board = {
-      id: uuidv4(),
-      title: title.trim(),
-      columns: [
-        {
-          id: uuidv4(),
-          title: "To Do",
-          tasks: [],
-          boardId: "",
-          isDefault: true, 
-        },
-        {
-          id: uuidv4(),
-          title: "In Progress",
-          tasks: [],
-          boardId: "",
-          isDefault: true, 
-        },
-        {
-          id: uuidv4(),
-          title: "Done",
-          tasks: [],
-          boardId: "",
-          isDefault: true, 
-        },
-      ],
-    }
-
-    newBoard.columns = newBoard.columns.map((column) => ({
-      ...column,
-      boardId: newBoard.id,
-    }))
-
-    onCreateBoard(newBoard)
+    onCreateBoard(title.trim())
     setTitle("")
   }
 

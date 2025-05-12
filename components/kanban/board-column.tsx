@@ -4,16 +4,16 @@ import { useDrop } from "react-dnd"
 import { Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import TaskCard from "./task-card"
-import type { Column, Task } from "@/lib/kanban/types"
 import { useRef } from "react"
+import { KanbanColumn, KanbanTask } from "@/types/kanban/kanban.types"
 
 interface BoardColumnProps {
-  column: Column
+  column: KanbanColumn
   onMoveTask: (taskId: string, sourceColumnId: string, targetColumnId: string) => void
-  onTaskClick: (task: Task) => void
+  onTaskClick: (task: KanbanTask) => void
   onAddTask: () => void
   onDeleteColumn: (columnId: string) => void
-  filteredTasks: Task[]
+  filteredTasks: KanbanTask[]
   isFiltering: boolean
 }
 
