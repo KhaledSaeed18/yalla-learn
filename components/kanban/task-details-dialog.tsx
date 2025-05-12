@@ -40,7 +40,7 @@ export default function TaskDetailsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="flex justify-between items-center">
+          <DialogTitle className="flex justify-between items-center mt-5">
             <span>Task Details</span>
             <Button
               variant="destructive"
