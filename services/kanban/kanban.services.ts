@@ -11,8 +11,6 @@ import {
     CreateTaskRequest,
     CreateTaskResponse,
     GetTaskResponse,
-    UpdateTaskRequest,
-    UpdateTaskResponse,
     DeleteTaskResponse
 } from '@/types/kanban/kanban.types';
 
@@ -106,19 +104,6 @@ export const kanbanServices = {
     getTask: (id: string) => {
         return api.get<GetTaskResponse>(
             `/kanban/get-task/${id}`
-        );
-    },
-
-    /**
-     * Update a task
-     * @param id - The task ID to update
-     * @param taskData - The updated task data
-     * @returns A promise that resolves to the updated task response
-     */
-    updateTask: (id: string, taskData: UpdateTaskRequest) => {
-        return api.put<UpdateTaskResponse>(
-            `/kanban/update-task/${id}`,
-            taskData
         );
     },
 

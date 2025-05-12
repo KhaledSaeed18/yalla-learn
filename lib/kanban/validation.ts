@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { TaskPriority } from "@/types/kanban/kanban.types";
 
 export const boardSchema = z.object({
     title: z

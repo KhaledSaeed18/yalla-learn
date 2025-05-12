@@ -117,23 +117,6 @@ export interface GetTaskResponse {
     };
 }
 
-export interface UpdateTaskRequest {
-    title?: string;
-    description?: string | null;
-    priority?: TaskPriority;
-    dueDate?: string | null;
-    columnId?: string;
-}
-
-export interface UpdateTaskResponse {
-    status: string;
-    statusCode: number;
-    message: string;
-    data: {
-        task: KanbanTask;
-    };
-}
-
 export interface DeleteTaskResponse {
     status: string;
     statusCode: number;

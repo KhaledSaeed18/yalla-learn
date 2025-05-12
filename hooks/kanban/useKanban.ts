@@ -2,12 +2,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { kanbanServices } from '@/services/kanban/kanban.services';
 import {
     KanbanBoard,
-    KanbanColumn,
-    KanbanTask,
     CreateBoardRequest,
     CreateColumnRequest,
     CreateTaskRequest,
-    UpdateTaskRequest
 } from '@/types/kanban/kanban.types';
 import { toast } from 'sonner';
 
@@ -190,80 +187,6 @@ export const useCreateTask = () => {
         },
         onError: (error: any) => {
             toast.error(error.message || 'Failed to create task');
-        },
-    });
-};
-
-// Update task hook
-export const useUpdateTask = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({ id, taskData, boardId }: { id: string; taskData: UpdateTaskRequest; boardId: string }) =>
-            kanbanServices.updateTask(id, taskData),
-        onSuccess: (response, { id, boardId, taskData }) => {
-            // First, update the task detail if it's being viewed
-            queryClient.setQueryData(
-                kanbanKeys.task(id),
-                response.data.task
-            );
-
-            // Then update the task in the board view
-            queryClient.setQueryData<KanbanBoard>(
-                kanbanKeys.board(boardId),
-                (oldData) => {
-                    if (!oldData) return oldData;
-
-                    // If task is moving between columns
-                    if (taskData.columnId) {
-                        const updatedTask = response.data.task;
-                        const oldColumnId = oldData.columns.find(col =>
-                            col.tasks.some(task => task.id === id)
-                        )?.id;
-
-                        if (oldColumnId) {
-                            return {
-                                ...oldData,
-                                columns: oldData.columns.map(column => {
-                                    // Remove task from old column
-                                    if (column.id === oldColumnId) {
-                                        return {
-                                            ...column,
-                                            tasks: column.tasks.filter(task => task.id !== id)
-                                        };
-                                    }
-                                    // Add task to new column
-                                    if (column.id === taskData.columnId) {
-                                        return {
-                                            ...column,
-                                            tasks: [...column.tasks, updatedTask]
-                                        };
-                                    }
-                                    return column;
-                                })
-                            };
-                        }
-                    }
-
-                    // If task is just being updated in the same column
-                    return {
-                        ...oldData,
-                        columns: oldData.columns.map(column => {
-                            return {
-                                ...column,
-                                tasks: column.tasks.map(task =>
-                                    task.id === id ? response.data.task : task
-                                )
-                            };
-                        })
-                    };
-                }
-            );
-
-            toast.success('Task updated successfully');
-        },
-        onError: (error: any) => {
-            toast.error(error.message || 'Failed to update task');
         },
     });
 };
