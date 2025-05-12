@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
-import { Plus, CircleX, AlertCircle } from "lucide-react"
+import { Plus, CircleX, AlertCircle, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import BoardColumn from "./board-column"
@@ -16,14 +16,30 @@ import { useGetBoards, useGetBoard, useCreateBoard, useDeleteBoard, useCreateCol
 import { Skeleton } from "@/components/ui/skeleton"
 import { KanbanTask, TaskPriority } from "@/types/kanban/kanban.types"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useRouter, useSearchParams } from "next/navigation"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 export default function KanbanBoard() {
+  // Router for URL handling
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
   // State for UI controls
   const [showCreateBoard, setShowCreateBoard] = useState(false)
   const [showCreateColumn, setShowCreateColumn] = useState(false)
   const [showCreateTask, setShowCreateTask] = useState(false)
   const [showTaskDetails, setShowTaskDetails] = useState(false)
   const [showDeleteColumn, setShowDeleteColumn] = useState(false)
+  const [showDeleteBoard, setShowDeleteBoard] = useState(false)
   const [selectedBoardId, setSelectedBoardId] = useState<string>("")
   const [selectedColumnId, setSelectedColumnId] = useState<string>("")
   const [selectedTaskId, setSelectedTaskId] = useState<string>("")
@@ -44,6 +60,29 @@ export default function KanbanBoard() {
   const createTaskMutation = useCreateTask()
   const deleteTaskMutation = useDeleteTask()
 
+  // Initialize selected board from URL
+  useEffect(() => {
+    const boardId = searchParams.get('board')
+    if (boardId && boards) {
+      const board = boards.find(b => b.id === boardId)
+      if (board) {
+        setSelectedBoardId(boardId)
+      }
+    }
+  }, [searchParams, boards])
+
+  // Update URL when board changes
+  useEffect(() => {
+    if (selectedBoardId && boards) {
+      const board = boards.find(b => b.id === selectedBoardId)
+      if (board) {
+        const params = new URLSearchParams(searchParams.toString())
+        params.set('board', selectedBoardId)
+        router.push(`/dashboard/kanban-board?${params.toString()}`)
+      }
+    }
+  }, [selectedBoardId, boards, router, searchParams])
+
   // Helper to find the selected column
   const selectedColumn = activeBoard?.columns.find(column => column.id === selectedColumnId) || null
 
@@ -57,11 +96,34 @@ export default function KanbanBoard() {
       {
         onSuccess: (response) => {
           // Select the newly created board
-          setSelectedBoardId(response.data.board.id)
+          const newBoardId = response.data.board.id
+          setSelectedBoardId(newBoardId)
           setShowCreateBoard(false)
+
+          // Update URL with new board
+          const params = new URLSearchParams(searchParams.toString())
+          params.set('board', newBoardId)
+          router.push(`/dashboard/kanban-board?${params.toString()}`)
         }
       }
     )
+  }
+
+  // Function to handle deleting a board
+  const handleDeleteBoard = () => {
+    if (!selectedBoardId) return
+
+    deleteBoardMutation.mutate(selectedBoardId, {
+      onSuccess: () => {
+        setSelectedBoardId("")
+        setShowDeleteBoard(false)
+
+        // Clear the board param from URL
+        const params = new URLSearchParams(searchParams.toString())
+        params.delete('board')
+        router.push(`/dashboard/kanban-board${params.toString() ? `?${params.toString()}` : ''}`)
+      }
+    })
   }
 
   // Function to handle creating a new column
@@ -246,6 +308,14 @@ export default function KanbanBoard() {
               onValueChange={(value) => {
                 setSelectedBoardId(value)
                 setFilterPriority("ALL")
+
+                // Find board title for URL
+                const selectedBoard = boards.find(board => board.id === value)
+                if (selectedBoard) {
+                  const params = new URLSearchParams(searchParams.toString())
+                  params.set('board', value)
+                  router.push(`/dashboard/kanban-board?${params.toString()}`)
+                }
               }}
             >
               <SelectTrigger className="w-[180px]">
@@ -310,6 +380,14 @@ export default function KanbanBoard() {
                 <Button variant="outline" size="sm" onClick={() => setShowCreateColumn(true)}>
                   <Plus className="h-4 w-4 mr-1" />
                   Add Column
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setShowDeleteBoard(true)}
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Delete Board
                 </Button>
               </div>
             </div>
@@ -395,6 +473,28 @@ export default function KanbanBoard() {
           onConfirmDelete={confirmDeleteColumn}
         />
       )}
+
+      {/* Delete Board Dialog */}
+      <AlertDialog open={showDeleteBoard} onOpenChange={setShowDeleteBoard}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Board</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this board? This action cannot be undone and all
+              columns and tasks within this board will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDeleteBoard}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DndProvider>
   )
 }
