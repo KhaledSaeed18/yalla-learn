@@ -28,7 +28,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
-export default function KanbanBoard() {
+export default function KanbanBoard({ boardId }: { boardId?: string }) {
   // Router for URL handling
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -40,7 +40,7 @@ export default function KanbanBoard() {
   const [showTaskDetails, setShowTaskDetails] = useState(false)
   const [showDeleteColumn, setShowDeleteColumn] = useState(false)
   const [showDeleteBoard, setShowDeleteBoard] = useState(false)
-  const [selectedBoardId, setSelectedBoardId] = useState<string>("")
+  const [selectedBoardId, setSelectedBoardId] = useState<string>(boardId || "")
   const [selectedColumnId, setSelectedColumnId] = useState<string>("")
   const [selectedTaskId, setSelectedTaskId] = useState<string>("")
   const [filterPriority, setFilterPriority] = useState<TaskPriority | "ALL">("ALL")
@@ -51,7 +51,7 @@ export default function KanbanBoard() {
     data: activeBoard,
     isLoading: isBoardLoading,
     error: boardError
-  } = useGetBoard(selectedBoardId)
+  } = useGetBoard(selectedBoardId ? selectedBoardId : "")
 
   const createBoardMutation = useCreateBoard()
   const deleteBoardMutation = useDeleteBoard()
@@ -61,28 +61,18 @@ export default function KanbanBoard() {
   const deleteTaskMutation = useDeleteTask()
   const moveTaskMutation = useMoveTask()
 
-  // Initialize selected board from URL
+  // Only initialize selected board if a specific board ID is provided in the URL
   useEffect(() => {
-    const boardId = searchParams.get('board')
     if (boardId && boards) {
       const board = boards.find(b => b.id === boardId)
       if (board) {
         setSelectedBoardId(boardId)
       }
     }
-  }, [searchParams, boards])
+  }, [boardId, boards])
 
-  // Update URL when board changes
-  useEffect(() => {
-    if (selectedBoardId && boards) {
-      const board = boards.find(b => b.id === selectedBoardId)
-      if (board) {
-        const params = new URLSearchParams(searchParams.toString())
-        params.set('board', selectedBoardId)
-        router.push(`/dashboard/kanban-board?${params.toString()}`)
-      }
-    }
-  }, [selectedBoardId, boards, router, searchParams])
+  // Update URL only when user explicitly selects a board
+  // We removed the automatic URL update on component load
 
   // Helper to find the selected column
   const selectedColumn = activeBoard?.columns.find(column => column.id === selectedColumnId) || null
@@ -101,10 +91,8 @@ export default function KanbanBoard() {
           setSelectedBoardId(newBoardId)
           setShowCreateBoard(false)
 
-          // Update URL with new board
-          const params = new URLSearchParams(searchParams.toString())
-          params.set('board', newBoardId)
-          router.push(`/dashboard/kanban-board?${params.toString()}`)
+          // Navigate to the new board URL
+          router.push(`/dashboard/kanban-board/${newBoardId}`)
         }
       }
     )
@@ -119,10 +107,8 @@ export default function KanbanBoard() {
         setSelectedBoardId("")
         setShowDeleteBoard(false)
 
-        // Clear the board param from URL
-        const params = new URLSearchParams(searchParams.toString())
-        params.delete('board')
-        router.push(`/dashboard/kanban-board${params.toString() ? `?${params.toString()}` : ''}`)
+        // Navigate back to the boards list
+        router.push(`/dashboard/kanban-board`)
       }
     })
   }
@@ -322,13 +308,8 @@ export default function KanbanBoard() {
                 setSelectedBoardId(value)
                 setFilterPriority("ALL")
 
-                // Find board title for URL
-                const selectedBoard = boards.find(board => board.id === value)
-                if (selectedBoard) {
-                  const params = new URLSearchParams(searchParams.toString())
-                  params.set('board', value)
-                  router.push(`/dashboard/kanban-board?${params.toString()}`)
-                }
+                // Navigate to board page using path-based URL only when a board is explicitly selected
+                router.push(`/dashboard/kanban-board/${value}`)
               }}
             >
               <SelectTrigger className="w-[180px]">
@@ -348,26 +329,35 @@ export default function KanbanBoard() {
             </Button>
           </div>
 
-          <div className="flex items-center gap-2 w-full md:w-auto">
-            <Select
-              value={filterPriority}
-              onValueChange={(value) => setFilterPriority(value as TaskPriority | "ALL")}
-            >
-              <SelectTrigger className="w-full md:w-[130px]">
-                <SelectValue placeholder="Priority" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">All Priorities</SelectItem>
-                <SelectItem value="LOW">Low</SelectItem>
-                <SelectItem value="MEDIUM">Medium</SelectItem>
-                <SelectItem value="HIGH">High</SelectItem>
-                <SelectItem value="URGENT">Urgent</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {selectedBoardId && (
+            <div className="flex items-center gap-2 w-full md:w-auto">
+              <Select
+                value={filterPriority}
+                onValueChange={(value) => setFilterPriority(value as TaskPriority | "ALL")}
+              >
+                <SelectTrigger className="w-full md:w-[130px]">
+                  <SelectValue placeholder="Priority" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Priorities</SelectItem>
+                  <SelectItem value="LOW">Low</SelectItem>
+                  <SelectItem value="MEDIUM">Medium</SelectItem>
+                  <SelectItem value="HIGH">High</SelectItem>
+                  <SelectItem value="URGENT">Urgent</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
 
-        {isBoardLoading && (
+        {!selectedBoardId && (
+          <div className="flex flex-col items-center justify-center py-10 border-2 border-dashed rounded-lg p-6">
+            <h3 className="text-xl font-semibold mb-2">Select a Board</h3>
+            <p className="text-muted-foreground mb-4">Choose a board from the dropdown or create a new one</p>
+          </div>
+        )}
+
+        {isBoardLoading && selectedBoardId && (
           <div className="flex space-x-4 overflow-x-auto pb-4">
             <Skeleton className="h-[500px] w-[300px] flex-shrink-0" />
             <Skeleton className="h-[500px] w-[300px] flex-shrink-0" />
@@ -375,7 +365,7 @@ export default function KanbanBoard() {
           </div>
         )}
 
-        {boardError && (
+        {boardError && selectedBoardId && (
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
@@ -385,7 +375,7 @@ export default function KanbanBoard() {
           </Alert>
         )}
 
-        {activeBoard && !isBoardLoading && (
+        {activeBoard && selectedBoardId && !isBoardLoading && (
           <>
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-2xl font-bold">{activeBoard.title}</h1>
