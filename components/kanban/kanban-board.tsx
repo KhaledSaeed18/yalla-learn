@@ -92,7 +92,7 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
           setShowCreateBoard(false)
 
           // Navigate to the new board URL
-          router.push(`/dashboard/kanban-board/${newBoardId}`)
+          router.push(`/dashboard/kanban-board?board=${newBoardId}`)
         }
       }
     )
@@ -309,7 +309,7 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
                 setFilterPriority("ALL")
 
                 // Navigate to board page using path-based URL only when a board is explicitly selected
-                router.push(`/dashboard/kanban-board/${value}`)
+                router.push(`/dashboard/kanban-board?board=${value}`)
               }}
             >
               <SelectTrigger className="w-[180px]">
