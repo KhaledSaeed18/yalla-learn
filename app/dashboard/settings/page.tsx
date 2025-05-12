@@ -148,8 +148,10 @@ function ThemeColorSelector() {
                 return "bg-[oklch(0.723_0.219_149.579)]"
             case "yellow":
                 return "bg-[oklch(0.795_0.184_86.047)]"
+            case "purple":
+                return "bg-[oklch(0.627_0.265_303.9)]"
             default:
-                return "bg-[oklch(0.623_0.214_259.815)]"
+                return "bg-[oklch(0.141_0.005_285.823)]"
         }
     }
 
