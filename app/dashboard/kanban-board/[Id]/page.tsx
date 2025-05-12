@@ -3,7 +3,7 @@ import RoleBasedRoute from "@/components/RoleBasedRoute"
 
 interface PageProps {
     params: {
-        id: string
+        Id: string
     }
 }
 
@@ -11,7 +11,7 @@ export default function BoardPage({ params }: PageProps) {
     return (
         <RoleBasedRoute allowedRoles={["USER", "ADMIN"]}>
             <main>
-                <KanbanBoard boardId={params.id} />
+                <KanbanBoard boardId={params.Id} />
             </main>
         </RoleBasedRoute>
     )
