@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     siteName: 'Yalla Learn',
     images: [
       {
-        url: '/images/og-image.jpg',
+        url: '/images/logo.png',
         width: 1200,
         height: 630,
         alt: 'Yalla Learn - Student Collaboration Platform',
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Yalla Learn',
     description: 'All-in-one platform for students: productivity tools, AI learning assistance, marketplace, and expense tracking',
-    images: ['/images/twitter-image.jpg'],
+    images: ['/images/logo.png'],
     creator: '@yallalearn',
     site: '@yallalearn',
   },
