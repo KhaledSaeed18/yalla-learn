@@ -233,12 +233,15 @@ export default function KanbanBoard() {
     let filteredTasks: KanbanTask[] = []
 
     activeBoard.columns.forEach((column) => {
-      column.tasks.forEach((task) => {
-        const matchesPriority = filterPriority === "ALL" || task.priority === filterPriority
-        if (matchesPriority) {
-          filteredTasks.push(task)
-        }
-      })
+      // Check if column.tasks exists before trying to iterate over it
+      if (column.tasks && Array.isArray(column.tasks)) {
+        column.tasks.forEach((task) => {
+          const matchesPriority = filterPriority === "ALL" || task.priority === filterPriority
+          if (matchesPriority) {
+            filteredTasks.push(task)
+          }
+        })
+      }
     })
 
     return filteredTasks

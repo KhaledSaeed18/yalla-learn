@@ -39,9 +39,12 @@ export default function BoardColumn({
     }),
   })
 
+  // Ensure column.tasks is an array
+  const columnTasks = column.tasks || []
+
   const tasksToDisplay = isFiltering
-    ? column.tasks.filter((task) => filteredTasks.some((ft) => ft.id === task.id))
-    : column.tasks
+    ? columnTasks.filter((task) => filteredTasks.some((ft) => ft.id === task.id))
+    : columnTasks
 
   const deleteTooltip = column.isDefault
     ? "Default columns cannot be deleted"

@@ -100,9 +100,15 @@ export const useCreateColumn = () => {
                 (oldData) => {
                     if (!oldData) return oldData;
 
+                    // Ensure new column has tasks array initialized
+                    const newColumn = {
+                        ...response.data.column,
+                        tasks: response.data.column.tasks || []
+                    };
+
                     return {
                         ...oldData,
-                        columns: [...oldData.columns, response.data.column]
+                        columns: [...oldData.columns, newColumn]
                     };
                 }
             );
@@ -174,7 +180,7 @@ export const useCreateTask = () => {
                             if (column.id === columnId) {
                                 return {
                                     ...column,
-                                    tasks: [...column.tasks, response.data.task]
+                                    tasks: [...(column.tasks || []), response.data.task]
                                 };
                             }
                             return column;
@@ -213,7 +219,7 @@ export const useDeleteTask = () => {
                         columns: oldData.columns.map(column => {
                             return {
                                 ...column,
-                                tasks: column.tasks.filter(task => task.id !== id)
+                                tasks: (column.tasks || []).filter(task => task.id !== id)
                             };
                         })
                     };
