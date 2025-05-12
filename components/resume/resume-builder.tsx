@@ -21,6 +21,7 @@ import { generatePDF } from "@/lib/resume/pdf-generator"
 import { ImportExportResume } from "./import-export"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
 import { ATSAnalyzer } from "./ats-analyser"
+import { toast } from "sonner"
 
 export default function ResumeBuilder() {
   const { resumeData, updateResumeSection, activeTemplate, setActiveTemplate, isFormEmpty, resetResumeData } = useResumeContext()
@@ -33,16 +34,11 @@ export default function ResumeBuilder() {
   }, [isMobile])
 
   const handleDownloadPDF = async () => {
-    await generatePDF(resumeData, activeTemplate)
-  }
-
-  const handleSaveResume = () => {
-    console.log("Resume Data:", JSON.stringify(resumeData, null, 2))
-
-    // Show a toast notification
-
-    // In a real application, you would save to a database or file here
-    // For now, we're just using localStorage which is already handled by the context
+    try {
+      await generatePDF(resumeData, activeTemplate)
+    } catch (error) {
+      toast.error("Failed to generate PDF. Please try again.")
+    }
   }
 
   return (
@@ -179,15 +175,6 @@ export default function ResumeBuilder() {
               </AlertDialog>
               <ImportExportResume />
               <ATSAnalyzer />
-              <Button
-                onClick={handleSaveResume}
-                size="sm"
-                className="flex items-center justify-center"
-                variant="outline"
-              >
-                <Save className="h-4 w-4 mr-2" />
-                Save
-              </Button>
               <Button
                 onClick={handleDownloadPDF}
                 size="sm"
