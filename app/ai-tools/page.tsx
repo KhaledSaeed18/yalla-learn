@@ -83,7 +83,7 @@ const AIToolsPage = () => {
                                     className={cn(
                                         "h-full overflow-hidden border border-transparent",
                                         "transition-all duration-500 ease-out",
-                                        "hover:border-primary/30 hover:shadow-[0_0_25px_-5px_rgba(var(--primary),0.3)]",
+                                        "hover:border-primary/30",
                                         "dark:bg-gray-900 dark:hover:bg-gray-800",
                                         "relative",
                                     )}
