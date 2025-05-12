@@ -1,13 +1,14 @@
 import KanbanBoard from "@/components/kanban/kanban-board"
 import RoleBasedRoute from "@/components/RoleBasedRoute"
 
-type Props = {
+interface PageProps {
     params: {
         boardId: string
     }
+    searchParams: Record<string, string | string[] | undefined>
 }
 
-export default function BoardPage({ params }: Props) {
+export default function BoardPage({ params }: PageProps) {
     return (
         <RoleBasedRoute allowedRoles={["USER", "ADMIN"]}>
             <main>
