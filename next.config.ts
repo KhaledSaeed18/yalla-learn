@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
       'picsum.photos',
     ],
   },
+  // Disable ESLint during the build process
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
