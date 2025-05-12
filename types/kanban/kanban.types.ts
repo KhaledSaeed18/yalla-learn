@@ -123,6 +123,15 @@ export interface DeleteTaskResponse {
     message: string;
 }
 
+export interface MoveTaskResponse {
+    status: string;
+    statusCode: number;
+    message: string;
+    data: {
+        task: KanbanTask;
+    };
+}
+
 export interface KanbanError {
     message: string;
     status?: number;

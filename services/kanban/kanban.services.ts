@@ -11,7 +11,8 @@ import {
     CreateTaskRequest,
     CreateTaskResponse,
     GetTaskResponse,
-    DeleteTaskResponse
+    DeleteTaskResponse,
+    MoveTaskResponse
 } from '@/types/kanban/kanban.types';
 
 export const kanbanServices = {
@@ -115,6 +116,19 @@ export const kanbanServices = {
     deleteTask: (id: string) => {
         return api.delete<DeleteTaskResponse>(
             `/kanban/delete-task/${id}`
+        );
+    },
+
+    /**
+     * Move a task from one column to another
+     * @param taskId - The task ID to move
+     * @param targetColumnId - The target column ID
+     * @returns A promise that resolves to the move response
+     */
+    moveTask: (taskId: string, targetColumnId: string) => {
+        return api.patch<MoveTaskResponse>(
+            `/kanban/tasks/${taskId}/move`,
+            { columnId: targetColumnId }
         );
     }
 };

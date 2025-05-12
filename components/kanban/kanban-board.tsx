@@ -12,7 +12,7 @@ import CreateColumnDialog from "./create-column-dialog"
 import TaskDetailsDialog from "./task-details-dialog"
 import CreateTaskDialog from "./create-task-dialog"
 import DeleteColumnDialog from "./delete-column-dialog"
-import { useGetBoards, useGetBoard, useCreateBoard, useDeleteBoard, useCreateColumn, useDeleteColumn, useCreateTask, useDeleteTask } from "@/hooks/kanban/useKanban"
+import { useGetBoards, useGetBoard, useCreateBoard, useDeleteBoard, useCreateColumn, useDeleteColumn, useCreateTask, useDeleteTask, useMoveTask } from "@/hooks/kanban/useKanban"
 import { Skeleton } from "@/components/ui/skeleton"
 import { KanbanTask, TaskPriority } from "@/types/kanban/kanban.types"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -59,6 +59,7 @@ export default function KanbanBoard() {
   const deleteColumnMutation = useDeleteColumn()
   const createTaskMutation = useCreateTask()
   const deleteTaskMutation = useDeleteTask()
+  const moveTaskMutation = useMoveTask()
 
   // Initialize selected board from URL
   useEffect(() => {
@@ -171,9 +172,18 @@ export default function KanbanBoard() {
 
   // Function to handle moving a task between columns
   const handleMoveTask = (taskId: string, sourceColumnId: string, targetColumnId: string) => {
-    // This would need a backend API endpoint to move tasks
-    // For now, we'll implement a simple client-side solution
-    console.log("Moving task", taskId, "from", sourceColumnId, "to", targetColumnId)
+    if (!selectedBoardId || sourceColumnId === targetColumnId) return;
+
+    console.log("Moving task", taskId, "from", sourceColumnId, "to", targetColumnId);
+
+    moveTaskMutation.mutate(
+      {
+        taskId,
+        sourceColumnId,
+        targetColumnId,
+        boardId: selectedBoardId
+      }
+    );
   }
 
   // Function to handle deleting a task
