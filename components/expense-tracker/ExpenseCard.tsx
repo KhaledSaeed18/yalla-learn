@@ -57,8 +57,7 @@ export const ExpenseCard = ({ expense, onEdit, onDelete }: ExpenseCardProps) => 
     };
 
     return (
-        <Card className="h-full cursor-pointer hover:border-primary/50 transition-all"
-            onClick={() => router.push(`/dashboard/expense-tracker/expenses/${expense.id}`)}>
+        <Card className="h-full transition-all">
             <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2">

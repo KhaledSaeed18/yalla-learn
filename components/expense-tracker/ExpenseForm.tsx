@@ -45,14 +45,23 @@ export const expenseFormSchema = z.object({
     amount: z.coerce.number().positive({
         message: "Amount must be a positive number.",
     }),
-    date: z.date(),
+    date: z.preprocess(
+        (arg) => {
+            if (typeof arg === 'string' || arg instanceof Date) return new Date(arg);
+            return undefined;
+        },
+        z.date({
+            required_error: "Please select a date",
+            invalid_type_error: "That's not a valid date",
+        })
+    ),
     category: z.nativeEnum(ExpenseCategoryType),
     paymentMethod: z.string().refine((value) =>
         ['CASH', 'CREDIT_CARD', 'DEBIT_CARD', 'BANK_TRANSFER', 'MOBILE_PAYMENT', 'SCHOLARSHIP', 'OTHER'].includes(value), {
         message: "Invalid payment method.",
     }),
     location: z.string().optional(),
-    semesterId: z.string().uuid({
+    semesterId: z.string().min(1, {
         message: "Please select a valid semester.",
     }),
 });

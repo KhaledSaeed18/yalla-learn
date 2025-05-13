@@ -9,38 +9,44 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Expense } from '@/types/expense-tracker/expenseTracker.types';
 
 interface DeleteExpenseDialogProps {
-    isOpen: boolean;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
     isDeleting: boolean;
-    expenseDescription: string;
-    amount: string;
-    onClose: () => void;
+    expense: Expense | null;
     onConfirm: () => void;
 }
 
 export const DeleteExpenseDialog = ({
-    isOpen,
+    open,
+    onOpenChange,
     isDeleting,
-    expenseDescription,
-    amount,
-    onClose,
+    expense,
     onConfirm,
 }: DeleteExpenseDialogProps) => {
+    if (!expense) return null;
+
+    const amount = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    }).format(parseFloat(expense.amount));
+
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
                     <DialogTitle>Delete Expense</DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to delete the expense "{expenseDescription}" for {amount}?
+                        Are you sure you want to delete the expense "{expense.description}" for {amount}?
                         This action cannot be undone.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="gap-2 sm:justify-end">
                     <Button
                         variant="outline"
-                        onClick={onClose}
+                        onClick={() => onOpenChange(false)}
                         disabled={isDeleting}
                     >
                         Cancel
