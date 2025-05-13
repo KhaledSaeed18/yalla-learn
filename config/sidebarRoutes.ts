@@ -1,4 +1,4 @@
-import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout, FileUser, Settings, User, Users, Wallet, BarChart, CreditCard, PiggyBank, Calendar, Target, Clock } from "lucide-react";
+import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout, FileUser, Settings, User, Users, Wallet, BarChart, CreditCard, PiggyBank, Calendar, Target, Clock, Headset } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type SidebarRoute = {
@@ -168,23 +168,32 @@ export const sidebarRoutes: SidebarRoute[] = [
         activeWhen: (pathname) => pathname.startsWith("/dashboard/users"),
         children: [
             {
+                id: "statistics",
+                label: "Statistics",
+                href: "/dashboard/users",
+                icon: ChartNoAxesCombined,
+                requiresAuth: true,
+                roles: ["ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/users",
+            },
+            {
                 id: "users",
                 label: "Users",
-                href: "/dashboard/users",
+                href: "/dashboard/users/manage",
                 icon: User,
                 requiresAuth: true,
                 roles: ["ADMIN"],
                 activeWhen: (pathname) => pathname === "/dashboard/users/manage",
             },
-            {
-                id: "statistics",
-                label: "Statistics",
-                href: "/dashboard/users/statistics",
-                icon: ChartNoAxesCombined,
-                requiresAuth: true,
-                roles: ["ADMIN"],
-                activeWhen: (pathname) => pathname === "/dashboard/users/statistics",
-            },
         ],
     },
+    {
+        id: "support",
+        label: "Support",
+        href: "/dashboard/support",
+        icon: Headset,
+        requiresAuth: true,
+        roles: ["ADMIN"],
+        activeWhen: (pathname) => pathname.startsWith("/dashboard/support"),
+    }
 ];
