@@ -3,27 +3,18 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import {
-    Loader2, Plus, Search, CreditCard
-} from 'lucide-react';
-
+import { Loader2, Plus, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
-} from '@/components/ui/select';
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ExpenseCard } from '@/components/expense-tracker/ExpenseCard';
 import { ExpenseForm, ExpenseFormValues } from '@/components/expense-tracker/ExpenseForm';
 import { DeleteExpenseDialog } from '@/components/expense-tracker/DeleteExpenseDialog';
-import { ExpenseFilters } from '@/components/expense-tracker/ExpenseFilters';
-
 import { useGetExpenses, useCreateExpense, useUpdateExpense, useDeleteExpense } from '@/hooks/expense-tracker/useExpenses';
 import { useGetSemesters, useGetActiveSemester } from '@/hooks/expense-tracker/useSemesters';
-import { ExpensesQueryParams, Expense, ExpenseCategoryType } from '@/types/expense-tracker/expenseTracker.types';
+import { ExpensesQueryParams, Expense, ExpenseCategoryType, PaymentMethod } from '@/types/expense-tracker/expenseTracker.types';
 
 const ExpensesPage = () => {
     const router = useRouter();
@@ -79,7 +70,9 @@ const ExpensesPage = () => {
     const handleCreateExpense = (data: ExpenseFormValues) => {
         createExpense({
             ...data,
-            date: format(data.date, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'')
+            date: format(data.date, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\''),
+            paymentMethod: data.paymentMethod as PaymentMethod,
+            location: data.location || '' // Ensure location is always a string
         }, {
             onSuccess: () => {
                 setIsCreateDialogOpen(false);
@@ -93,7 +86,8 @@ const ExpensesPage = () => {
                 id: selectedExpense.id,
                 expenseData: {
                     ...data,
-                    date: format(data.date, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'')
+                    date: format(data.date, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\''),
+                    paymentMethod: data.paymentMethod as PaymentMethod
                 }
             }, {
                 onSuccess: () => {
@@ -115,25 +109,6 @@ const ExpensesPage = () => {
         }
     };
 
-    // Filter handlers
-    const applyFilters = (newFilters: ExpensesQueryParams) => {
-        setFilters({
-            ...newFilters,
-            page: 1 // Reset to first page when filters change
-        });
-    };
-
-    const resetFilters = () => {
-        setFilters({
-            page: 1,
-            limit: 9,
-            semesterId: activeSemester?.id,
-            sortBy: 'createdAt',
-            sortOrder: 'desc'
-        });
-        setSearchQuery('');
-    };
-
     // Pagination handlers
     const handlePageChange = (newPage: number) => {
         setFilters(prev => ({
@@ -149,7 +124,7 @@ const ExpensesPage = () => {
             amount: 0,
             date: new Date(),
             category: ExpenseCategoryType.OTHER,
-            paymentMethod: 'CASH',
+            paymentMethod: 'CASH' as PaymentMethod,
             location: '',
             semesterId: activeSemester?.id || ''
         };
@@ -163,8 +138,8 @@ const ExpensesPage = () => {
             description: selectedExpense.description,
             amount: parseFloat(selectedExpense.amount),
             date: new Date(selectedExpense.date),
-            category: selectedExpense.category,
-            paymentMethod: selectedExpense.paymentMethod,
+            category: selectedExpense.category as ExpenseCategoryType,
+            paymentMethod: selectedExpense.paymentMethod as PaymentMethod,
             location: selectedExpense.location || '',
             semesterId: selectedExpense.semesterId
         };
@@ -179,7 +154,7 @@ const ExpensesPage = () => {
     }
 
     return (
-        <div className="container mx-auto py-6 space-y-8">
+        <div className="space-y-8">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                 <div>
                     <h1 className="text-2xl font-bold">Expenses</h1>
@@ -196,16 +171,6 @@ const ExpensesPage = () => {
             {/* Filters and Search */}
             <div className="flex flex-col sm:flex-row justify-between gap-4">
                 <div className="flex gap-2 w-full sm:w-auto">
-                    <div className="relative flex-1 sm:w-64">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search expenses..."
-                            className="pl-8"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-
                     {/* Semester filter */}
                     <Select
                         value={filters.semesterId || ''}
@@ -226,12 +191,12 @@ const ExpensesPage = () => {
                     </Select>
                 </div>
 
-                {/* Expense filters */}
+                {/* Expense filters
                 <ExpenseFilters
                     filters={filters}
                     onFilterChange={applyFilters}
                     onResetFilters={resetFilters}
-                />
+                /> */}
             </div>
 
             {/* Expenses Grid */}
@@ -278,9 +243,7 @@ const ExpensesPage = () => {
                     <PaginationContent>
                         <PaginationItem>
                             <PaginationPrevious
-                                onClick={() => handlePageChange(Math.max(1, filters.page || 1 - 1))}
-                                disabled={filters.page === 1}
-                            />
+                                onClick={() => handlePageChange(Math.max(1, filters.page || 1 - 1))} />
                         </PaginationItem>
                         <PaginationItem>
                             <span className="px-4">
@@ -290,7 +253,6 @@ const ExpensesPage = () => {
                         <PaginationItem>
                             <PaginationNext
                                 onClick={() => handlePageChange(Math.min(expensesData.pagination.totalPages, (filters.page || 1) + 1))}
-                                disabled={filters.page === expensesData.pagination.totalPages}
                             />
                         </PaginationItem>
                     </PaginationContent>
