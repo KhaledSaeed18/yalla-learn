@@ -4,13 +4,15 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Loader2, AlertCircle, CheckCircle, XCircle } from "lucide-react"
+import { Loader2, AlertCircle, CheckCircle, XCircle, Download } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
+import { jsPDF } from "jspdf"
+import autoTable from "jspdf-autotable"
 
 interface QuizQuestion {
     question: string
@@ -129,6 +131,52 @@ export default function QuizPage() {
         const answered = selectedAnswers.filter(answer => answer !== "").length
         return (answered / quizQuestions.length) * 100
     }
+
+    const handleDownloadPDF = () => {
+        if (quizQuestions.length === 0) return;
+
+        const doc = new jsPDF();
+
+        // Add title
+        doc.setFontSize(18);
+        doc.text(`Quiz Results: ${topic}`, 14, 20);
+
+        // Add metadata
+        doc.setFontSize(12);
+        doc.text(`Difficulty: ${difficulty}`, 14, 30);
+        doc.text(`Score: ${score} out of ${quizQuestions.length} (${Math.round((score / quizQuestions.length) * 100)}%)`, 14, 37);
+
+        // Add table with quiz data
+        autoTable(doc, {
+            startY: 45,
+            head: [['Question', 'Your Answer', 'Correct Answer', 'Explanation']],
+            body: quizQuestions.map((question, index) => [
+                question.question,
+                selectedAnswers[index] || "No answer",
+                question.correctAnswer,
+                question.explanation
+            ]),
+            styles: {
+                fontSize: 10,
+                cellPadding: 3,
+                overflow: 'linebreak',
+                cellWidth: 'wrap'
+            },
+            headStyles: {
+                fillColor: [220, 220, 220],
+                textColor: [0, 0, 0]
+            },
+            columnStyles: {
+                0: { cellWidth: 50 },
+                1: { cellWidth: 40 },
+                2: { cellWidth: 40 },
+                3: { cellWidth: 60 }
+            }
+        });
+
+        // Save the PDF
+        doc.save(`${topic.replace(/\s+/g, '-').toLowerCase()}-quiz-results.pdf`);
+    };
 
     return (
         <div className="container mx-auto py-4 px-4">
@@ -271,12 +319,23 @@ export default function QuizPage() {
 
                     {showResults && (
                         <div className="space-y-6">
-                            <div className="text-center">
-                                <h3 className="text-2xl font-bold mb-2">Quiz Results</h3>
-                                <p className="text-lg">
-                                    You scored <span className="font-bold text-primary">{score}</span> out of <span className="font-bold">{quizQuestions.length}</span>
-                                    ({Math.round((score / quizQuestions.length) * 100)}%)
-                                </p>
+                            <div className="flex justify-between items-center mb-4">
+                                <div className="text-center flex-1">
+                                    <h3 className="text-2xl font-bold mb-2">Quiz Results</h3>
+                                    <p className="text-lg">
+                                        You scored <span className="font-bold text-primary">{score}</span> out of <span className="font-bold">{quizQuestions.length}</span>
+                                        ({Math.round((score / quizQuestions.length) * 100)}%)
+                                    </p>
+                                </div>
+                                <Button
+                                    onClick={handleDownloadPDF}
+                                    variant="outline"
+                                    size="sm"
+                                    className="flex items-center gap-2"
+                                >
+                                    <Download className="h-4 w-4" />
+                                    Download PDF
+                                </Button>
                             </div>
 
                             <Progress
@@ -322,7 +381,7 @@ export default function QuizPage() {
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <div className="text-sm bg-white p-2 rounded border">
+                                                    <div className="text-sm p-2 rounded border">
                                                         <span className="font-medium">Explanation: </span>
                                                         {question.explanation}
                                                     </div>
@@ -342,6 +401,10 @@ export default function QuizPage() {
                                     setShowResults(false)
                                 }}>
                                     Create New Quiz
+                                </Button>
+                                <Button onClick={handleDownloadPDF}>
+                                    <Download className="mr-2 h-4 w-4" />
+                                    Download Results as PDF
                                 </Button>
                             </div>
                         </div>
