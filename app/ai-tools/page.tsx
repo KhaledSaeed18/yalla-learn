@@ -1,4 +1,4 @@
-import { FileText, ImageIcon, Network, SquareMousePointer, Languages, Sparkles } from "lucide-react"
+import { FileText, ImageIcon, Network, SquareMousePointer, Languages, Sparkles, ListChecks } from "lucide-react"
 import { AnimatedBeamMultipleOutputUI } from "@/components/shared/AnimatedBeamMultipleOutputUI"
 import { Card } from "@/components/ui/card"
 import Link from "next/link"
@@ -43,6 +43,14 @@ const AIToolsPage = () => {
             href: "/ai-tools/translation",
             description: "Translate text into 130+ languages instantly and accurately.",
             icon: Languages,
+            color: "from-primary/20 to-primary/5",
+            iconColor: "text-primary",
+        },
+        {
+            title: "AI Study Plan Generator",
+            href: "/ai-tools/study-plan",
+            description: "Generate a personalized study plan based on your subject, timeframe, difficulty, and goals.",
+            icon: ListChecks,
             color: "from-primary/20 to-primary/5",
             iconColor: "text-primary",
         },
