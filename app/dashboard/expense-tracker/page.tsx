@@ -275,11 +275,6 @@ const ExpenseTrackerDashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <p>Create and manage semesters to organize your expenses by academic periods.</p>
-                        {semesters && (
-                            <div className="mt-2 text-sm text-muted-foreground">
-                                {semesters.length} semesters created
-                            </div>
-                        )}
                     </CardContent>
                     <CardFooter>
                         <Button
@@ -302,11 +297,6 @@ const ExpenseTrackerDashboard = () => {
                     </CardHeader>
                     <CardContent>
                         <p>Record and categorize your expenses to keep track of your spending habits.</p>
-                        {expensesData?.pagination && (
-                            <div className="mt-2 text-sm text-muted-foreground">
-                                {expensesData.pagination.total} expenses recorded
-                            </div>
-                        )}
                     </CardContent>
                     <CardFooter>
                         <Button
@@ -326,48 +316,18 @@ const ExpenseTrackerDashboard = () => {
                             <Pencil className="h-5 w-5" />
                             Budgets
                         </CardTitle>
-                        <CardDescription>Plan your finances</CardDescription>
+                        <CardDescription>Set and manage your budgets</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p>Create budget plans to help manage your finances during each semester.</p>
-                        <div className="mt-2 text-xs italic text-muted-foreground">
-                            Coming soon
-                        </div>
+                        <p>Plan your spending by setting budgets for different categories.</p>
                     </CardContent>
                     <CardFooter>
                         <Button
                             variant="outline"
                             className="w-full"
                             onClick={() => router.push('/dashboard/expense-tracker/budgets')}
-                            disabled={!activeSemester || true}
                         >
                             Manage Budgets
-                        </Button>
-                    </CardFooter>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <PieChart className="h-5 w-5" />
-                            Reports
-                        </CardTitle>
-                        <CardDescription>Analyze your spending</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p>Generate and view reports to analyze your spending patterns and budget adherence.</p>
-                        <div className="mt-2 text-xs italic text-muted-foreground">
-                            Coming soon
-                        </div>
-                    </CardContent>
-                    <CardFooter>
-                        <Button
-                            variant="outline"
-                            className="w-full"
-                            onClick={() => router.push('/dashboard/expense-tracker/reports')}
-                            disabled={!activeSemester || true}
-                        >
-                            View Reports
                         </Button>
                     </CardFooter>
                 </Card>
