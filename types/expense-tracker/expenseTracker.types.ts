@@ -4,6 +4,26 @@ export type BudgetPeriod = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'SEMESTER' | 'YEARLY
 export type Term = 'FALL' | 'SPRING' | 'SUMMER';
 export type UniversityPaymentType = 'TUITION' | 'HOUSING' | 'MEAL_PLAN' | 'BOOKS' | 'LAB_FEES' | 'ACTIVITY_FEES' | 'TECHNOLOGY_FEES' | 'INSURANCE' | 'PARKING' | 'OTHER';
 
+// Expense Category Type enum
+export enum ExpenseCategoryType {
+    HOUSING = 'HOUSING',
+    FOOD = 'FOOD',
+    TRANSPORTATION = 'TRANSPORTATION',
+    EDUCATION = 'EDUCATION',
+    ENTERTAINMENT = 'ENTERTAINMENT',
+    HEALTHCARE = 'HEALTHCARE',
+    CLOTHING = 'CLOTHING',
+    UTILITIES = 'UTILITIES',
+    SUBSCRIPTIONS = 'SUBSCRIPTIONS',
+    SAVINGS = 'SAVINGS',
+    PERSONAL_CARE = 'PERSONAL_CARE',
+    GIFTS = 'GIFTS',
+    TRAVEL = 'TRAVEL',
+    TECH = 'TECH',
+    INSURANCE = 'INSURANCE',
+    OTHER = 'OTHER'
+}
+
 // Base response interface
 export interface ApiResponse {
     status: string;
@@ -22,6 +42,7 @@ export interface Pagination {
 // 1. Expense Categories
 export interface ExpenseCategory {
     id: string;
+    type: ExpenseCategoryType;
     name: string;
     description: string | null;
     icon: string | null;
@@ -44,6 +65,7 @@ export interface GetCategoryResponse extends ApiResponse {
 }
 
 export interface CreateCategoryRequest {
+    type: ExpenseCategoryType;
     name: string;
     description?: string | null;
     icon?: string | null;
@@ -58,6 +80,7 @@ export interface CreateCategoryResponse extends ApiResponse {
 }
 
 export interface UpdateCategoryRequest {
+    type?: ExpenseCategoryType;
     name?: string;
     description?: string | null;
     icon?: string | null;
@@ -79,8 +102,8 @@ export interface Expense {
     amount: number;
     description: string | null;
     date: string;
-    categoryId: string;
-    category: ExpenseCategory;
+    categoryType: ExpenseCategoryType;
+    category?: ExpenseCategory | null;
     paymentMethod: PaymentMethod | null;
     location: string | null;
     semesterId: string | null;

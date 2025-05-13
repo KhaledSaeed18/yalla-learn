@@ -1,4 +1,4 @@
-import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout, FileUser, Settings, User, Users } from "lucide-react";
+import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout, FileUser, Settings, User, Users, Wallet, BarChart, CreditCard, PiggyBank, Calendar, Target, Clock } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type SidebarRoute = {
@@ -129,6 +129,70 @@ export const sidebarRoutes: SidebarRoute[] = [
                 requiresAuth: true,
                 roles: ["ADMIN"],
                 activeWhen: (pathname) => pathname === "/dashboard/users/statistics",
+            },
+        ],
+    },
+    {
+        id: "expense-tracker",
+        label: "Expense Tracker",
+        icon: Wallet,
+        requiresAuth: true,
+        roles: ["USER", "ADMIN"],
+        activeWhen: (pathname) => pathname.startsWith("/dashboard/expense-tracker"),
+        children: [
+            {
+                id: "dashboard",
+                label: "Dashboard",
+                href: "/dashboard/expense-tracker",
+                icon: BarChart,
+                requiresAuth: true,
+                roles: ["USER", "ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/expense-tracker",
+            },
+            {
+                id: "expenses",
+                label: "Expenses",
+                href: "/dashboard/expense-tracker/expenses",
+                icon: CreditCard,
+                requiresAuth: true,
+                roles: ["USER", "ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/expense-tracker/expenses",
+            },
+            {
+                id: "income",
+                label: "Income",
+                href: "/dashboard/expense-tracker/income",
+                icon: PiggyBank,
+                requiresAuth: true,
+                roles: ["USER", "ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/expense-tracker/income",
+            },
+            {
+                id: "budgets",
+                label: "Budgets",
+                href: "/dashboard/expense-tracker/budgets",
+                icon: Target,
+                requiresAuth: true,
+                roles: ["USER", "ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/expense-tracker/budgets",
+            },
+            {
+                id: "semesters",
+                label: "Semesters",
+                href: "/dashboard/expense-tracker/semesters",
+                icon: Calendar,
+                requiresAuth: true,
+                roles: ["USER", "ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/expense-tracker/semesters",
+            },
+            {
+                id: "payment-schedules",
+                label: "Payment Schedules",
+                href: "/dashboard/expense-tracker/payment-schedules",
+                icon: Clock,
+                requiresAuth: true,
+                roles: ["USER", "ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/expense-tracker/payment-schedules",
             },
         ],
     },
