@@ -177,15 +177,6 @@ export const sidebarRoutes: SidebarRoute[] = [
                 activeWhen: (pathname) => pathname === "/dashboard/expense-tracker/income",
             },
             {
-                id: "budgets",
-                label: "Budgets",
-                href: "/dashboard/expense-tracker/budgets",
-                icon: Target,
-                requiresAuth: true,
-                roles: ["USER", "ADMIN"],
-                activeWhen: (pathname) => pathname === "/dashboard/expense-tracker/budgets",
-            },
-            {
                 id: "payment-schedules",
                 label: "Payment Schedules",
                 href: "/dashboard/expense-tracker/payment-schedules",

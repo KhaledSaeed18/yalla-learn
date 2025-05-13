@@ -1,6 +1,7 @@
 // Types for expense tracking feature
 export type PaymentMethod = 'CASH' | 'CREDIT_CARD' | 'DEBIT_CARD' | 'BANK_TRANSFER' | 'MOBILE_PAYMENT' | 'SCHOLARSHIP' | 'OTHER';
 export type Term = 'FALL' | 'SPRING' | 'SUMMER';
+export type PaymentType = 'TUITION' | 'HOUSING' | 'MEAL_PLAN' | 'BOOKS' | 'LAB_FEES' | 'ACTIVITY_FEES' | 'TECHNOLOGY_FEES' | 'INSURANCE' | 'PARKING' | 'OTHER';
 
 // Expense Category Type enum
 export enum ExpenseCategoryType {
@@ -175,3 +176,83 @@ export interface UpdateExpenseResponse extends ApiResponse {
 }
 
 export interface DeleteExpenseResponse extends ApiResponse { }
+
+// Payment Schedule Interfaces
+export interface PaymentSchedule {
+    id: string;
+    name: string;
+    amount: number;
+    dueDate: string;
+    isPaid: boolean;
+    paidDate: string | null;
+    semesterId: string;
+    userId: string;
+    paymentType: PaymentType;
+    notes: string | null;
+    createdAt: string;
+    updatedAt: string;
+    semester?: Semester;
+}
+
+export interface CreatePaymentScheduleRequest {
+    name: string;
+    amount: number;
+    dueDate: string;
+    isPaid: boolean;
+    paidDate?: string | null;
+    semesterId: string;
+    paymentType: PaymentType;
+    notes?: string | null;
+}
+
+export interface UpdatePaymentScheduleRequest {
+    name?: string;
+    amount?: number;
+    dueDate?: string;
+    isPaid?: boolean;
+    paidDate?: string | null;
+    semesterId?: string;
+    paymentType?: PaymentType;
+    notes?: string | null;
+}
+
+export interface PaymentSchedulesQueryParams {
+    semesterId?: string;
+    isPaid?: boolean;
+    paymentType?: PaymentType;
+    upcoming?: boolean;
+    overdue?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+}
+
+export interface GetPaymentSchedulesResponse extends ApiResponse {
+    data: {
+        paymentSchedules: PaymentSchedule[];
+        pagination?: Pagination;
+    };
+}
+
+export interface GetPaymentScheduleResponse extends ApiResponse {
+    data: {
+        paymentSchedule: PaymentSchedule;
+    };
+}
+
+export interface CreatePaymentScheduleResponse extends ApiResponse {
+    data: {
+        paymentSchedule: PaymentSchedule;
+    };
+}
+
+export interface UpdatePaymentScheduleResponse extends ApiResponse {
+    data: {
+        paymentSchedule: PaymentSchedule;
+    };
+}
+
+export interface DeletePaymentScheduleResponse extends ApiResponse {
+    data: null;
+}
