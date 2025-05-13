@@ -16,7 +16,7 @@ import {
 } from '@/types/expense-tracker/expenseTracker.types';
 import { format } from 'date-fns';
 import * as z from 'zod';
-import { Loader2, Plus, Edit, Trash2, Calendar, ArrowUpDown, FilePen } from 'lucide-react';
+import { Plus, Edit, Trash2, Calendar, ArrowUpDown, FilePen } from 'lucide-react';
 
 // UI Components
 import { Button } from '@/components/ui/button';
@@ -42,6 +42,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SemesterForm, semesterFormSchema } from '@/components/expense-tracker/SemesterForm';
 import { DeleteSemesterDialog } from '@/components/expense-tracker/DeleteSemesterDialog';
 import { SemesterCard } from '@/components/expense-tracker/SemesterCard';
+import { SemesterTableSkeleton, SemesterGridSkeleton } from '@/components/expense-tracker/skeletons/SemesterSkeleton';
 
 const SemestersPage = () => {
     const router = useRouter();
@@ -163,8 +164,27 @@ const SemestersPage = () => {
     // Render loading state
     if (isLoadingSemesters) {
         return (
-            <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h1 className="text-2xl font-bold">Semesters Management</h1>
+                        <p className="text-muted-foreground">
+                            Create and manage your academic semesters for expense tracking
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Tabs value="table">
+                            <TabsList className="grid w-[160px] grid-cols-2">
+                                <TabsTrigger value="table">Table View</TabsTrigger>
+                                <TabsTrigger value="grid">Grid View</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                        <Button disabled>
+                            <Plus className="mr-2 h-4 w-4" /> Add Semester
+                        </Button>
+                    </div>
+                </div>
+                <SemesterTableSkeleton />
             </div>
         );
     }

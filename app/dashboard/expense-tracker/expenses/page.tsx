@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import { Loader2, Plus, CreditCard } from 'lucide-react';
+import { Plus, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ExpenseCard } from '@/components/expense-tracker/ExpenseCard';
 import { ExpenseForm, ExpenseFormValues } from '@/components/expense-tracker/ExpenseForm';
 import { DeleteExpenseDialog } from '@/components/expense-tracker/DeleteExpenseDialog';
+import { ExpensesGridSkeleton } from '@/components/expense-tracker/skeletons/ExpenseSkeleton';
 import { useGetExpenses, useCreateExpense, useUpdateExpense, useDeleteExpense } from '@/hooks/expense-tracker/useExpenses';
 import { useGetSemesters, useGetActiveSemester } from '@/hooks/expense-tracker/useSemesters';
 import { ExpensesQueryParams, Expense, ExpenseCategoryType, PaymentMethod } from '@/types/expense-tracker/expenseTracker.types';
@@ -135,8 +136,33 @@ const ExpensesPage = () => {
 
     if (isLoadingSemesters || (isLoadingExpenses && !expensesData)) {
         return (
-            <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="space-y-8">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold">Expenses</h1>
+                        <p className="text-muted-foreground">
+                            Manage and track your expenses
+                        </p>
+                    </div>
+                    <Button disabled>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Expense
+                    </Button>
+                </div>
+
+                {/* Filters and Search Skeleton */}
+                <div className="flex flex-col sm:flex-row justify-between gap-4">
+                    <div className="flex gap-2 w-full sm:w-auto">
+                        <Select disabled>
+                            <SelectTrigger className="w-[140px]">
+                                <SelectValue placeholder="Semester" />
+                            </SelectTrigger>
+                        </Select>
+                    </div>
+                </div>
+
+                {/* Expenses Grid Skeleton */}
+                <ExpensesGridSkeleton />
             </div>
         );
     }

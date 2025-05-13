@@ -13,6 +13,7 @@ import { useGetActiveSemester, useGetSemesters } from '@/hooks/expense-tracker/u
 import { PaymentScheduleForm, PaymentScheduleFormValues } from '@/components/expense-tracker/PaymentScheduleForm';
 import { PaymentScheduleCard } from '@/components/expense-tracker/PaymentScheduleCard';
 import { DeletePaymentScheduleDialog } from '@/components/expense-tracker/DeletePaymentScheduleDialog';
+import { PaymentSchedulesGridSkeleton } from '@/components/expense-tracker/skeletons/PaymentScheduleSkeleton';
 import { PaymentSchedule, PaymentSchedulesQueryParams, PaymentType } from '@/types/expense-tracker/expenseTracker.types';
 
 import {
@@ -30,7 +31,7 @@ import {
     SelectValue
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Loader2, Plus, Search, FilterX } from 'lucide-react';
+import { Plus, Search, FilterX } from 'lucide-react';
 
 const PaymentSchedulesPage = () => {
     const [filters, setFilters] = useState<PaymentSchedulesQueryParams>({
@@ -195,8 +196,30 @@ const PaymentSchedulesPage = () => {
 
     if (isLoadingSemesters || (isLoadingPaymentSchedules && !paymentSchedulesData)) {
         return (
-            <div className="flex items-center justify-center h-full">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="space-y-6">
+                <div className="flex flex-col md:flex-row justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight">Payment Schedules</h1>
+                        <p className="text-muted-foreground">
+                            Manage your upcoming tuition, housing, and other educational payments.
+                        </p>
+                    </div>
+                    <Button disabled>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Payment
+                    </Button>
+                </div>
+
+                <div className="flex flex-col md:flex-row justify-between gap-4">
+                    <div className="flex flex-col md:flex-row gap-4 w-full">
+                        <div className="flex flex-1 gap-2">
+                            {/* Skeleton filters */}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Payment Schedule Grid Skeleton */}
+                <PaymentSchedulesGridSkeleton />
             </div>
         );
     }
