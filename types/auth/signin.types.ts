@@ -7,7 +7,8 @@ export interface User {
     isVerified: boolean;
     avatar: string,
     bio: true,
-    location: true
+    location: true,
+    twoFactorEnabled?: boolean
 }
 
 export interface SignInRequest {

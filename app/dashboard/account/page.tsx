@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { updateUser } from "@/redux/slices/authSlice"
 import { Skeleton } from "@/components/ui/skeleton"
+import { TwoFactorAuthTab } from "@/components/auth/two-factor-auth-tab"
 
 const generalFormSchema = z.object({
     firstName: z.string().min(2, { message: "First name must be at least 2 characters" }),
@@ -125,7 +126,7 @@ export default function AccountPage() {
                 description: "Your account has been deleted successfully.",
             })
             dispatch(updateUser(null))
-            queryClient.clear() 
+            queryClient.clear()
             router.push("/")
         },
         onError: (error: any) => {
@@ -250,12 +251,15 @@ export default function AccountPage() {
     return (
         <div className="container mx-auto p-4">
             <Tabs defaultValue="general" className="w-full max-w-4xl mx-auto">
-                <TabsList className="grid w-full grid-cols-3 cursor-pointer">
+                <TabsList className="grid w-full grid-cols-4 cursor-pointer">
                     <TabsTrigger value="general" className="cursor-pointer">
                         General
                     </TabsTrigger>
                     <TabsTrigger value="password" className="cursor-pointer">
                         Password
+                    </TabsTrigger>
+                    <TabsTrigger value="2fa" className="cursor-pointer">
+                        Two-Factor Auth
                     </TabsTrigger>
                     <TabsTrigger value="danger" className="cursor-pointer">
                         Danger Zone
@@ -492,6 +496,10 @@ export default function AccountPage() {
                             </form>
                         </Form>
                     </Card>
+                </TabsContent>
+
+                <TabsContent value="2fa">
+                    <TwoFactorAuthTab />
                 </TabsContent>
 
                 <TabsContent value="danger">

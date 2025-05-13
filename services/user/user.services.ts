@@ -11,6 +11,14 @@ import {
     ChangePasswordRequest,
     ChangePasswordResponse
 } from '@/types/user/user.types';
+import {
+    TwoFactorSetupResponse,
+    TwoFactorVerifyRequest,
+    TwoFactorVerifyResponse,
+    TwoFactorDisableRequest,
+    TwoFactorDisableResponse,
+    TwoFactorStatusResponse
+} from '@/types/auth/twoFactorAuth.types';
 
 export const userServices = {
 
@@ -47,6 +55,32 @@ export const userServices = {
      */
     changePassword: (data: ChangePasswordRequest) => {
         return api.post<ChangePasswordResponse>('/users/change-password', data);
+    },
+
+    /**
+     * Setup 2-factor authentication
+     * @returns A promise that resolves to the 2FA setup response
+     */
+    setup2FA: () => {
+        return api.post<TwoFactorSetupResponse>('/auth/2fa/setup');
+    },
+
+    /**
+     * Verify and enable 2-factor authentication
+     * @param data - The verification token from authenticator app
+     * @returns A promise that resolves to the 2FA verification response
+     */
+    verify2FA: (data: TwoFactorVerifyRequest) => {
+        return api.post<TwoFactorVerifyResponse>('/auth/2fa/verify', data);
+    },
+
+    /**
+     * Disable 2-factor authentication
+     * @param data - The token from authenticator app
+     * @returns A promise that resolves to the 2FA disable response
+     */
+    disable2FA: (data: TwoFactorDisableRequest) => {
+        return api.post<TwoFactorDisableResponse>('/auth/2fa/disable', data);
     },
 
     // admin services:

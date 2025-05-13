@@ -9,6 +9,10 @@ interface AuthState {
     isLoading: boolean;
     error: string | null;
     isAuthenticated: boolean;
+    twoFactorSetup: {
+        secret: string | null;
+        qrCode: string | null;
+    };
 }
 
 const initialState: AuthState = {
@@ -18,6 +22,10 @@ const initialState: AuthState = {
     isLoading: false,
     error: null,
     isAuthenticated: false,
+    twoFactorSetup: {
+        secret: null,
+        qrCode: null
+    }
 };
 
 export const refreshTokenAction = createAsyncThunk(
@@ -77,6 +85,26 @@ const authSlice = createSlice({
             if (state.user) {
                 state.user = { ...state.user, ...action.payload };
             }
+        },
+        setTwoFactorSetup: (state, action) => {
+            state.twoFactorSetup = {
+                secret: action.payload.secret,
+                qrCode: action.payload.qrCode
+            };
+        },
+        clearTwoFactorSetup: (state) => {
+            state.twoFactorSetup = {
+                secret: null,
+                qrCode: null
+            };
+        },
+        updateTwoFactorStatus: (state, action) => {
+            if (state.user) {
+                state.user = {
+                    ...state.user,
+                    twoFactorEnabled: action.payload.isEnabled
+                };
+            }
         }
     },
     extraReducers: (builder) => {
@@ -93,5 +121,14 @@ const authSlice = createSlice({
     },
 });
 
-export const { setAuthData, setAuthError, clearCredentials, clearError, updateUser } = authSlice.actions;
+export const {
+    setAuthData,
+    setAuthError,
+    clearCredentials,
+    clearError,
+    updateUser,
+    setTwoFactorSetup,
+    clearTwoFactorSetup,
+    updateTwoFactorStatus
+} = authSlice.actions;
 export default authSlice.reducer;
