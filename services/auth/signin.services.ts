@@ -1,5 +1,5 @@
 import { api } from '@/lib/api/baseAPI';
-import { SignInRequest, SignInResponse } from '@/types/auth/signin.types';
+import { SignInRequest, SignInResponse, TwoFactorSignInRequest } from '@/types/auth/signin.types';
 
 export const authServices = {
     /**
@@ -10,6 +10,18 @@ export const authServices = {
     signIn: (credentials: SignInRequest) => {
         return api.post<SignInResponse>(
             '/auth/signin',
+            credentials
+        );
+    },
+
+    /**
+     * Complete sign in with 2FA token
+     * @param credentials - The user's email, password, and 2FA token
+     * @returns A promise that resolves to the sign-in response
+     */
+    twoFactorSignIn: (credentials: TwoFactorSignInRequest) => {
+        return api.post<SignInResponse>(
+            '/auth/2fa/signin',
             credentials
         );
     },

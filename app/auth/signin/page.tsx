@@ -15,11 +15,12 @@ import { PasswordInput } from "@/components/auth/password-input"
 import { useRouter } from "next/navigation"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/redux/store"
-import { setAuthData, setAuthError, clearError } from "@/redux/slices/authSlice"
+import { setAuthData, setAuthError, clearError, setPendingTwoFactor } from "@/redux/slices/authSlice"
 import { toast } from "sonner"
 import { authServices } from "@/services/auth/signin.services"
 import { ApiError } from "@/lib/api/baseAPI"
 import { Loader2, LogIn } from "lucide-react"
+import { TwoFactorAuthForm } from "@/components/auth/two-factor-auth-form"
 
 type SignInValues = z.infer<typeof signinSchema>
 
@@ -28,7 +29,7 @@ export default function SignInPage() {
   const dispatch = useDispatch()
   const router = useRouter()
 
-  const { error } = useSelector(
+  const { error, pendingTwoFactor } = useSelector(
     (state: RootState) => state.auth
   )
 
@@ -55,17 +56,33 @@ export default function SignInPage() {
     try {
       const response = await authServices.signIn(values)
 
-      dispatch(
-        setAuthData({
-          user: response.data.user,
-          accessToken: response.data.accessToken,
-          refreshToken: response.data.refreshToken,
+      // Check if 2FA is required
+      if (response.status === "pending" && 'requiresOtp' in response.data) {
+        // Store credentials for the 2FA step
+        dispatch(
+          setPendingTwoFactor({
+            email: values.email,
+            password: values.password,
+            userId: response.data.user.id
+          })
+        )
+        toast.info("2FA Required", {
+          description: "Please enter the code from your authenticator app",
         })
-      )
-      toast.success("Welcome back!", {
-        description: "Signed in successfully",
-      })
-      router.push("/dashboard")
+      } else if ('accessToken' in response.data) {
+        // Standard sign-in flow with successful authentication
+        dispatch(
+          setAuthData({
+            user: response.data.user,
+            accessToken: response.data.accessToken,
+            refreshToken: response.data.refreshToken,
+          })
+        )
+        toast.success("Welcome back!", {
+          description: "Signed in successfully",
+        })
+        router.push("/dashboard")
+      }
     } catch (error) {
       const apiError = error as ApiError
       dispatch(setAuthError(apiError.message || "Failed to sign in"))
@@ -76,57 +93,67 @@ export default function SignInPage() {
 
   return (
     <>
-      <AuthCard title="Welcome back" description="Sign in to your account">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email *</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="john.doe@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <AuthCard
+        title={pendingTwoFactor.isRequired ? "Verification Required" : "Welcome back"}
+        description={pendingTwoFactor.isRequired
+          ? "Please enter the 6-digit code from your authenticator app"
+          : "Sign in to your account"
+        }
+      >
+        {pendingTwoFactor.isRequired ? (
+          <TwoFactorAuthForm />
+        ) : (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email *</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="john.doe@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center justify-between">
-                    <FormLabel>Password *</FormLabel>
-                    <Link href="/auth/forget-password" className="text-sm text-primary hover:underline">
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <FormControl>
-                    <PasswordInput placeholder="••••••••" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Password *</FormLabel>
+                      <Link href="/auth/forget-password" className="text-sm text-primary hover:underline">
+                        Forgot password?
+                      </Link>
+                    </div>
+                    <FormControl>
+                      <PasswordInput placeholder="••••••••" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <Button type="submit" className="w-full mt-6" disabled={isLoading}>
-              {isLoading ?
-                <>
-                  <Loader2 className="animate-spin mr-1" />
-                  {"Signing in..."}
-                </>
-                :
-                <>
-                  <LogIn className="mr-1" />
-                  {"Sign in"}
-                </>
-              }
-            </Button>
-          </form>
-        </Form>
+              <Button type="submit" className="w-full mt-6" disabled={isLoading}>
+                {isLoading ?
+                  <>
+                    <Loader2 className="animate-spin mr-1" />
+                    {"Signing in..."}
+                  </>
+                  :
+                  <>
+                    <LogIn className="mr-1" />
+                    {"Sign in"}
+                  </>
+                }
+              </Button>
+            </form>
+          </Form>
+        )}
       </AuthCard>
 
       <AuthFooter text="Don't have an account?" linkText="Sign up" linkHref="/auth/signup" />

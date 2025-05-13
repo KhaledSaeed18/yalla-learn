@@ -97,6 +97,15 @@ export const signinSchema = z.object({
     password: z.string().min(1, "Password is required").max(64, "Password exceeds maximum length"),
 })
 
+// Two-factor signin schema
+export const twoFactorSigninSchema = signinSchema.extend({
+    token: z
+        .string()
+        .trim()
+        .length(6, "Token must be 6 digits")
+        .regex(/^\d{6}$/, "Token must contain only digits"),
+})
+
 // Email verification schema
 export const verifyEmailSchema = z.object({
     email: z.string().trim().email("Invalid email format"),

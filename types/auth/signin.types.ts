@@ -8,7 +8,8 @@ export interface User {
     avatar: string,
     bio: true,
     location: true,
-    twoFactorEnabled?: boolean
+    twoFactorEnabled?: boolean,
+    totpEnabled?: boolean
 }
 
 export interface SignInRequest {
@@ -24,7 +25,21 @@ export interface SignInResponse {
         user: User;
         accessToken: string;
         refreshToken: string;
+    } | {
+        requiresOtp: boolean;
+        user: {
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
+        }
     };
+}
+
+export interface TwoFactorSignInRequest {
+    email: string;
+    password: string;
+    token: string;
 }
 
 export interface SignInError {

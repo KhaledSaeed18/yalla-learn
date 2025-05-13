@@ -13,6 +13,12 @@ interface AuthState {
         secret: string | null;
         qrCode: string | null;
     };
+    pendingTwoFactor: {
+        isRequired: boolean;
+        email: string | null;
+        password: string | null;
+        userId: string | null;
+    };
 }
 
 const initialState: AuthState = {
@@ -25,6 +31,12 @@ const initialState: AuthState = {
     twoFactorSetup: {
         secret: null,
         qrCode: null
+    },
+    pendingTwoFactor: {
+        isRequired: false,
+        email: null,
+        password: null,
+        userId: null
     }
 };
 
@@ -105,6 +117,22 @@ const authSlice = createSlice({
                     twoFactorEnabled: action.payload.isEnabled
                 };
             }
+        },
+        setPendingTwoFactor: (state, action) => {
+            state.pendingTwoFactor = {
+                isRequired: true,
+                email: action.payload.email,
+                password: action.payload.password,
+                userId: action.payload.userId
+            };
+        },
+        clearPendingTwoFactor: (state) => {
+            state.pendingTwoFactor = {
+                isRequired: false,
+                email: null,
+                password: null,
+                userId: null
+            };
         }
     },
     extraReducers: (builder) => {
@@ -129,6 +157,8 @@ export const {
     updateUser,
     setTwoFactorSetup,
     clearTwoFactorSetup,
-    updateTwoFactorStatus
+    updateTwoFactorStatus,
+    setPendingTwoFactor,
+    clearPendingTwoFactor
 } = authSlice.actions;
 export default authSlice.reducer;
