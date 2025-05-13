@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
-import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer, BrainCircuit, ListChecks, ClipboardCheck, Brain, Clock } from "lucide-react"
+import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer, BrainCircuit, ListChecks, ClipboardCheck, Brain, Clock, ScanEye, Info, Headset, CircleHelp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
@@ -86,6 +86,12 @@ export function Header() {
                     description: "Enhance your focus with Pomodoro technique - 25/5 minute timer cycles with customizable options.",
                     icon: <Clock className="size-5 mr-2 text-primary" />
                 },
+                {
+                    title: "Focus Mode",
+                    href: "/productivity-tools/focus-mode",
+                    description: "Enter a distraction-free environment to maximize your concentration and productivity.",
+                    icon: <ScanEye className="size-5 mr-2 text-primary" />
+                },
             ],
         },
         {
@@ -152,12 +158,19 @@ export function Header() {
             icon: <FileText className="size-5 mr-2 text-primary" />
         },
         {
-            name: "About",
-            href: "/about",
+            name: "Q&A",
+            href: "/qa",
+            icon: <CircleHelp className="size-5 mr-2 text-primary" />
         },
         {
-            name: "Contact",
-            href: "/contact",
+            name: "About",
+            href: "/about",
+            icon: <Info className="size-5 mr-2 text-primary" />
+        },
+        {
+            name: "Support",
+            href: "/support",
+            icon: <Headset className="size-5 mr-2 text-primary" />
         },
     ]
 

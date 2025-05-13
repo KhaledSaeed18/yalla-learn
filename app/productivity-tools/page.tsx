@@ -2,7 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
-import { Clock } from "lucide-react"
+import { Clock, ScanEye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export default function ProductivityToolsPage() {
@@ -35,11 +35,23 @@ export default function ProductivityToolsPage() {
                     <div className="absolute inset-x-0 bottom-0 h-1 bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
                 </div>
 
-                {/* Placeholder for future productivity tools */}
-                <div className="relative overflow-hidden rounded-lg border border-dashed bg-background/50 p-6 flex flex-col items-center justify-center min-h-[300px]">
-                    <p className="text-xl text-muted-foreground text-center">
-                        More productivity tools coming soon...
+                {/* Focus Mode Card with updated icon */}
+                <div className="group relative overflow-hidden rounded-lg border bg-background p-6 hover:shadow-lg transition-all duration-300 flex flex-col">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4">
+                        <ScanEye className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+                        Focus Mode
+                    </h3>
+                    <p className="text-muted-foreground flex-grow mb-6">
+                        Enter a distraction-free environment with fullscreen mode, motivational quotes, and a countdown timer to maximize concentration.
                     </p>
+                    <Button asChild className="w-full group-hover:bg-primary transition-colors">
+                        <Link href="/productivity-tools/focus-mode">
+                            Try it now
+                        </Link>
+                    </Button>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
                 </div>
             </div>
         </div>
