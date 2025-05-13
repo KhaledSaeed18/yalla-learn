@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Image from "next/image";
 
@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Shield, ShieldCheck } from "lucide-react";
+import { AlertCircle, Loader2, Shield, ShieldCheck } from "lucide-react";
 
 import { userServices } from "@/services/user/user.services";
 import { twoFactorSetupSchema, twoFactorDisableSchema } from "@/lib/auth/twoFactorValidations";
@@ -51,8 +51,17 @@ type DisableFormValues = {
 
 export function TwoFactorAuthTab() {
     const dispatch = useDispatch();
-    const { user, twoFactorSetup } = useSelector((state: any) => state.auth);
+    const { twoFactorSetup } = useSelector((state: any) => state.auth);
     const [setupMode, setSetupMode] = useState<boolean>(false);
+
+    // Fetch 2FA status
+    const statusQuery = useQuery({
+        queryKey: ['2fa-status'],
+        queryFn: async () => {
+            const response = await userServices.check2FAStatus();
+            return response.data.totpEnabled;
+        }
+    });
 
     // Setup 2FA mutation
     const setupMutation = useMutation({
@@ -90,6 +99,8 @@ export function TwoFactorAuthTab() {
             });
             // Update 2FA status in Redux
             dispatch(updateTwoFactorStatus({ isEnabled: true }));
+            // Refetch the status
+            statusQuery.refetch();
         },
         onError: (error: any) => {
             toast.error("Failed to verify 2FA token", {
@@ -107,6 +118,8 @@ export function TwoFactorAuthTab() {
             });
             // Update 2FA status in Redux
             dispatch(updateTwoFactorStatus({ isEnabled: false }));
+            // Refetch the status
+            statusQuery.refetch();
         },
         onError: (error: any) => {
             toast.error("Failed to disable 2FA", {
@@ -161,9 +174,29 @@ export function TwoFactorAuthTab() {
         };
     }, [dispatch, setupMode]);
 
+    // Render loading state
+    if (statusQuery.isLoading) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Two-Factor Authentication</CardTitle>
+                    <CardDescription>
+                        Secure your account with two-factor authentication.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="flex justify-center items-center py-8">
+                    <div className="flex flex-col items-center space-y-4">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <p className="text-sm text-muted-foreground">Loading 2FA status...</p>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
     // Render 2FA status and controls
     const render2FAStatus = () => {
-        const is2FAEnabled = user?.twoFactorEnabled;
+        const is2FAEnabled = statusQuery.data;
 
         if (setupMode) {
             return (
@@ -348,6 +381,17 @@ export function TwoFactorAuthTab() {
             <CardContent>
                 {render2FAStatus()}
             </CardContent>
+            {statusQuery.isError && (
+                <CardFooter>
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>
+                            Failed to load 2FA status. Please try refreshing the page.
+                        </AlertDescription>
+                    </Alert>
+                </CardFooter>
+            )}
         </Card>
     );
 }

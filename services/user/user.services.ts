@@ -58,6 +58,14 @@ export const userServices = {
     },
 
     /**
+     * Check 2-factor authentication status
+     * @returns A promise that resolves to the 2FA status response
+     */
+    check2FAStatus: () => {
+        return api.get<TwoFactorStatusResponse>('/auth/2fa/status');
+    },
+
+    /**
      * Setup 2-factor authentication
      * @returns A promise that resolves to the 2FA setup response
      */

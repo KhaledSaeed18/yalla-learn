@@ -33,6 +33,6 @@ export interface TwoFactorStatusResponse {
     statusCode: number;
     message: string;
     data: {
-        isEnabled: boolean;
+        totpEnabled: boolean;
     };
 }
