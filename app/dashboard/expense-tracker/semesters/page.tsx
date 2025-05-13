@@ -7,7 +7,6 @@ import {
     useCreateSemester,
     useUpdateSemester,
     useDeleteSemester,
-    useGetActiveSemester
 } from '@/hooks/expense-tracker/useSemesters';
 import {
     CreateSemesterRequest,
@@ -54,7 +53,6 @@ const SemestersPage = () => {
 
     // Custom hooks for CRUD operations
     const { data: semesters, isLoading: isLoadingSemesters } = useGetSemesters();
-    const { data: activeSemester } = useGetActiveSemester();
     const { mutate: createSemester, isPending: isCreating } = useCreateSemester();
     const { mutate: updateSemester, isPending: isUpdating } = useUpdateSemester();
     const { mutate: deleteSemester, isPending: isDeleting } = useDeleteSemester();

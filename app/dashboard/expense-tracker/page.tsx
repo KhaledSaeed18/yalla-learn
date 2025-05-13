@@ -120,9 +120,6 @@ const ExpenseTrackerDashboard = () => {
                                 <Button variant="outline" onClick={() => router.push(`/dashboard/expense-tracker/expenses?semesterId=${activeSemester.id}`)}>
                                     View Expenses
                                 </Button>
-                                <Button onClick={() => router.push(`/dashboard/expense-tracker/semesters/${activeSemester.id}`)}>
-                                    Semester Details
-                                </Button>
                             </div>
                         </div>
                     </CardContent>
