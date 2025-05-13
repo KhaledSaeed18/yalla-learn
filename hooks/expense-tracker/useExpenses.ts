@@ -1,28 +1,28 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { expenseServices } from '@/services/expense-tracker/expenses.services';
-import {
-    Expense,
-    ExpenseQueryParams,
-    CreateExpenseRequest,
-    UpdateExpenseRequest
-} from '@/types/expense-tracker/expenseTracker.types';
 import { toast } from 'sonner';
+import { expensesServices } from '@/services/expense-tracker/expenses.services';
+import {
+    ExpensesQueryParams,
+    CreateExpenseRequest,
+    UpdateExpenseRequest,
+    Expense
+} from '@/types/expense-tracker/expenseTracker.types';
 
 // Query keys
 export const expenseKeys = {
     all: ['expenses'] as const,
     lists: () => [...expenseKeys.all, 'list'] as const,
-    list: (params?: ExpenseQueryParams) => [...expenseKeys.lists(), { params }] as const,
+    list: (params?: ExpensesQueryParams) => [...expenseKeys.lists(), { params }] as const,
     details: () => [...expenseKeys.all, 'detail'] as const,
     detail: (id: string) => [...expenseKeys.details(), id] as const,
 };
 
 // Get all expenses hook with optional filtering, pagination, and sorting
-export const useGetExpenses = (params?: ExpenseQueryParams) => {
+export const useGetExpenses = (params?: ExpensesQueryParams) => {
     return useQuery({
         queryKey: expenseKeys.list(params),
         queryFn: async () => {
-            const response = await expenseServices.getExpenses(params);
+            const response = await expensesServices.getExpenses(params);
             return {
                 expenses: response.data.expenses,
                 pagination: response.data.pagination
@@ -31,12 +31,12 @@ export const useGetExpenses = (params?: ExpenseQueryParams) => {
     });
 };
 
-// Get single expense hook
+// Get single expense hook by ID
 export const useGetExpense = (id: string) => {
     return useQuery({
         queryKey: expenseKeys.detail(id),
         queryFn: async () => {
-            const response = await expenseServices.getExpenseById(id);
+            const response = await expensesServices.getExpense(id);
             return response.data.expense;
         },
         enabled: !!id,
@@ -49,25 +49,8 @@ export const useCreateExpense = () => {
 
     return useMutation({
         mutationFn: (expenseData: CreateExpenseRequest) =>
-            expenseServices.createExpense(expenseData),
+            expensesServices.createExpense(expenseData),
         onSuccess: (response) => {
-            // Update expenses list
-            queryClient.setQueryData(
-                expenseKeys.lists(),
-                (oldData: any) => {
-                    if (!oldData) return oldData;
-                    return {
-                        ...oldData,
-                        expenses: [response.data.expense, ...(oldData.expenses || [])],
-                        pagination: oldData.pagination ? {
-                            ...oldData.pagination,
-                            total: (oldData.pagination.total || 0) + 1
-                        } : undefined
-                    };
-                }
-            );
-
-            // Invalidate related queries
             queryClient.invalidateQueries({
                 queryKey: expenseKeys.lists(),
             });
@@ -86,15 +69,12 @@ export const useUpdateExpense = () => {
 
     return useMutation({
         mutationFn: ({ id, expenseData }: { id: string; expenseData: UpdateExpenseRequest }) =>
-            expenseServices.updateExpense(id, expenseData),
+            expensesServices.updateExpense(id, expenseData),
         onSuccess: (response, { id }) => {
-            // Update expense detail
-            queryClient.setQueryData(
-                expenseKeys.detail(id),
-                response.data.expense
-            );
+            queryClient.invalidateQueries({
+                queryKey: expenseKeys.detail(id),
+            });
 
-            // Update expenses in lists
             queryClient.invalidateQueries({
                 queryKey: expenseKeys.lists(),
             });
@@ -112,14 +92,12 @@ export const useDeleteExpense = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (id: string) => expenseServices.deleteExpense(id),
+        mutationFn: (id: string) => expensesServices.deleteExpense(id),
         onSuccess: (_, id) => {
-            // Remove from expense lists
             queryClient.invalidateQueries({
                 queryKey: expenseKeys.lists(),
             });
 
-            // Remove specific expense data
             queryClient.removeQueries({
                 queryKey: expenseKeys.detail(id),
             });

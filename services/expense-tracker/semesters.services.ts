@@ -1,7 +1,6 @@
 import { api } from '@/lib/api/baseAPI';
 import {
     GetSemestersResponse,
-    GetActiveSemesterResponse,
     GetSemesterResponse,
     CreateSemesterRequest,
     CreateSemesterResponse,
@@ -10,14 +9,14 @@ import {
     DeleteSemesterResponse
 } from '@/types/expense-tracker/expenseTracker.types';
 
-export const semesterServices = {
+export const semestersServices = {
     /**
      * Get all semesters
      * @returns A promise that resolves to the semesters response
      */
     getSemesters: () => {
         return api.get<GetSemestersResponse>(
-            '/expense-tracker/semesters'
+            '/expense-tracker/get-semesters'
         );
     },
 
@@ -26,7 +25,7 @@ export const semesterServices = {
      * @returns A promise that resolves to the active semester response
      */
     getActiveSemester: () => {
-        return api.get<GetActiveSemesterResponse>(
+        return api.get<GetSemesterResponse>(
             '/expense-tracker/semesters/active'
         );
     },
@@ -36,9 +35,9 @@ export const semesterServices = {
      * @param id - The semester ID
      * @returns A promise that resolves to the semester response
      */
-    getSemesterById: (id: string) => {
+    getSemester: (id: string) => {
         return api.get<GetSemesterResponse>(
-            `/expense-tracker/semesters/${id}`
+            `/expense-tracker/get-semester/${id}`
         );
     },
 
@@ -49,7 +48,7 @@ export const semesterServices = {
      */
     createSemester: (semesterData: CreateSemesterRequest) => {
         return api.post<CreateSemesterResponse>(
-            '/expense-tracker/semesters',
+            '/expense-tracker/create-semester',
             semesterData
         );
     },
@@ -62,7 +61,7 @@ export const semesterServices = {
      */
     updateSemester: (id: string, semesterData: UpdateSemesterRequest) => {
         return api.put<UpdateSemesterResponse>(
-            `/expense-tracker/semesters/${id}`,
+            `/expense-tracker/update-semester/${id}`,
             semesterData
         );
     },
@@ -74,7 +73,7 @@ export const semesterServices = {
      */
     deleteSemester: (id: string) => {
         return api.delete<DeleteSemesterResponse>(
-            `/expense-tracker/semesters/${id}`
+            `/expense-tracker/delete-semester/${id}`
         );
     }
 };

@@ -7,18 +7,18 @@ import {
     UpdateExpenseRequest,
     UpdateExpenseResponse,
     DeleteExpenseResponse,
-    ExpenseQueryParams
+    ExpensesQueryParams
 } from '@/types/expense-tracker/expenseTracker.types';
 
-export const expenseServices = {
+export const expensesServices = {
     /**
      * Get all expenses with optional filtering, pagination, and sorting
      * @param params - Query parameters for filtering, pagination, and sorting
      * @returns A promise that resolves to the expenses response
      */
-    getExpenses: (params?: ExpenseQueryParams) => {
+    getExpenses: (params?: ExpensesQueryParams) => {
         return api.get<GetExpensesResponse>(
-            '/expense-tracker/expenses',
+            '/expense-tracker/get-expenses',
             params
         );
     },
@@ -28,9 +28,9 @@ export const expenseServices = {
      * @param id - The expense ID
      * @returns A promise that resolves to the expense response
      */
-    getExpenseById: (id: string) => {
+    getExpense: (id: string) => {
         return api.get<GetExpenseResponse>(
-            `/expense-tracker/expenses/${id}`
+            `/expense-tracker/get-expense/${id}`
         );
     },
 
@@ -41,7 +41,7 @@ export const expenseServices = {
      */
     createExpense: (expenseData: CreateExpenseRequest) => {
         return api.post<CreateExpenseResponse>(
-            '/expense-tracker/expenses',
+            '/expense-tracker/create-expense',
             expenseData
         );
     },
@@ -54,7 +54,7 @@ export const expenseServices = {
      */
     updateExpense: (id: string, expenseData: UpdateExpenseRequest) => {
         return api.put<UpdateExpenseResponse>(
-            `/expense-tracker/expenses/${id}`,
+            `/expense-tracker/update-expense/${id}`,
             expenseData
         );
     },
@@ -66,7 +66,7 @@ export const expenseServices = {
      */
     deleteExpense: (id: string) => {
         return api.delete<DeleteExpenseResponse>(
-            `/expense-tracker/expenses/${id}`
+            `/expense-tracker/delete-expense/${id}`
         );
     }
 };
