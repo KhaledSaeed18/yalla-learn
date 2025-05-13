@@ -4,7 +4,6 @@ import { format } from 'date-fns';
 import { Calendar, ArrowUpDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
 interface SemesterCardProps {
@@ -69,15 +68,6 @@ export const SemesterCard = ({ semester }: SemesterCardProps) => {
                     </div>
                 )}
             </CardContent>
-            <CardFooter>
-                <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => router.push(`/dashboard/expense-tracker/semesters/${semester.id}`)}
-                >
-                    View Details
-                </Button>
-            </CardFooter>
         </Card>
     );
 };

@@ -37,7 +37,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Custom Components
 import { SemesterForm, semesterFormSchema } from '@/components/expense-tracker/SemesterForm';
@@ -249,14 +249,6 @@ const SemestersPage = () => {
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => router.push(`/dashboard/expense-tracker/semesters/${semester.id}`)}
-                                                >
-                                                    <FilePen className="h-4 w-4" />
-                                                    <span className="sr-only">View Details</span>
-                                                </Button>
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
