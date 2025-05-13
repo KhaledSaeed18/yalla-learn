@@ -16,12 +16,6 @@ import { DeletePaymentScheduleDialog } from '@/components/expense-tracker/Delete
 import { PaymentSchedule, PaymentSchedulesQueryParams, PaymentType } from '@/types/expense-tracker/expenseTracker.types';
 
 import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger
-} from '@/components/ui/tabs';
-import {
     Dialog,
     DialogContent,
     DialogDescription,
@@ -31,32 +25,15 @@ import {
 import {
     Select,
     SelectContent,
-    SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious
-} from '@/components/ui/pagination';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2, Plus, Search, FilterX } from 'lucide-react';
 
 const PaymentSchedulesPage = () => {
-    const router = useRouter();
     const [filters, setFilters] = useState<PaymentSchedulesQueryParams>({
-        page: 1,
-        limit: 9,
         sortBy: 'dueDate',
         sortOrder: 'asc'
     });
@@ -108,7 +85,6 @@ const PaymentSchedulesPage = () => {
         setFilters(prev => ({
             ...prev,
             ...newFilters,
-            page: 1 // Reset to first page when tab changes
         }));
     }, [activeTab]);
 
@@ -168,14 +144,6 @@ const PaymentSchedulesPage = () => {
         }
     };
 
-    // Pagination handlers
-    const handlePageChange = (newPage: number) => {
-        setFilters(prev => ({
-            ...prev,
-            page: newPage
-        }));
-    };
-
     // Prepare default values for create form
     const getCreateFormDefaultValues = (): PaymentScheduleFormValues => {
         return {
@@ -209,8 +177,7 @@ const PaymentSchedulesPage = () => {
     // Reset filters handler
     const handleResetFilters = () => {
         setFilters({
-            page: 1,
-            limit: 9,
+
             sortBy: 'dueDate',
             sortOrder: 'asc',
             semesterId: activeSemester?.id
@@ -223,7 +190,6 @@ const PaymentSchedulesPage = () => {
         setFilters(prev => ({
             ...prev,
             [field]: value,
-            page: 1 // Reset to first page when filters change
         }));
     };
 

@@ -1,269 +1,268 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useGetActiveSemester, useGetSemesters } from '@/hooks/expense-tracker/useSemesters';
-import { useGetExpenses } from '@/hooks/expense-tracker/useExpenses';
-import { Loader2, BookOpen, Calendar, Pencil, PieChart, CreditCard, BarChart, TrendingUp, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { ExpenseStats } from '@/components/expense-tracker/ExpenseStats';
+import {
+    BookOpen,
+    CreditCard,
+    DollarSign,
+    Wallet,
+    BarChart3,
+    PieChart,
+    CalendarRange,
+    TrendingUp,
+    ArrowUpRight,
+    ArrowDownRight,
+    ListChecks,
+    Pencil
+} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { format } from 'date-fns';
+
+// Import analytics hooks and components
+import { useGetDashboardStats, useGetExpenseSummary, useGetExpenseIncomeComparison } from '@/hooks/expense-tracker/useAnalytics';
+import { useGetSemesters } from '@/hooks/expense-tracker/useSemesters';
+import {
+    ExpenseSummaryPieChart,
+    ExpenseIncomeBarChart,
+    StatsCard
+} from '@/components/expense-tracker/AnalyticsCharts';
+import {
+    DateRangePicker,
+    SemesterFilter,
+    GroupByFilter
+} from '@/components/expense-tracker/DateRangePicker';
+import {
+    ExpenseSummaryPeriod,
+    GroupByOption
+} from '@/types/expense-tracker/analytics.types';
 
 const ExpenseTrackerDashboard = () => {
     const router = useRouter();
-    const { data: activeSemester, isLoading: isLoadingActive } = useGetActiveSemester();
-    const { data: semesters, isLoading: isLoadingSemesters } = useGetSemesters();
 
-    // Get recent expenses for the active semester
-    const { data: expensesData, isLoading: isLoadingExpenses } = useGetExpenses({
-        limit: 5,
-        semesterId: activeSemester?.id,
-        sortBy: 'createdAt',
-        sortOrder: 'desc'
-    });
+    // State for filter controls
+    const [period, setPeriod] = useState<ExpenseSummaryPeriod>('this-month');
+    const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+    const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+    const [selectedSemesterId, setSelectedSemesterId] = useState<string | undefined>(undefined);
+    const [groupBy, setGroupBy] = useState<GroupByOption>('month');
 
-    // State for dashboard stats
-    const [dashboardStats, setDashboardStats] = useState({
-        totalExpenses: 0,
-        avgExpenseAmount: 0,
-        expenseCount: 0,
-        topCategory: '',
-        topCategoryPercentage: 0
-    });
-
-    // Calculate dashboard stats when expenses data changes
+    // Reset dates when period changes
     useEffect(() => {
-        if (expensesData?.expenses && expensesData.expenses.length > 0) {
-            // Calculate total expenses
-            const total = expensesData.expenses.reduce(
-                (sum, expense) => sum + parseFloat(expense.amount),
-                0
-            );
-
-            // Calculate average expense amount
-            const avg = total / expensesData.expenses.length;
-
-            // Find top category
-            const categoryCount = expensesData.expenses.reduce((acc, expense) => {
-                acc[expense.category] = (acc[expense.category] || 0) + parseFloat(expense.amount);
-                return acc;
-            }, {} as Record<string, number>);
-
-            const topCategory = Object.entries(categoryCount)
-                .sort((a, b) => b[1] - a[1])[0];
-
-            const topCategoryPercentage = (topCategory[1] / total) * 100;
-
-            setDashboardStats({
-                totalExpenses: total,
-                avgExpenseAmount: avg,
-                expenseCount: expensesData.expenses.length,
-                topCategory: topCategory ? topCategory[0].replace(/_/g, ' ') : 'None',
-                topCategoryPercentage: topCategoryPercentage
-            });
+        if (period !== 'custom') {
+            setStartDate(undefined);
+            setEndDate(undefined);
         }
-    }, [expensesData]);
+    }, [period]);
 
-    // Redirect to create semester if no semesters exist
-    useEffect(() => {
-        if (!isLoadingSemesters && semesters && semesters.length === 0) {
-            router.push('/dashboard/expense-tracker/semesters');
-        }
-    }, [isLoadingSemesters, semesters, router]);
+    // Get semesters for filter dropdown
+    const { data: semesters = [] } = useGetSemesters();
 
-    if (isLoadingActive || isLoadingSemesters || isLoadingExpenses) {
-        return (
-            <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            </div>
-        );
-    }
-
-    // Format currency for display
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        }).format(amount);
+    // Prepare query parameters
+    const getDashboardStatsParams = {
+        period,
+        ...(period === 'custom' && startDate && { startDate: format(startDate, 'yyyy-MM-dd') }),
+        ...(period === 'custom' && endDate && { endDate: format(endDate, 'yyyy-MM-dd') }),
+        ...(selectedSemesterId && { semesterId: selectedSemesterId })
     };
 
+    // Fetch dashboard statistics
+    const {
+        data: dashboardStats,
+        isLoading: isDashboardStatsLoading
+    } = useGetDashboardStats(getDashboardStatsParams);
+
+    // Prepare expense summary params
+    const expenseSummaryParams = {
+        ...(period === 'custom' && startDate && { startDate: format(startDate, 'yyyy-MM-dd') }),
+        ...(period === 'custom' && endDate && { endDate: format(endDate, 'yyyy-MM-dd') }),
+        ...(selectedSemesterId && { semesterId: selectedSemesterId })
+    };
+
+    // Fetch expense summary for pie chart
+    const {
+        data: expenseSummaryData,
+        isLoading: isExpenseSummaryLoading
+    } = useGetExpenseSummary(expenseSummaryParams);
+
+    // Prepare expense-income comparison params
+    const expenseIncomeParams = {
+        ...(period === 'custom' && startDate && { startDate: format(startDate, 'yyyy-MM-dd') }),
+        ...(period === 'custom' && endDate && { endDate: format(endDate, 'yyyy-MM-dd') }),
+        groupBy,
+        ...(selectedSemesterId && { semesterId: selectedSemesterId })
+    };
+
+    // Fetch expense-income comparison for bar chart
+    const {
+        data: expenseIncomeData,
+        isLoading: isExpenseIncomeLoading
+    } = useGetExpenseIncomeComparison(expenseIncomeParams);
+
     return (
-        <div className="container mx-auto py-6 space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold">Expense Tracker Dashboard</h1>
-                <p className="text-muted-foreground">
-                    Manage your expenses, budgets, and financial planning
-                </p>
+        <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold">Expense Tracker Dashboard</h1>
+                    <p className="text-muted-foreground">
+                        Manage your expenses, budgets, and financial planning
+                    </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                    <DateRangePicker
+                        period={period}
+                        startDate={startDate}
+                        endDate={endDate}
+                        onPeriodChange={setPeriod}
+                        onStartDateChange={setStartDate}
+                        onEndDateChange={setEndDate}
+                    />
+
+                    <SemesterFilter
+                        semesters={semesters.map(s => ({ id: s.id, name: s.name }))}
+                        selectedSemesterId={selectedSemesterId}
+                        onSelect={setSelectedSemesterId}
+                    />
+                </div>
             </div>
 
-            {activeSemester ? (
-                <Card className="bg-muted/50">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Calendar className="h-5 w-5" />
-                            Active Semester
-                        </CardTitle>
-                        <CardDescription>Your current active semester for expense tracking</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                            <div>
-                                <h3 className="text-xl font-bold">{activeSemester.name}</h3>
-                                <div className="mt-1 flex items-center gap-2">
-                                    <Badge variant="outline">{activeSemester.term}</Badge>
-                                    <span>{activeSemester.year}</span>
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <Button variant="outline" onClick={() => router.push(`/dashboard/expense-tracker/expenses?semesterId=${activeSemester.id}`)}>
-                                    View Expenses
-                                </Button>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            ) : (
-                <Card className="bg-muted/50">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Calendar className="h-5 w-5" />
-                            No Active Semester
-                        </CardTitle>
-                        <CardDescription>You don't have an active semester set</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center justify-between">
-                            <p>Set an active semester to track your expenses more efficiently.</p>
-                            <Button onClick={() => router.push('/dashboard/expense-tracker/semesters')}>
-                                Manage Semesters
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <StatsCard
+                    title="Total Income"
+                    value={dashboardStats?.summary?.totalIncome ?
+                        `$${dashboardStats.summary.totalIncome.toFixed(2)}` :
+                        "$0.00"}
+                    description={`For ${period.replace('-', ' ')}`}
+                    loading={isDashboardStatsLoading}
+                    icon={<DollarSign className="h-4 w-4" />}
+                />
 
-            {/* Quick Stats Section */}
-            {activeSemester && expensesData?.expenses && expensesData.expenses.length > 0 && (
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-                    <div className="md:col-span-3">
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm font-medium flex items-center gap-2">
-                                        <DollarSign className="h-4 w-4 text-muted-foreground" />
-                                        Total Expenses
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-2xl font-bold">
-                                        {formatCurrency(dashboardStats.totalExpenses)}
-                                    </div>
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        For current active semester
-                                    </p>
-                                </CardContent>
-                            </Card>
+                <StatsCard
+                    title="Total Expenses"
+                    value={dashboardStats?.summary?.totalExpenses ?
+                        `$${dashboardStats.summary.totalExpenses.toFixed(2)}` :
+                        "$0.00"}
+                    description={`For ${period.replace('-', ' ')}`}
+                    loading={isDashboardStatsLoading}
+                    icon={<Wallet className="h-4 w-4" />}
+                />
 
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm font-medium flex items-center gap-2">
-                                        <BarChart className="h-4 w-4 text-muted-foreground" />
-                                        Average Expense
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-2xl font-bold">
-                                        {formatCurrency(dashboardStats.avgExpenseAmount)}
-                                    </div>
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        Across {dashboardStats.expenseCount} expenses
-                                    </p>
-                                </CardContent>
-                            </Card>
+                <StatsCard
+                    title="Net Savings"
+                    value={dashboardStats?.summary?.netSavings ?
+                        `$${dashboardStats.summary.netSavings.toFixed(2)}` :
+                        "$0.00"}
+                    description={dashboardStats?.summary?.netSavings && dashboardStats?.summary?.netSavings > 0 ?
+                        "You're saving money!" :
+                        "Try to reduce expenses"}
+                    loading={isDashboardStatsLoading}
+                    icon={dashboardStats?.summary?.netSavings && dashboardStats?.summary?.netSavings > 0 ?
+                        <ArrowUpRight className="h-4 w-4 text-green-500" /> :
+                        <ArrowDownRight className="h-4 w-4 text-red-500" />}
+                />
 
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm font-medium flex items-center gap-2">
-                                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                                        Top Spending Category
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-2xl font-bold">
-                                        {dashboardStats.topCategory}
-                                    </div>
-                                    <div className="mt-2">
-                                        <Progress value={dashboardStats.topCategoryPercentage} className="h-2" />
-                                        <p className="text-xs text-muted-foreground mt-1">
-                                            {Math.round(dashboardStats.topCategoryPercentage)}% of total spending
-                                        </p>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
+                <StatsCard
+                    title="Savings Rate"
+                    value={dashboardStats?.summary?.savingsRate ?
+                        `${dashboardStats.summary.savingsRate.toFixed(1)}%` :
+                        "0%"}
+                    description="Of your total income"
+                    loading={isDashboardStatsLoading}
+                    icon={<TrendingUp className="h-4 w-4" />}
+                />
+            </div>
 
-                        <div className="mt-6">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <CreditCard className="h-5 w-5" />
-                                        Recent Expenses
-                                    </CardTitle>
-                                    <CardDescription>
-                                        Your most recently added expenses
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    {expensesData.expenses.length > 0 ? (
-                                        <div className="space-y-4">
-                                            {expensesData.expenses.slice(0, 5).map((expense) => (
-                                                <div key={expense.id} className="flex justify-between items-center py-2 border-b last:border-0">
-                                                    <div>
-                                                        <div className="font-medium">{expense.description}</div>
-                                                        <div className="text-sm text-muted-foreground flex items-center gap-2">
-                                                            <Badge variant="outline" className="text-xs">
-                                                                {expense.category.replace(/_/g, ' ')}
-                                                            </Badge>
-                                                            <span>
-                                                                {new Date(expense.date).toLocaleDateString()}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="font-semibold">
-                                                        {formatCurrency(parseFloat(expense.amount))}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p>No expenses found for this semester.</p>
-                                    )}
-                                </CardContent>
-                                <CardFooter>
-                                    <Button
-                                        variant="outline"
-                                        className="w-full"
-                                        onClick={() => router.push('/dashboard/expense-tracker/expenses')}
-                                    >
-                                        View All Expenses
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        </div>
+            {/* Charts */}
+            <Tabs defaultValue="overview" className="space-y-4">
+                <TabsList>
+                    <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <TabsTrigger value="detail">Detailed Analysis</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="overview" className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <ExpenseSummaryPieChart
+                            categories={expenseSummaryData?.categories || []}
+                            loading={isExpenseSummaryLoading}
+                        />
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Key Insights</CardTitle>
+                                <CardDescription>Important metrics for this period</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <dl className="space-y-4">
+                                    <div className="flex justify-between">
+                                        <dt className="font-medium">Daily Average Spending:</dt>
+                                        <dd className="text-right">
+                                            {isDashboardStatsLoading ? (
+                                                <Skeleton className="h-5 w-20" />
+                                            ) : (
+                                                `$${dashboardStats?.insights?.avgDailyExpense?.toFixed(2) || "0.00"}`
+                                            )}
+                                        </dd>
+                                    </div>
+
+                                    <div className="flex justify-between">
+                                        <dt className="font-medium">Top Spending Category:</dt>
+                                        <dd className="text-right">
+                                            {isDashboardStatsLoading ? (
+                                                <Skeleton className="h-5 w-28" />
+                                            ) : (
+                                                dashboardStats?.insights?.topCategory?.category || "None"
+                                            )}
+                                        </dd>
+                                    </div>
+
+                                    <div className="flex justify-between">
+                                        <dt className="font-medium">Upcoming Payments:</dt>
+                                        <dd className="text-right">
+                                            {isDashboardStatsLoading ? (
+                                                <Skeleton className="h-5 w-24" />
+                                            ) : (
+                                                `${dashboardStats?.insights?.upcomingPaymentsCount || 0} ($${dashboardStats?.insights?.upcomingPaymentsTotal?.toFixed(2) || "0.00"})`
+                                            )}
+                                        </dd>
+                                    </div>
+
+                                    <div className="flex justify-between">
+                                        <dt className="font-medium">Overdue Payments:</dt>
+                                        <dd className="text-right text-red-500">
+                                            {isDashboardStatsLoading ? (
+                                                <Skeleton className="h-5 w-24" />
+                                            ) : (
+                                                `${dashboardStats?.insights?.overduePaymentsCount || 0} ($${dashboardStats?.insights?.overduePaymentsTotal?.toFixed(2) || "0.00"})`
+                                            )}
+                                        </dd>
+                                    </div>
+                                </dl>
+                            </CardContent>
+                        </Card>
                     </div>
+                </TabsContent>
 
-                    <div className="md:col-span-1">
-                        <ExpenseStats
-                            expenses={expensesData.expenses}
-                            title="Expense Analytics"
-                            description="Current semester statistics"
+                <TabsContent value="detail" className="space-y-4">
+                    <div className="flex justify-end mb-4">
+                        <GroupByFilter
+                            value={groupBy}
+                            onChange={(value) => setGroupBy(value as GroupByOption)}
                         />
                     </div>
-                </div>
-            )}
 
+                    <ExpenseIncomeBarChart
+                        data={expenseIncomeData?.comparison || []}
+                        loading={isExpenseIncomeLoading}
+                    />
+                </TabsContent>
+            </Tabs>
+
+            {/* Navigation Cards */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader>
@@ -303,7 +302,6 @@ const ExpenseTrackerDashboard = () => {
                             variant="outline"
                             className="w-full"
                             onClick={() => router.push('/dashboard/expense-tracker/expenses')}
-                            disabled={!activeSemester}
                         >
                             Manage Expenses
                         </Button>
@@ -313,21 +311,43 @@ const ExpenseTrackerDashboard = () => {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Pencil className="h-5 w-5" />
-                            Budgets
+                            <DollarSign className="h-5 w-5" />
+                            Income
                         </CardTitle>
-                        <CardDescription>Set and manage your budgets</CardDescription>
+                        <CardDescription>Track your earnings</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p>Plan your spending by setting budgets for different categories.</p>
+                        <p>Record and manage your income from various sources to better track your finances.</p>
                     </CardContent>
                     <CardFooter>
                         <Button
                             variant="outline"
                             className="w-full"
-                            onClick={() => router.push('/dashboard/expense-tracker/budgets')}
+                            onClick={() => router.push('/dashboard/expense-tracker/income')}
                         >
-                            Manage Budgets
+                            Manage Income
+                        </Button>
+                    </CardFooter>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <CalendarRange className="h-5 w-5" />
+                            Payment Schedule
+                        </CardTitle>
+                        <CardDescription>Plan future payments</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p>Schedule and track upcoming payments to stay organized and avoid late fees.</p>
+                    </CardContent>
+                    <CardFooter>
+                        <Button
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => router.push('/dashboard/expense-tracker/payment-schedules')}
+                        >
+                            Manage Schedules
                         </Button>
                     </CardFooter>
                 </Card>

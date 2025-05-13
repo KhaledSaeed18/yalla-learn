@@ -6,7 +6,6 @@ import { format } from 'date-fns';
 import { Loader2, Plus, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Pagination, PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ExpenseCard } from '@/components/expense-tracker/ExpenseCard';
@@ -17,10 +16,7 @@ import { useGetSemesters, useGetActiveSemester } from '@/hooks/expense-tracker/u
 import { ExpensesQueryParams, Expense, ExpenseCategoryType, PaymentMethod } from '@/types/expense-tracker/expenseTracker.types';
 
 const ExpensesPage = () => {
-    const router = useRouter();
     const [filters, setFilters] = useState<ExpensesQueryParams>({
-        page: 1,
-        limit: 9,
         sortBy: 'createdAt',
         sortOrder: 'desc'
     });
@@ -107,14 +103,6 @@ const ExpensesPage = () => {
                 }
             });
         }
-    };
-
-    // Pagination handlers
-    const handlePageChange = (newPage: number) => {
-        setFilters(prev => ({
-            ...prev,
-            page: newPage
-        }));
     };
 
     // Prepare default values for create form
@@ -235,28 +223,6 @@ const ExpensesPage = () => {
                         </Button>
                     </CardContent>
                 </Card>
-            )}
-
-            {/* Pagination */}
-            {expensesData?.pagination && expensesData.pagination.totalPages > 1 && (
-                <Pagination className="flex justify-center mt-8">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={() => handlePageChange(Math.max(1, filters.page || 1 - 1))} />
-                        </PaginationItem>
-                        <PaginationItem>
-                            <span className="px-4">
-                                Page {filters.page} of {expensesData.pagination.totalPages}
-                            </span>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <PaginationNext
-                                onClick={() => handlePageChange(Math.min(expensesData.pagination.totalPages, (filters.page || 1) + 1))}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
             )}
 
             {/* Create Expense Dialog */}

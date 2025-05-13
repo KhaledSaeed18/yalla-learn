@@ -6,7 +6,6 @@ import { Plus, PiggyBank } from 'lucide-react';
 import { format } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
-import { Pagination } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { IncomeCard } from '@/components/expense-tracker/IncomeCard';
@@ -17,10 +16,7 @@ import { useGetIncomes, useCreateIncome, useUpdateIncome, useDeleteIncome } from
 import { Income, IncomeQueryParams } from '@/types/expense-tracker/income.types';
 
 const IncomePage = () => {
-    const router = useRouter();
     const [filters, setFilters] = useState<IncomeQueryParams>({
-        page: 1,
-        limit: 9,
         sortBy: 'date',
         sortOrder: 'desc'
     });
@@ -85,13 +81,6 @@ const IncomePage = () => {
         }
     };
 
-    // Pagination handlers
-    const handlePageChange = (newPage: number) => {
-        setFilters(prev => ({
-            ...prev,
-            page: newPage
-        }));
-    };
 
     // Prepare default values for create form
     const getCreateFormDefaultValues = (): IncomeFormValues => {
@@ -176,16 +165,6 @@ const IncomePage = () => {
                             />
                         ))}
                     </div>
-
-                    {/* {incomesData?.pagination && incomesData.pagination.totalPages > 1 && (
-                        <div className="flex justify-center mt-8">
-                            <Pagination
-                                currentPage={incomesData.pagination.page}
-                                totalPages={incomesData.pagination.totalPages}
-                                onPageChange={handlePageChange}
-                            />
-                        </div>
-                    )} */}
                 </>
             )}
 
