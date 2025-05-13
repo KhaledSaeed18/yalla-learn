@@ -5,7 +5,6 @@ import {
     ExpensesQueryParams,
     CreateExpenseRequest,
     UpdateExpenseRequest,
-    Expense
 } from '@/types/expense-tracker/expenseTracker.types';
 
 // Query keys

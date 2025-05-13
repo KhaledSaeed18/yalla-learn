@@ -150,6 +150,15 @@ export const sidebarRoutes: SidebarRoute[] = [
                 activeWhen: (pathname) => pathname === "/dashboard/expense-tracker",
             },
             {
+                id: "semesters",
+                label: "Semesters",
+                href: "/dashboard/expense-tracker/semesters",
+                icon: Calendar,
+                requiresAuth: true,
+                roles: ["USER", "ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/expense-tracker/semesters",
+            },
+            {
                 id: "expenses",
                 label: "Expenses",
                 href: "/dashboard/expense-tracker/expenses",
@@ -175,15 +184,6 @@ export const sidebarRoutes: SidebarRoute[] = [
                 requiresAuth: true,
                 roles: ["USER", "ADMIN"],
                 activeWhen: (pathname) => pathname === "/dashboard/expense-tracker/budgets",
-            },
-            {
-                id: "semesters",
-                label: "Semesters",
-                href: "/dashboard/expense-tracker/semesters",
-                icon: Calendar,
-                requiresAuth: true,
-                roles: ["USER", "ADMIN"],
-                activeWhen: (pathname) => pathname === "/dashboard/expense-tracker/semesters",
             },
             {
                 id: "payment-schedules",

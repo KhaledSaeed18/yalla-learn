@@ -1,10 +1,4 @@
 import { z } from "zod"
-import {
-    PaymentMethod,
-    BudgetPeriod,
-    Term,
-    UniversityPaymentType
-} from "@/types/expense-tracker/expenseTracker.types"
 
 // Expense Category Validation Schema
 export const expenseCategorySchema = z.object({
