@@ -10,6 +10,8 @@ export interface User {
     avatar: string | null;
     bio: string | null;
     location: string | null;
+    phoneNumber?: string | null;
+    totpEnabled?: boolean;
     createdAt: string;
     updatedAt: string;
 }
@@ -72,4 +74,48 @@ export interface GetUserStatisticsResponse {
 export interface UserError {
     message: string;
     status?: number;
+}
+
+export interface GetUserProfileResponse {
+    status: string;
+    statusCode: number;
+    message: string;
+    data: {
+        user: User;
+    };
+}
+
+export interface UpdateProfileRequest {
+    firstName?: string;
+    lastName?: string;
+    bio?: string | null;
+    location?: string | null;
+    phoneNumber?: string | null;
+    avatar?: string | null;
+}
+
+export interface UpdateProfileResponse {
+    status: string;
+    statusCode: number;
+    message: string;
+    data: {
+        user: User;
+    };
+}
+
+export interface DeleteAccountResponse {
+    status: string;
+    statusCode: number;
+    message: string;
+}
+
+export interface ChangePasswordRequest {
+    oldPassword: string;
+    newPassword: string;
+}
+
+export interface ChangePasswordResponse {
+    status: string;
+    statusCode: number;
+    message: string;
 }
