@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
-import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer, BrainCircuit, ListChecks, ClipboardCheck, Brain } from "lucide-react"
+import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer, BrainCircuit, ListChecks, ClipboardCheck, Brain, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
@@ -72,6 +72,22 @@ export function Header() {
 
     // Navigation data with dropdown content
     const navItems = [
+        {
+            name: "Productivity Tools",
+            href: "/productivity-tools",
+            icon: <ClipboardCheck className="size-5 mr-2 text-primary" />,
+            title: "Productivity Tools",
+            description: "Boost your productivity with our specialized tools designed to help you work smarter.",
+            descriptionIcon: <ClipboardCheck className="size-10 text-primary" />,
+            content: [
+                {
+                    title: "Focus & Time Management",
+                    href: "/productivity-tools/pomodoro",
+                    description: "Enhance your focus with Pomodoro technique - 25/5 minute timer cycles with customizable options.",
+                    icon: <Clock className="size-5 mr-2 text-primary" />
+                },
+            ],
+        },
         {
             name: "AI Tools",
             href: "/ai-tools",
