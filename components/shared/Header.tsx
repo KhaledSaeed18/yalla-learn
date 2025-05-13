@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
-import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer, BrainCircuit, ListChecks } from "lucide-react"
+import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer, BrainCircuit, ListChecks, ClipboardCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
@@ -115,6 +115,12 @@ export function Header() {
                     href: "/ai-tools/study-plan",
                     description: "Generate a personalized study plan based on your subject, timeframe, and goals.",
                     icon: <ListChecks className="size-5 mr-2 text-primary" />
+                },
+                {
+                    title: "AI Quiz Generator",
+                    href: "/ai-tools/quiz",
+                    description: "Create interactive quizzes on any topic with automatic scoring and explanations.",
+                    icon: <ClipboardCheck className="size-5 mr-2 text-primary" />
                 }
             ],
         },

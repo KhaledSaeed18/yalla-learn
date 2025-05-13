@@ -1,4 +1,4 @@
-import { FileText, ImageIcon, Network, SquareMousePointer, Languages, Sparkles, ListChecks } from "lucide-react"
+import { FileText, ImageIcon, Network, SquareMousePointer, Languages, Sparkles, ListChecks, ClipboardCheck } from "lucide-react"
 import { AnimatedBeamMultipleOutputUI } from "@/components/shared/AnimatedBeamMultipleOutputUI"
 import { Card } from "@/components/ui/card"
 import Link from "next/link"
@@ -54,6 +54,14 @@ const AIToolsPage = () => {
             color: "from-primary/20 to-primary/5",
             iconColor: "text-primary",
         },
+        {
+            title: "AI Quiz Generator",
+            href: "/ai-tools/quiz",
+            description: "Create interactive quizzes on any topic with automatic scoring and explanations.",
+            icon: ClipboardCheck,
+            color: "from-primary/20 to-primary/5",
+            iconColor: "text-primary",
+        },
     ]
 
     return (
@@ -75,14 +83,14 @@ const AIToolsPage = () => {
                         </p>
                     </div>
 
-                    <div className="w-full max-w-3xl mx-auto h-[300px] flex items-center justify-center">
+                    <div className="w-full max-w-3xl mx-auto flex items-center justify-center">
                         <AnimatedBeamMultipleOutputUI />
                     </div>
                 </div>
             </section>
 
             {/* Tools Grid Section */}
-            <section className="py-16 bg-white dark:bg-gray-950 relative z-20 -mt-16 rounded-t-3xl">
+            <section className="pb-16 bg-white dark:bg-gray-950 relative z-20 -mt-16 rounded-t-3xl">
                 <div className="container px-4 mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {tools.map((tool, index) => (
