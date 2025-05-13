@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Loader2, AlertCircle } from "lucide-react"
+import { Loader2, AlertCircle, Download } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { jsPDF } from "jspdf"
+import autoTable from "jspdf-autotable"
 
 interface StudyPlanDay {
     day: number
@@ -58,6 +60,45 @@ export default function StudyPlanPage() {
         }
     }
 
+    const handleDownloadPDF = () => {
+        if (studyPlan.length === 0) return;
+
+        const doc = new jsPDF();
+        
+        // Add title
+        doc.setFontSize(18);
+        doc.text(`Study Plan: ${subject}`, 14, 20);
+        
+        // Add metadata
+        doc.setFontSize(12);
+        doc.text(`Difficulty: ${difficulty}`, 14, 30);
+        doc.text(`Duration: ${timeframe} days`, 14, 37);
+        doc.text(`Goals: ${goals}`, 14, 44);
+        
+        // Add table with study plan data
+        autoTable(doc, {
+            startY: 55,
+            head: [['Day', 'Focus', 'Tasks', 'Tips']],
+            body: studyPlan.map(day => [
+                day.day.toString(),
+                day.focus,
+                day.tasks.join('\n'),
+                day.tips
+            ]),
+            styles: {
+                fontSize: 10,
+                cellPadding: 3
+            },
+            headStyles: {
+                fillColor: [220, 220, 220],
+                textColor: [0, 0, 0]
+            }
+        });
+        
+        // Save the PDF
+        doc.save(`${subject.replace(/\s+/g, '-').toLowerCase()}-study-plan.pdf`);
+    };
+
     return (
         <div className="container mx-auto py-4 px-4">
             <Card className="w-full mx-auto">
@@ -92,7 +133,7 @@ export default function StudyPlanPage() {
                         </div>
                         <div>
                             <label htmlFor="goals" className="block font-medium mb-1">Learning Goals</label>
-                            <Textarea id="goals" placeholder="e.g. Master derivatives, understand integrals, solve real-world problems..." value={goals} onChange={e => setGoals(e.target.value)} className="min-h-[80px]" disabled={loading} />
+                            <Input id="goals" placeholder="e.g. Master derivatives, understand integrals, solve real-world problems..." value={goals} onChange={e => setGoals(e.target.value)} disabled={loading} />
                         </div>
                     </div>
                     <Button onClick={handleGeneratePlan} disabled={loading || !subject.trim() || !timeframe.trim() || !difficulty.trim() || !goals.trim()} className="w-full">
@@ -114,7 +155,18 @@ export default function StudyPlanPage() {
                     )}
                     {studyPlan.length > 0 && (
                         <div className="mt-8">
-                            <h2 className="text-xl font-semibold mb-4 text-center">Generated Study Plan</h2>
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-xl font-semibold">Generated Study Plan</h2>
+                                <Button 
+                                    onClick={handleDownloadPDF} 
+                                    variant="outline" 
+                                    size="sm"
+                                    className="flex items-center gap-2"
+                                >
+                                    <Download className="h-4 w-4" />
+                                    Download PDF
+                                </Button>
+                            </div>
                             <div className="overflow-x-auto">
                                 <table className="min-w-full border text-sm rounded-lg overflow-hidden">
                                     <thead className="bg-muted">
