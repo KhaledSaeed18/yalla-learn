@@ -1,23 +1,32 @@
-import type { Metadata } from "next"
-import type React from "react"
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-    // You could fetch the question data here to get the title
-    // For now, we'll use a generic title that includes the slug
+export async function generateMetadata({ params }: {
+    params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+    const resolvedParams = await params;
+    const decodedSlug = decodeURIComponent(resolvedParams.slug.replace(/-/g, ' '));
+
     return {
-        title: `Question - ${decodeURIComponent(params.slug.replace(/-/g, ' '))}`,
+        title: `Question - ${decodedSlug}`,
         description: "View question details and answers from the community",
-    }
+    };
 }
 
-export default function QaQuestionLayout({
+export default async function QaQuestionLayout({
     children,
+    params,
 }: {
-    children: React.ReactNode
+    children: ReactNode;
+    params: Promise<{ slug: string }>;
 }) {
+    // We don't need to use params in the layout itself, 
+    // but we make it async to satisfy TypeScript requirements
+    await params;
+
     return (
         <div className="min-h-screen">
             {children}
         </div>
-    )
+    );
 }

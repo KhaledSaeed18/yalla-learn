@@ -1,6 +1,8 @@
 'use client';
 
 import RoleBasedRoute from '@/components/RoleBasedRoute';
+import AdminDashboard from '@/components/dashboard/AdminDashboard';
+import UserDashboard from '@/components/dashboard/UserDashboard';
 import { useUserRole } from '@/hooks/useUserRole';
 
 export default function DashboardPage() {
@@ -8,17 +10,7 @@ export default function DashboardPage() {
 
     return (
         <RoleBasedRoute allowedRoles={["USER", "ADMIN"]}>
-            {isAdmin ? (
-                <div className="">
-                    <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-                    <p className="text-gray-500">Welcome to the admin dashboard</p>
-                </div>
-            ) : (
-                <div className="">
-                    <h1 className="text-2xl font-bold">User Dashboard</h1>
-                    <p className="text-gray-500">Welcome to the user dashboard</p>
-                </div>
-            )}
+            {isAdmin ? <AdminDashboard /> : <UserDashboard />}
         </RoleBasedRoute>
     );
 }
