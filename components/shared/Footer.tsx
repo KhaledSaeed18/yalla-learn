@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Github, Twitter, Linkedin, BrainCircuit } from "lucide-react"
+import { Github, Twitter, Linkedin, BrainCircuit, Sparkles, ClipboardCheck, FileText, CircleHelp, Info, Headset } from "lucide-react"
 
 export function Footer() {
     return (
@@ -17,94 +17,100 @@ export function Footer() {
                         </p>
                     </div>
 
-                    {/* Quick links */}
+                    {/* Main Navigation */}
                     <div>
-                        <h3 className="mb-4 text-sm font-semibold">Quick Links</h3>
+                        <h3 className="mb-4 text-sm font-semibold">Main Navigation</h3>
                         <ul className="space-y-2 text-sm">
                             <li>
-                                <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+                                <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                                    <BrainCircuit className="h-4 w-4 text-primary" />
                                     Home
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/projects" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    Projects
+                                <Link href="/ai-tools" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                                    <Sparkles className="h-4 w-4 text-primary" />
+                                    AI Tools
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
+                                <Link href="/productivity-tools" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                                    <ClipboardCheck className="h-4 w-4 text-primary" />
+                                    Productivity Tools
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/blog" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                                    <FileText className="h-4 w-4 text-primary" />
+                                    Blog
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/qa" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                                    <CircleHelp className="h-4 w-4 text-primary" />
+                                    Q&A
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Popular Tools */}
+                    <div>
+                        <h3 className="mb-4 text-sm font-semibold">Popular Tools</h3>
+                        <ul className="space-y-2 text-sm">
+                            <li>
+                                <Link href="/ai-tools/pdf" className="text-muted-foreground hover:text-foreground transition-colors">
+                                    PDF AI Chat
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/ai-tools/mindmap" className="text-muted-foreground hover:text-foreground transition-colors">
+                                    Mindmap Creation
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/ai-tools/flashcard" className="text-muted-foreground hover:text-foreground transition-colors">
+                                    Flashcard Generation
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/productivity-tools/pomodoro" className="text-muted-foreground hover:text-foreground transition-colors">
+                                    Focus & Time Management
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Connect & Support */}
+                    <div>
+                        <h3 className="mb-4 text-sm font-semibold">Connect & Support</h3>
+                        <ul className="space-y-2 text-sm mb-4">
+                            <li>
+                                <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                                    <Info className="h-4 w-4 text-primary" />
                                     About
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    Contact
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Resources */}
-                    <div>
-                        <h3 className="mb-4 text-sm font-semibold">Resources</h3>
-                        <ul className="space-y-2 text-sm">
-                            <li>
-                                <Link href="/documentation" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    Documentation
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
-                                    FAQ
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/support" className="text-muted-foreground hover:text-foreground transition-colors">
+                                <Link href="/support" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                                    <Headset className="h-4 w-4 text-primary" />
                                     Support
                                 </Link>
                             </li>
                         </ul>
-                    </div>
-
-                    {/* Connect */}
-                    <div>
-                        <h3 className="mb-4 text-sm font-semibold">Connect</h3>
-                        <div className="flex space-x-4">
-                            <Link href="https://github.com" className="text-muted-foreground hover:text-foreground transition-colors">
-                                <Github className="h-5 w-5" />
-                                <span className="sr-only">GitHub</span>
-                            </Link>
-                            <Link
-                                href="https://twitter.com"
-                                className="text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                                <Twitter className="h-5 w-5" />
-                                <span className="sr-only">Twitter</span>
-                            </Link>
-                            <Link
-                                href="https://linkedin.com"
-                                className="text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                                <Linkedin className="h-5 w-5" />
-                                <span className="sr-only">LinkedIn</span>
-                            </Link>
-                        </div>
                     </div>
                 </div>
 
                 <div className="mt-8 border-t pt-8">
                     <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
                         <p className="text-xs text-muted-foreground">
-                            © {new Date().getFullYear()} Yalla Learn. All rights reserved.
+                            © {new Date().getFullYear()}{" "}
+                            <Link href="/" className="text-muted-foreground underline hover:text-foreground transition-colors">
+                                Yalla Learn.
+                            </Link>
+                            {" "}
+                            All rights reserved.
                         </p>
-                        <div className="flex space-x-4 text-xs text-muted-foreground">
-                            <Link href="/privacy" className="hover:text-foreground transition-colors">
-                                Privacy Policy
-                            </Link>
-                            <Link href="/terms" className="hover:text-foreground transition-colors">
-                                Terms of Service
-                            </Link>
-                        </div>
                     </div>
                 </div>
             </div>

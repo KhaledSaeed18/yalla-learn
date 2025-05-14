@@ -1,6 +1,5 @@
 import { AIToolsSection } from "@/components/shared/ai-tools-section";
-import { FeaturesSectionUI } from "@/components/shared/FeaturesSectionUI";
-import { GlowingEffectUI } from "@/components/shared/GlowingEffectUI";
+import { ProductivityToolsSection } from "@/components/shared/productivity-tools-section";
 import { MacbookScrollUi } from "@/components/shared/MacbookScrollUI";
 
 export default function Home() {
@@ -8,9 +7,8 @@ export default function Home() {
     <>
       <MacbookScrollUi />
       <main className="container mx-auto p-4">
-        {/* <GlowingEffectUI />
-        <FeaturesSectionUI /> */}
         <AIToolsSection />
+        <ProductivityToolsSection />
       </main>
     </>
   );

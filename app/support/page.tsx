@@ -6,14 +6,12 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle
 } from '@/components/ui/card';
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -62,7 +60,6 @@ export default function SupportPage() {
     const [isSuccess, setIsSuccess] = useState(false);
     const createContactForm = useCreateContactForm();
 
-    // Initialize form
     const form = useForm<z.infer<typeof supportFormSchema>>({
         resolver: zodResolver(supportFormSchema),
         defaultValues: {
@@ -73,14 +70,12 @@ export default function SupportPage() {
         },
     });
 
-    // Form submission handler
     function onSubmit(values: z.infer<typeof supportFormSchema>) {
         createContactForm.mutate(values, {
             onSuccess: () => {
                 setIsSuccess(true);
                 form.reset();
 
-                // Reset success message after 5 seconds
                 setTimeout(() => {
                     setIsSuccess(false);
                 }, 5000);
@@ -97,7 +92,7 @@ export default function SupportPage() {
                 transition={{ duration: 0.8 }}
                 className="text-center mb-16"
             >
-                <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+                <h1 className="text-4xl md:text-5xl font-bold mb-6 text-primary">
                     Support & Help Center
                 </h1>
                 <p className="text-xl max-w-3xl mx-auto">

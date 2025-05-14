@@ -2,14 +2,9 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import { Card } from '@/components/ui/card';
-import { Avatar } from '@/components/ui/avatar';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 
 export default function AboutPage() {
-
     return (
         <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
             {/* Hero Section */}
@@ -19,7 +14,7 @@ export default function AboutPage() {
                 transition={{ duration: 0.8 }}
                 className="text-center mb-16"
             >
-                <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+                <h1 className="text-4xl md:text-5xl font-bold mb-6 text-primary">
                     About Yalla Learn
                 </h1>
                 <p className="text-xl max-w-3xl mx-auto">
