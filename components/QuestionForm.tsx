@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 import { TipTapEditor } from "@/components/editor/TipTapEditor";
 import Select from 'react-select';
+import { useTheme } from "next-themes";
 
 interface QuestionFormProps {
     mode: 'create' | 'edit';
@@ -33,12 +34,73 @@ export default function QuestionForm({ mode, initialData }: QuestionFormProps) {
     const createQuestion = useCreateQuestion();
     const updateQuestion = useUpdateQuestion();
     const [content, setContent] = useState<string>(initialData?.content || "");
+    const { resolvedTheme } = useTheme();
+    const isDarkMode = resolvedTheme === "dark";
 
-    // Format tags for React Select
     const tagOptions = tags.map(tag => ({
         value: tag.id,
         label: tag.name
     }));
+
+    const selectStyles = {
+        control: (base: any) => ({
+            ...base,
+            background: isDarkMode ? "hsl(240 10% 3.9%)" : base.background,
+            borderColor: isDarkMode ? "hsl(240 3.7% 15.9%)" : base.borderColor,
+            boxShadow: isDarkMode ? "none" : base.boxShadow,
+            "&:hover": {
+                borderColor: isDarkMode ? "hsl(240 5% 64.9%)" : base.borderColor,
+            },
+        }),
+        menu: (base: any) => ({
+            ...base,
+            background: isDarkMode ? "hsl(240 10% 3.9%)" : base.background,
+            borderColor: isDarkMode ? "hsl(240 3.7% 15.9%)" : base.borderColor,
+            boxShadow: isDarkMode ? "0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4)" : base.boxShadow,
+        }),
+        option: (base: any, state: { isFocused: boolean; isSelected: boolean }) => ({
+            ...base,
+            backgroundColor: isDarkMode
+                ? state.isSelected 
+                    ? "hsl(240 5.9% 10%)" 
+                    : state.isFocused 
+                        ? "hsl(240 4.9% 15%)" 
+                        : base.backgroundColor
+                : base.backgroundColor,
+            color: isDarkMode ? "hsl(0 0% 98%)" : base.color,
+            "&:active": {
+                backgroundColor: isDarkMode ? "hsl(240 5.9% 10%)" : base.backgroundColor,
+            },
+        }),
+        multiValue: (base: any) => ({
+            ...base,
+            backgroundColor: isDarkMode ? "hsl(240 5.9% 10%)" : base.backgroundColor,
+        }),
+        multiValueLabel: (base: any) => ({
+            ...base,
+            color: isDarkMode ? "hsl(0 0% 98%)" : base.color,
+        }),
+        multiValueRemove: (base: any) => ({
+            ...base,
+            color: isDarkMode ? "hsl(0 0% 98%)" : base.color,
+            "&:hover": {
+                backgroundColor: isDarkMode ? "hsl(0 72.2% 50.6%)" : base.backgroundColor,
+                color: isDarkMode ? "white" : base.color,
+            },
+        }),
+        input: (base: any) => ({
+            ...base,
+            color: isDarkMode ? "hsl(0 0% 98%)" : base.color,
+        }),
+        placeholder: (base: any) => ({
+            ...base,
+            color: isDarkMode ? "hsl(240 5% 64.9%)" : base.color,
+        }),
+        singleValue: (base: any) => ({
+            ...base,
+            color: isDarkMode ? "hsl(0 0% 98%)" : base.color,
+        }),
+    };
 
     const form = useForm<QuestionFormValues>({
         resolver: zodResolver(questionSchema),
@@ -56,7 +118,7 @@ export default function QuestionForm({ mode, initialData }: QuestionFormProps) {
                 title: initialData.title,
                 content: initialData.content,
                 tags: initialData.tags,
-                status: "OPEN" // We don't allow changing status in the form
+                status: "OPEN"
             });
             setContent(initialData.content);
         }
@@ -67,19 +129,19 @@ export default function QuestionForm({ mode, initialData }: QuestionFormProps) {
             .toString()
             .toLowerCase()
             .trim()
-            .replace(/\s+/g, '-')        // Replace spaces with -
-            .replace(/&/g, '-and-')      // Replace & with 'and'
-            .replace(/[^\w\-]+/g, '')    // Remove all non-word characters
-            .replace(/\-\-+/g, '-');     // Replace multiple - with single -
+            .replace(/\s+/g, '-')
+            .replace(/&/g, '-and-')
+            .replace(/[^\w\-]+/g, '')
+            .replace(/\-\-+/g, '-');
     };
 
     const onSubmit = (data: QuestionFormValues) => {
         if (mode === 'create') {
             const questionData = {
                 title: data.title,
-                content, // Use the content from TipTapEditor
+                content, 
                 tags: data.tags,
-                slug: slugify(data.title) // Generate slug from title
+                slug: slugify(data.title)
             };
 
             createQuestion.mutate(questionData, {
@@ -90,7 +152,7 @@ export default function QuestionForm({ mode, initialData }: QuestionFormProps) {
         } else if (mode === 'edit' && initialData?.id) {
             const questionData = {
                 title: data.title,
-                content, // Use the content from TipTapEditor
+                content,
                 tags: data.tags
             };
 
@@ -185,6 +247,7 @@ export default function QuestionForm({ mode, initialData }: QuestionFormProps) {
                                                 placeholder="Select tags that relate to your question"
                                                 className="react-select-container"
                                                 classNamePrefix="react-select"
+                                                styles={selectStyles}
                                                 onChange={(selectedOptions) => {
                                                     const selectedValues = selectedOptions ?
                                                         selectedOptions.map(option => option.value) :

@@ -73,28 +73,6 @@ export function Header() {
     // Navigation data with dropdown content
     const navItems = [
         {
-            name: "Productivity Tools",
-            href: "/productivity-tools",
-            icon: <ClipboardCheck className="size-5 mr-2 text-primary" />,
-            title: "Productivity Tools",
-            description: "Boost your productivity with our specialized tools designed to help you work smarter.",
-            descriptionIcon: <ClipboardCheck className="size-10 text-primary" />,
-            content: [
-                {
-                    title: "Focus & Time Management",
-                    href: "/productivity-tools/pomodoro",
-                    description: "Enhance your focus with Pomodoro technique - 25/5 minute timer cycles with customizable options.",
-                    icon: <Clock className="size-5 mr-2 text-primary" />
-                },
-                {
-                    title: "Focus Mode",
-                    href: "/productivity-tools/focus-mode",
-                    description: "Enter a distraction-free environment to maximize your concentration and productivity.",
-                    icon: <ScanEye className="size-5 mr-2 text-primary" />
-                },
-            ],
-        },
-        {
             name: "AI Tools",
             href: "/ai-tools",
             icon: <Sparkles className="size-5 mr-2 text-primary" />,
@@ -150,6 +128,28 @@ export function Header() {
                     description: "Receive clear explanations of complex concepts with visual descriptions.",
                     icon: <Brain className="size-5 mr-2 text-primary" />
                 }
+            ],
+        },
+        {
+            name: "Productivity Tools",
+            href: "/productivity-tools",
+            icon: <ClipboardCheck className="size-5 mr-2 text-primary" />,
+            title: "Productivity Tools",
+            description: "Boost your productivity with our specialized tools designed to help you work smarter.",
+            descriptionIcon: <ClipboardCheck className="size-10 text-primary" />,
+            content: [
+                {
+                    title: "Focus & Time Management",
+                    href: "/productivity-tools/pomodoro",
+                    description: "Enhance your focus with Pomodoro technique - 25/5 minute timer cycles with customizable options.",
+                    icon: <Clock className="size-5 mr-2 text-primary" />
+                },
+                {
+                    title: "Focus Mode",
+                    href: "/productivity-tools/focus-mode",
+                    description: "Enter a distraction-free environment to maximize your concentration and productivity.",
+                    icon: <ScanEye className="size-5 mr-2 text-primary" />
+                },
             ],
         },
         {

@@ -37,10 +37,7 @@ export const useGetQuestions = (params?: QaQuestionsQueryParams) => {
         queryKey: qaKeys.questionsList(params),
         queryFn: async () => {
             const response = await qaServices.getQuestions(params);
-            return {
-                questions: response.data.questions,
-                pagination: response.data.pagination
-            };
+            return response.data;
         },
     });
 };
@@ -174,10 +171,7 @@ export const useGetAnswers = (params?: QaAnswersQueryParams) => {
         queryKey: qaKeys.answersList(params),
         queryFn: async () => {
             const response = await qaServices.getAnswers(params);
-            return {
-                answers: response.data.answers,
-                pagination: response.data.pagination
-            };
+            return response; // Return the full response to maintain the data.answers structure
         },
     });
 };

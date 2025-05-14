@@ -24,6 +24,7 @@ export function DashboardSidebar() {
   const pathname = usePathname()
   const { open } = useSidebar()
   const { user } = useSelector((state: RootState) => state.auth)
+  const firstName = user?.firstName || ""
   const [clickedItem, setClickedItem] = useState<string | null>(null)
   const { isAdmin } = useUserRole()
   const userRole = isAdmin ? "ADMIN" : "USER"
@@ -249,7 +250,13 @@ export function DashboardSidebar() {
             whileHover={{ scale: 1.03 }}
             transition={{ duration: 0.2 }}
           >
-            My Dashboard
+            {
+              firstName ? (
+                <>Hello, {firstName}! 👋</>
+              ) : (
+                <LayoutDashboard className="size-5" aria-hidden="true" />
+              )
+            }
           </motion.span>
         </Link>
       ) : (
