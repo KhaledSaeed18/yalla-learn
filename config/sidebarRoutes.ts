@@ -1,4 +1,4 @@
-import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout, FileUser, Settings, User, Users, Wallet, BarChart, CreditCard, PiggyBank, Calendar, Target, Clock, Headset } from "lucide-react";
+import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout, FileUser, Settings, User, Users, Wallet, BarChart, CreditCard, PiggyBank, Calendar, Target, Clock, Headset, HelpCircle, Tag, FileQuestion, MessageSquare } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type SidebarRoute = {
@@ -156,6 +156,61 @@ export const sidebarRoutes: SidebarRoute[] = [
                 requiresAuth: true,
                 roles: ["USER", "ADMIN"],
                 activeWhen: (pathname) => pathname === "/dashboard/blog",
+            },
+        ],
+    },
+    {
+        id: "qa",
+        label: "Q&A System",
+        icon: HelpCircle,
+        requiresAuth: true,
+        roles: ["USER", "ADMIN"],
+        activeWhen: (pathname) => pathname.startsWith("/dashboard/qa"),
+        children: [
+            {
+                id: "qa-statistics",
+                label: "Statistics",
+                href: "/dashboard/qa/statistics",
+                icon: ChartNoAxesCombined,
+                requiresAuth: true,
+                roles: ["ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/qa/statistics",
+            },
+            {
+                id: "qa-tags",
+                label: "Tags",
+                href: "/dashboard/qa/tags",
+                icon: Tag,
+                requiresAuth: true,
+                roles: ["ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/qa/tags",
+            },
+            {
+                id: "qa-all-questions",
+                label: "All Questions",
+                href: "/dashboard/qa/all",
+                icon: FileQuestion,
+                requiresAuth: true,
+                roles: ["ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/qa/all",
+            },
+            {
+                id: "qa-ask-question",
+                label: "Ask Question",
+                href: "/dashboard/qa/ask",
+                icon: PenLine,
+                requiresAuth: true,
+                roles: ["USER", "ADMIN"],
+                activeWhen: (pathname) => pathname.startsWith("/dashboard/qa/ask"),
+            },
+            {
+                id: "qa-my-questions",
+                label: "My Questions",
+                href: "/dashboard/qa",
+                icon: MessageSquare,
+                requiresAuth: true,
+                roles: ["USER", "ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/qa",
             },
         ],
     },
