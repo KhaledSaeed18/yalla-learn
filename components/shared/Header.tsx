@@ -181,7 +181,7 @@ export function Header() {
 
     return (
         <header className="sticky top-0 z-40 w-full border-b bg-background">
-            <div className="container mx-auto flex px-4 h-16 items-center">
+            <div className="container mx-auto flex h-16 items-center">
                 {/* Logo */}
                 <Link href="/" className="flex items-center space-x-2">
                     <span className="text-xl flex justify-center items-center pag-2 font-bold hover:scale-105">

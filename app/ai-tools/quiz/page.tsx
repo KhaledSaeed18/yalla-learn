@@ -179,7 +179,7 @@ export default function QuizPage() {
     };
 
     return (
-        <div className="container mx-auto py-4 px-4">
+        <div className="container mx-auto py-4">
             <Card className="w-full mx-auto">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold text-primary">AI Quiz Generator</CardTitle>

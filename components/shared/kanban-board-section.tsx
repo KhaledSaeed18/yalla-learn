@@ -36,20 +36,6 @@ export function KanbanBoardSection() {
             <FloatingIcons icons={floatingIconsArray} count={10} />
 
             <div className="container mx-auto relative">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                    transition={{ duration: 0.7 }}
-                    className="text-center mb-16"
-                >
-                    <h2 className="text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
-                        Visual Kanban Board
-                    </h2>
-                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-                        Organize your tasks and projects with our intuitive Kanban board system for maximum productivity
-                    </p>
-                </motion.div>
-
                 {/* Kanban Board Section Card */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}

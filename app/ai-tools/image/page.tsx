@@ -221,7 +221,7 @@ export default function ImageChat() {
     }
 
     return (
-        <div className="flex flex-col w-full container px-4 mx-auto">
+        <div className="flex flex-col w-full container mx-auto">
             <Card className="flex-1 overflow-hidden my-6 p-0 relative border-primary">
                 <CardContent className="p-0 overflow-y-auto h-[60vh]" ref={messagesContainerRef}>
                     <div className="p-4 space-y-6">

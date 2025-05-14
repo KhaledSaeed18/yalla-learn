@@ -281,7 +281,7 @@ const Translation = () => {
     }
 
     return (
-        <div className="container px-4 mx-auto my-4 transition-colors duration-300">
+        <div className="container mx-auto my-4 transition-colors duration-300">
             <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-1">
                     <h1 className="text-3xl font-bold flex items-center gap-2">

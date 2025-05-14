@@ -23,20 +23,6 @@ export function QASection() {
             <FloatingIcons icons={floatingIconsArray} count={10} />
 
             <div className="container mx-auto relative">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                    transition={{ duration: 0.7 }}
-                    className="text-center mb-16"
-                >
-                    <h2 className="text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
-                        Ask & Learn
-                    </h2>
-                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-                        Join our community-driven Q&A platform to ask questions, share knowledge, and learn from experts
-                    </p>
-                </motion.div>
-
                 {/* QA Section Card */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}

@@ -214,7 +214,7 @@ export default function FocusModePage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="container max-w-5xl mx-auto py-12 px-4"
+                        className="container max-w-5xl mx-auto py-12"
                     >
                         <div className="text-center mb-12">
                             <h1 className="text-4xl font-bold tracking-tight mb-4">Focus Mode</h1>

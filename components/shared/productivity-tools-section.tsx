@@ -47,20 +47,6 @@ export function ProductivityToolsSection() {
             <FloatingIcons icons={floatingIconsArray} count={15} />
 
             <div className="container mx-auto relative">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                    transition={{ duration: 0.7 }}
-                    className="text-center mb-16"
-                >
-                    <h2 className="text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
-                        Boost Your Productivity
-                    </h2>
-                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-                        Discover our collection of productivity tools designed to help you work smarter and achieve more
-                    </p>
-                </motion.div>
-
                 {/* Productivity Tool Cards with Alternating Layout */}
                 <div className="space-y-16">
                     {productivityTools.map((tool, index) => {

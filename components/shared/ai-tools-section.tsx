@@ -98,25 +98,11 @@ export function AIToolsSection() {
     ]
 
     return (
-        <section ref={sectionRef} className="relative py-24 px-4 md:px-6 lg:px-8 overflow-hidden">
+        <section ref={sectionRef} className="relative py-24 overflow-hidden">
             {/* Floating Icons Background */}
             <FloatingIcons icons={floatingIconsArray} count={15} />
 
             <div className="container mx-auto relative">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                    transition={{ duration: 0.7 }}
-                    className="text-center mb-16"
-                >
-                    <h2 className="text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
-                        Supercharge Your Learning
-                    </h2>
-                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-                        Explore our suite of cutting-edge AI tools designed to transform your learning experience
-                    </p>
-                </motion.div>
-
                 {/* AI Tool Cards with Alternating Layout */}
                 <div className="space-y-16">
                     {aiTools.map((tool, index) => {
