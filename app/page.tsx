@@ -4,16 +4,20 @@ import { MacbookScrollUi } from "@/components/shared/MacbookScrollUI";
 import { BlogSection } from "@/components/shared/blog-section";
 import { QASection } from "@/components/shared/qa-section";
 import { ResumeBuilderSection } from "@/components/shared/resume-builder-section";
+import { ExpenseTrackerSection } from "@/components/shared/expense-tracker-section";
+import { KanbanBoardSection } from "@/components/shared/kanban-board-section";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { SectionNavigation } from "@/components/shared/section-navigation";
 import { SectionHeader } from "@/components/shared/section-header";
-import { Sparkles, Brain, FileText, MessageSquare, FileCheck } from "lucide-react";
+import { Sparkles, Brain, FileText, MessageSquare, FileCheck, Wallet, Trello } from "lucide-react";
 
 export default function Home() {
   const sections = [
     { id: "ai-tools", label: "AI Tools", icon: <Sparkles className="h-5 w-5" /> },
     { id: "productivity", label: "Productivity", icon: <Brain className="h-5 w-5" /> },
     { id: "resume", label: "Resume Builder", icon: <FileCheck className="h-5 w-5" /> },
+    { id: "expense-tracker", label: "Expense Tracker", icon: <Wallet className="h-5 w-5" /> },
+    { id: "kanban-board", label: "Kanban Board", icon: <Trello className="h-5 w-5" /> },
     { id: "blog", label: "Blog", icon: <FileText className="h-5 w-5" /> },
     { id: "qa", label: "Q&A", icon: <MessageSquare className="h-5 w-5" /> },
   ];
@@ -48,6 +52,24 @@ export default function Home() {
             icon={<FileCheck className="h-6 w-6 text-primary" />}
           />
           <ResumeBuilderSection />
+        </section>
+
+        <section id="expense-tracker" className="scroll-mt-28 py-10">
+          <SectionHeader
+            title="Expense Tracker"
+            description="Take control of your finances with smart budget management tools"
+            icon={<Wallet className="h-6 w-6 text-primary" />}
+          />
+          <ExpenseTrackerSection />
+        </section>
+
+        <section id="kanban-board" className="scroll-mt-28 py-10">
+          <SectionHeader
+            title="Kanban Board"
+            description="Organize tasks and boost productivity with visual project management"
+            icon={<Trello className="h-6 w-6 text-primary" />}
+          />
+          <KanbanBoardSection />
         </section>
 
         <section id="blog" className="scroll-mt-28 py-10">
