@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Github, Twitter, Linkedin, BrainCircuit, Sparkles, ClipboardCheck, FileText, CircleHelp, Info, Headset } from "lucide-react"
+import { BrainCircuit, Sparkles, ClipboardCheck, FileText, CircleHelp, Info, Headset, Download } from "lucide-react"
 
 export function Footer() {
     return (
@@ -37,6 +37,12 @@ export function Footer() {
                                 <Link href="/productivity-tools" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
                                     <ClipboardCheck className="h-4 w-4 text-primary" />
                                     Productivity Tools
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/download" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                                    <Download className="h-4 w-4 text-primary" />
+                                    Download
                                 </Link>
                             </li>
                             <li>
