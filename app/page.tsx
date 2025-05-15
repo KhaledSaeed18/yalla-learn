@@ -11,6 +11,7 @@ import { SectionNavigation } from "@/components/shared/section-navigation";
 import { SectionHeader } from "@/components/shared/section-header";
 import { MobileDeviceUI } from "@/components/shared/mobile-device-ui";
 import { Sparkles, Brain, FileText, MessageSquare, FileCheck, Wallet, Trello, Smartphone, ShoppingBag } from "lucide-react";
+// import { CardDemo } from "@/components/shared/CardDemo";
 
 export default function Home() {
   const sections = [
@@ -26,6 +27,7 @@ export default function Home() {
   return (
     <>
       <MacbookScrollUi />
+      {/* <CardDemo /> */}
       <SectionNavigation sections={sections} />
       <main className="container mx-auto">
         <section id="ai-tools" className="scroll-mt-28 py-10">
