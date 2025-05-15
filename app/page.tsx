@@ -9,7 +9,8 @@ import { KanbanBoardSection } from "@/components/shared/kanban-board-section";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { SectionNavigation } from "@/components/shared/section-navigation";
 import { SectionHeader } from "@/components/shared/section-header";
-import { Sparkles, Brain, FileText, MessageSquare, FileCheck, Wallet, Trello } from "lucide-react";
+import { MobileDeviceUI } from "@/components/shared/mobile-device-ui";
+import { Sparkles, Brain, FileText, MessageSquare, FileCheck, Wallet, Trello, Smartphone, ShoppingBag } from "lucide-react";
 
 export default function Home() {
   const sections = [
@@ -88,6 +89,10 @@ export default function Home() {
             icon={<MessageSquare className="h-6 w-6 text-primary" />}
           />
           <QASection />
+        </section>
+
+        <section className="px-4 md:px-25">
+          <MobileDeviceUI />
         </section>
         <ScrollToTop />
       </main>

@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
       'images.unsplash.com', // Common image source
       'upload.wikimedia.org',
       'picsum.photos',
+      'images.ctfassets.net'
     ],
   },
   // Disable ESLint during the build process
