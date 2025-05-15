@@ -29,7 +29,7 @@ export default function SignInPage() {
   const dispatch = useDispatch()
   const router = useRouter()
 
-  const { error, pendingTwoFactor } = useSelector(
+  const { error, pendingTwoFactor = { isRequired: false } } = useSelector(
     (state: RootState) => state.auth
   )
 
@@ -58,7 +58,6 @@ export default function SignInPage() {
 
       // Check if 2FA is required
       if (response.status === "pending" && 'requiresOtp' in response.data) {
-        // Store credentials for the 2FA step
         dispatch(
           setPendingTwoFactor({
             email: values.email,
@@ -70,7 +69,6 @@ export default function SignInPage() {
           description: "Please enter the code from your authenticator app",
         })
       } else if ('accessToken' in response.data) {
-        // Standard sign-in flow with successful authentication
         dispatch(
           setAuthData({
             user: response.data.user,
@@ -94,13 +92,13 @@ export default function SignInPage() {
   return (
     <>
       <AuthCard
-        title={pendingTwoFactor.isRequired ? "Verification Required" : "Welcome back"}
-        description={pendingTwoFactor.isRequired
+        title={pendingTwoFactor?.isRequired ? "Verification Required" : "Welcome back"}
+        description={pendingTwoFactor?.isRequired
           ? "Please enter the 6-digit code from your authenticator app"
           : "Sign in to your account"
         }
       >
-        {pendingTwoFactor.isRequired ? (
+        {pendingTwoFactor?.isRequired ? (
           <TwoFactorAuthForm />
         ) : (
           <Form {...form}>

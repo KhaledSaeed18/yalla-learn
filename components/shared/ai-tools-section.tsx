@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useInView } from "framer-motion"
+import { motion } from "framer-motion"
 import { FileText, ImageIcon, Network, SquareMousePointer, Languages, ListChecks, ClipboardCheck, Brain, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -84,7 +84,6 @@ const aiTools = [
 
 export function AIToolsSection() {
     const sectionRef = useRef<HTMLDivElement>(null)
-    const isInView = useInView(sectionRef, { once: false, amount: 0.1 })
 
     const floatingIconsArray = [
         <FileText key="file" className="h-8 w-8 text-primary" />,

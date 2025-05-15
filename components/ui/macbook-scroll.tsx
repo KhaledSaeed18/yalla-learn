@@ -164,6 +164,10 @@ export const Lid = ({
             src={logoSrc}
             alt="Yalla Learn"
             fill
+            sizes="(max-width: 768px) 100vw, 512px"
+            quality={75}
+            priority={true}
+            loading="eager"
             className="absolute inset-0 rounded-lg object-cover object-left-top border-none"
           />
         )}
@@ -185,7 +189,7 @@ export const Trackpad = () => {
 
 export const Keypad = () => {
   return (
-    <div className="mx-1 h-full [transform:translateZ(0)] rounded-md bg-[#050505] p-1 [will-change:transform]">
+    <div className="mx-1 h-full rounded-md bg-[#050505] p-1 keyboard-layout">
       {/* First Row */}
       <div className="mb-[2px] flex w-full shrink-0 gap-[2px]">
         <KBtn
@@ -555,8 +559,8 @@ export const KBtn = ({
   return (
     <div
       className={cn(
-        "[transform:translateZ(0)] rounded-[4px] p-[0.5px] [will-change:transform]",
-        backlit && "bg-white/[0.2] shadow-xl shadow-white",
+        " rounded-[4px] p-[0.5px] [will-change:transform]",
+        backlit && "bg-white/[0.2]",
       )}
     >
       <div
@@ -564,10 +568,6 @@ export const KBtn = ({
           "flex h-6 w-6 items-center justify-center rounded-[3.5px] bg-[#0A090D]",
           className,
         )}
-        style={{
-          boxShadow:
-            "0px -0.5px 2px 0 #0D0D0F inset, -0.5px 0px 2px 0 #0D0D0F inset",
-        }}
       >
         <div
           className={cn(

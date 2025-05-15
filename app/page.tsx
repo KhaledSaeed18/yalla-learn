@@ -10,7 +10,7 @@ import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { SectionNavigation } from "@/components/shared/section-navigation";
 import { SectionHeader } from "@/components/shared/section-header";
 import { MobileDeviceUI } from "@/components/shared/mobile-device-ui";
-import { Sparkles, Brain, FileText, MessageSquare, FileCheck, Wallet, Trello, Smartphone, ShoppingBag } from "lucide-react";
+import { Sparkles, Brain, FileText, MessageSquare, FileCheck, Wallet, Trello } from "lucide-react";
 // import { CardDemo } from "@/components/shared/CardDemo";
 
 export default function Home() {

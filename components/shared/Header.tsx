@@ -181,17 +181,21 @@ export function Header() {
 
     return (
         <header className="sticky top-0 z-40 w-full border-b bg-background">
-            <div className="container mx-auto flex h-16 items-center">
+            <div className="container mx-auto px-4 flex h-16 items-center">
                 {/* Logo */}
-                <Link href="/" className="flex items-center space-x-2">
+                <Link 
+                    href="/" 
+                    className="flex items-center space-x-2" 
+                    aria-label="Yalla Learn Home Page">
                     <span className="text-xl flex justify-center items-center pag-2 font-bold hover:scale-105">
-                        <BrainCircuit className="h-8 w-8 text-primary" />
+                        <BrainCircuit className="h-8 w-8 text-primary" aria-hidden="true" />
                         Yalla Learn
+                        <span className="sr-only">Navigate to home page</span>
                     </span>
                 </Link>
 
                 {/* Desktop Navigation Menu */}
-                <div className="hidden md:flex md:flex-1 md:justify-center mx-auto">
+                <div className="hidden xl:flex xl:flex-1 xl:justify-center mx-auto">
                     <NavigationMenu>
                         <NavigationMenuList>
                             {navItems.map((item) => (
@@ -256,7 +260,7 @@ export function Header() {
                     <ColorThemeToggle />
 
                     {/* User Profile or Sign In button */}
-                    <div className="hidden md:inline-flex">
+                    <div className="hidden xl:inline-flex">
                         {isAuthenticated ? (
                             <Popover>
                                 <PopoverTrigger asChild>
@@ -308,7 +312,7 @@ export function Header() {
 
                     {/* Mobile Menu */}
                     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                        <SheetTrigger asChild className="md:hidden">
+                        <SheetTrigger asChild className="xl:hidden">
                             <Button variant="outline" size="icon">
                                 <Menu className="h-5 w-5" />
                                 <span className="sr-only">Toggle menu</span>
