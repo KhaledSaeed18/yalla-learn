@@ -205,7 +205,7 @@ export default function Chat() {
     }
 
     return (
-        <div className="flex flex-col w-full container mx-auto">
+        <div className="flex flex-col w-full px-4 container mx-auto">
             {/* Chat container */}
             <Card className="flex-1 overflow-hidden my-6 p-0 relative border-primary">
                 <CardContent className="p-0 overflow-y-auto h-[60vh]" ref={messagesContainerRef}>

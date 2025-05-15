@@ -13,7 +13,9 @@ export function MacbookScrollUi() {
                     </span>
                 }
                 badge={
-                    <Link href={'/'}>
+                    <Link href={'/'}
+                        aria-label="Yalla Learn Home Page"
+                    >
                         <BrainCircuit className="w-6 h-6" />
                     </Link>
                 }

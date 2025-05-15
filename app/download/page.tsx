@@ -67,7 +67,7 @@ export default function DownloadPage() {
     ]
 
     return (
-        <div className="container mx-auto relative">
+        <div className="container mx-auto px-4 relative">
             <div className="absolute inset-0 bg-grid-slate-200 dark:bg-grid-slate-800 [mask-image:linear-gradient(to_bottom,white,transparent)] pointer-events-none"></div>
 
             <main className="container relative mx-auto px-4 py-16">

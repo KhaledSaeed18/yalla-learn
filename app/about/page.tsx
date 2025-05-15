@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 
 export default function AboutPage() {
     return (
-        <div className="container mx-auto py-12">
+        <div className="container px-4 mx-auto py-12">
             {/* Hero Section */}
             <motion.div
                 initial={{ opacity: 0, y: 50 }}

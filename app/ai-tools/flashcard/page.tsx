@@ -74,7 +74,7 @@ export default function FlashcardPage() {
     }
 
     return (
-        <div className="container mx-auto py-4">
+        <div className="container px-4 mx-auto py-4">
             <Card className="w-full">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold text-primary">Flashcard Generator</CardTitle>

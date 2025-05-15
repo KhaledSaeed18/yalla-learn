@@ -100,7 +100,7 @@ export default function StudyPlanPage() {
     };
 
     return (
-        <div className="container mx-auto py-4">
+        <div className="container mx-auto px-4 py-4">
             <Card className="w-full mx-auto">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold text-primary">AI Study Plan Generator</CardTitle>

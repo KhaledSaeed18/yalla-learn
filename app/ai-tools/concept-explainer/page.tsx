@@ -129,7 +129,7 @@ export default function ConceptExplainer() {
     }
 
     return (
-        <div className="container mx-auto py-10">
+        <div className="container mx-auto px-4 py-10">
             <div className="flex flex-col items-center text-center mb-8">
                 <div className="rounded-full bg-primary/10 p-4 mb-4">
                     <Brain className="h-8 w-8 text-primary" />

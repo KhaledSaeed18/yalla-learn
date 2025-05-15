@@ -55,7 +55,7 @@ export default function MindMapPage() {
     }
 
     return (
-        <div className="flex flex-col container mx-auto my-4">
+        <div className="flex flex-col container px-4 mx-auto my-4">
             <div className="mb-4">
                 <h1 className="text-2xl font-bold">Mind Map Generator</h1>
                 <p className="text-muted-foreground mt-1">Create insightful mind maps from any topic</p>

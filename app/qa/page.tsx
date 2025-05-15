@@ -149,7 +149,7 @@ export default function QaPage() {
     };
 
     return (
-        <div className="container mx-auto py-8">
+        <div className="container mx-auto px-4 py-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight mb-2">Community Q&A</h1>

@@ -158,7 +158,7 @@ export default function QaQuestionPage() {
 
     if (questionLoading) {
         return (
-            <div className="container py-8 mx-auto">
+            <div className="container px-4 py-8 mx-auto">
                 <div className="flex items-center mb-6">
                     <Button variant="ghost" size="sm" className="mr-2" asChild>
                         <Link href="/qa">

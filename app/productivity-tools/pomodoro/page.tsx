@@ -109,7 +109,7 @@ export default function PomodoroPage() {
     }
 
     return (
-        <div className="container max-w-5xl mx-auto py-12">
+        <div className="container px-4 max-w-5xl mx-auto py-12">
             <div className="text-center mb-12">
                 <h1 className="text-4xl font-bold tracking-tight mb-4">Pomodoro Timer</h1>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">

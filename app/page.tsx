@@ -29,7 +29,7 @@ export default function Home() {
       <MacbookScrollUi />
       {/* <CardDemo /> */}
       <SectionNavigation sections={sections} />
-      <main className="container mx-auto">
+      <main className="container mx-auto px-4">
         <section id="ai-tools" className="scroll-mt-28 py-10">
           <SectionHeader
             title="AI Tools"

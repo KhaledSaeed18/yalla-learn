@@ -76,7 +76,7 @@ const AIToolsPage = () => {
         <main className="flex flex-col w-full min-h-screen">
             {/* Hero Section with Animation */}
             <section className="relative w-full overflow-hidden pt-12 pb-24">
-                <div className="container mx-auto relative z-10">
+                <div className="container mx-auto relative px-4 z-10">
                     <div className="text-center mb-8">
                         <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary text-white dark:text-black text-sm font-medium mb-4">
                             <Sparkles className="w-4 h-4 mr-2" />
