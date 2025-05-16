@@ -30,10 +30,9 @@ export function AIChat() {
   }, [messages])
 
   const handleMessageSubmit = (content: string) => {
-    console.log("Handling message submit:", content) // Debug log
     const formData = new FormData()
     formData.append("content", content)
-    handleSubmit(formData)
+    handleSubmit({ preventDefault: () => {}, data: formData } as unknown as React.FormEvent<HTMLFormElement>)
   }
 
   return (
