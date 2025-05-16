@@ -98,7 +98,7 @@ const AIToolsPage = () => {
             </section>
 
             {/* Tools Grid Section */}
-            <section className="pb-16 bg-white dark:bg-gray-950 relative z-20 -mt-16 rounded-t-3xl">
+            <section className="pb-16 relative z-20 -mt-16 rounded-t-3xl">
                 <div className="container px-4 mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {tools.map((tool, index) => (

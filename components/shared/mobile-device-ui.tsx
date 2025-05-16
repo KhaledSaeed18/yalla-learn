@@ -31,8 +31,13 @@ export function MobileDeviceUI() {
                     viewport={{ once: true }}
                     className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
                 >
-                    <Button variant="default" size="lg" className="gap-2 h-14 px-6" asChild>
-                        <Link href="#" target="_blank" rel="noopener noreferrer">
+                    <div className="flex flex-col items-center sm:items-start">
+                        <Button
+                            variant="default"
+                            size="lg"
+                            className="gap-2 h-14 px-6 opacity-70 cursor-not-allowed"
+                            disabled
+                        >
                             <svg
                                 className="h-5 w-5"
                                 viewBox="0 0 24 24"
@@ -46,10 +51,17 @@ export function MobileDeviceUI() {
                                 <span className="text-xs">Download on the</span>
                                 <span className="text-sm font-medium">App Store</span>
                             </div>
-                        </Link>
-                    </Button>
-                    <Button variant="outline" size="lg" className="gap-2 h-14 px-6" asChild>
-                        <Link href="#" target="_blank" rel="noopener noreferrer">
+                        </Button>
+                        <span className="text-xs text-muted-foreground mt-1">Coming Soon...</span>
+                    </div>
+
+                    <div className="flex flex-col items-center sm:items-start">
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            className="gap-2 h-14 px-6 opacity-70 cursor-not-allowed"
+                            disabled
+                        >
                             <svg
                                 className="h-5 w-5"
                                 viewBox="0 0 24 24"
@@ -65,8 +77,9 @@ export function MobileDeviceUI() {
                                 <span className="text-xs">GET IT ON</span>
                                 <span className="text-sm font-medium">Google Play</span>
                             </div>
-                        </Link>
-                    </Button>
+                        </Button>
+                        <span className="text-xs text-muted-foreground mt-1">Coming Soon...</span>
+                    </div>
                 </motion.div>
             </div>
 

@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
+import { BrainCircuit } from 'lucide-react';
 
 export default function AboutPage() {
     return (
@@ -46,7 +47,8 @@ export default function AboutPage() {
                 >
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-xl" />
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-40 h-40 sm:w-60 sm:h-60 bg-primary/90 rounded-full flex items-center justify-center text-white font-bold text-xl sm:text-3xl">
+                        <div className="w-40 h-40 sm:w-60 sm:h-60 bg-primary/90 rounded-full flex flex-col items-center justify-center text-white font-bold text-xl sm:text-3xl">
+                            <BrainCircuit className="h-24 w-24" />
                             Yalla Learn
                         </div>
                     </div>
@@ -111,7 +113,7 @@ export default function AboutPage() {
                     </p>
                 </div>
             </motion.div>
-            
+
 
             {/* Call to Action */}
             <motion.div

@@ -32,15 +32,7 @@ import { supportFormSchema } from '@/lib/validations/support.validations';
 const faqItems = [
     {
         question: "How do I get started with Yalla Learn?",
-        answer: "Simply sign up for an account, complete your profile, and you'll have immediate access to our productivity tools and AI features. Check out our getting started guide for a step-by-step walkthrough."
-    },
-    {
-        question: "Are all features available in the free plan?",
-        answer: "The free plan gives you access to basic features including task management, note-taking, and limited AI tool usage. Premium plans unlock advanced features like unlimited AI tools, priority support, and advanced analytics."
-    },
-    {
-        question: "How can I collaborate with other students?",
-        answer: "You can create or join study groups through the dashboard. Once in a group, you can share resources, create group schedules, and communicate with other members."
+        answer: "Simply sign up for an account, and you'll have immediate access."
     },
     {
         question: "Is my data secure on Yalla Learn?",
