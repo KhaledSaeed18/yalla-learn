@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import CallButton from "@/components/ai/CallButton"
-import ParticipantCard from "@/components/ai/ParticipantCard"
+import CallButton from "@/components/ai/assistant/CallButton"
+import ParticipantCard from "@/components/ai/assistant/ParticipantCard"
 import { useSelector } from "react-redux"
 import { RootState } from "@/redux/store"
 
