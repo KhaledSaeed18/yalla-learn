@@ -4,7 +4,13 @@ import AssistantSpeechIndicator from "./call/AssistantSpeechIndicator"
 import Button from "./base/Button"
 import VolumeLevel from "./call/VolumeLevel"
 
-const ActiveCallDetail = ({ assistantIsSpeaking, volumeLevel, onEndCallClick }) => {
+interface ActiveCallDetailProps {
+  assistantIsSpeaking: boolean;
+  volumeLevel: number;
+  onEndCallClick: () => void;
+}
+
+const ActiveCallDetail = ({ assistantIsSpeaking, volumeLevel, onEndCallClick }: ActiveCallDetailProps) => {
   return (
     <div>
       <div
