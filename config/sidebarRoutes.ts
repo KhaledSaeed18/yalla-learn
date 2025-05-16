@@ -1,4 +1,4 @@
-import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout, FileUser, Settings, User, Users, Wallet, BarChart, CreditCard, PiggyBank, Calendar, Target, Clock, Headset, HelpCircle, Tag, FileQuestion, MessageSquare } from "lucide-react";
+import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout, FileUser, Settings, User, Users, Wallet, BarChart, CreditCard, PiggyBank, Calendar, Target, Clock, Headset, HelpCircle, Tag, FileQuestion, MessageSquare, Bot, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type SidebarRoute = {
@@ -48,6 +48,35 @@ export const sidebarRoutes: SidebarRoute[] = [
         requiresAuth: true,
         roles: ["USER", "ADMIN"],
         activeWhen: (pathname) => pathname.startsWith("/dashboard/resume-builder"),
+    },
+    {
+        id: "ai",
+        label: "AI",
+        href: "/dashboard/ai",
+        icon: Sparkles,
+        requiresAuth: true,
+        roles: ["USER", "ADMIN"],
+        activeWhen: (pathname) => pathname.startsWith("/dashboard/ai"),
+        children: [
+            {
+                id: "ai-dashboard",
+                label: "Dashboard",
+                href: "/dashboard/ai",
+                icon: ChartNoAxesCombined,
+                requiresAuth: true,
+                roles: ["USER", "ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/ai",
+            },
+            {
+                id: "assistant",
+                label: "Assistant",
+                href: "/dashboard/ai/assistant",
+                icon: Bot,
+                requiresAuth: true,
+                roles: ["USER", "ADMIN"],
+                activeWhen: (pathname) => pathname.startsWith("/dashboard/ai/assistant"),
+            },
+        ]
     },
     {
         id: "expense-tracker",
