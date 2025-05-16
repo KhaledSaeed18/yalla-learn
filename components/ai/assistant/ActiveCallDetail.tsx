@@ -1,8 +1,8 @@
 "use client"
 
-import AssistantSpeechIndicator from "./assistant/call/AssistantSpeechIndicator"
-import Button from "./assistant/base/Button"
-import VolumeLevel from "./assistant/call/VolumeLevel"
+import AssistantSpeechIndicator from "./call/AssistantSpeechIndicator"
+import Button from "./base/Button"
+import VolumeLevel from "./call/VolumeLevel"
 
 interface ActiveCallDetailProps {
   assistantIsSpeaking: boolean;
