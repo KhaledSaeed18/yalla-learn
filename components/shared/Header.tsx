@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
-import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer, BrainCircuit, ListChecks, ClipboardCheck, Brain, Clock, ScanEye, Info, Headset, CircleHelp, Download, BriefcaseBusiness } from "lucide-react"
+import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer, BrainCircuit, ListChecks, ClipboardCheck, Brain, Clock, ScanEye, Info, Headset, CircleHelp, Download, BriefcaseBusiness, Search as SearchIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
@@ -127,6 +127,12 @@ export function Header() {
                     href: "/ai-tools/concept-explainer",
                     description: "Receive clear explanations of complex concepts with visual descriptions.",
                     icon: <Brain className="size-5 mr-2 text-primary" />
+                },
+                {
+                    title: "AI Web Search",
+                    href: "/ai-tools/search",
+                    description: "Search the web with AI and get relevant results instantly.",
+                    icon: <SearchIcon className="size-5 mr-2 text-primary" />
                 }
             ],
         },
@@ -188,13 +194,13 @@ export function Header() {
         <header className="sticky top-0 z-40 w-full border-b bg-background">
             <div className="container mx-auto px-4 flex h-16 items-center">
                 {/* Logo */}
-                <Link 
-                    href="/" 
-                    className="flex items-center space-x-2" 
+                <Link
+                    href="/"
+                    className="flex items-center"
                     aria-label="Yalla Learn Home Page">
-                    <span className="text-xl flex justify-center items-center pag-2 font-bold hover:scale-105">
+                    <span className="text-lg flex justify-center items-center font-bold hover:scale-105">
                         <BrainCircuit className="h-8 w-8 text-primary" aria-hidden="true" />
-                        Yalla Learn
+                        {"Yalla Learn"}
                         <span className="sr-only">Navigate to home page</span>
                     </span>
                 </Link>

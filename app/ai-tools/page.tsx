@@ -1,4 +1,4 @@
-import { FileText, ImageIcon, Network, SquareMousePointer, Languages, Sparkles, ListChecks, ClipboardCheck, Brain } from "lucide-react"
+import { FileText, ImageIcon, Network, SquareMousePointer, Languages, Sparkles, ListChecks, ClipboardCheck, Brain, Search } from "lucide-react"
 import { AnimatedBeamMultipleOutputUI } from "@/components/shared/AnimatedBeamMultipleOutputUI"
 import { Card } from "@/components/ui/card"
 import Link from "next/link"
@@ -67,6 +67,14 @@ const AIToolsPage = () => {
             href: "/ai-tools/concept-explainer",
             description: "Receive clear explanations of complex concepts with visual descriptions.",
             icon: Brain,
+            color: "from-primary/20 to-primary/5",
+            iconColor: "text-primary",
+        },
+        {
+            title: "AI Web Search",
+            href: "/ai-tools/search",
+            description: "Search the web using AI and get relevant, curated links with summaries.",
+            icon: Search,
             color: "from-primary/20 to-primary/5",
             iconColor: "text-primary",
         },

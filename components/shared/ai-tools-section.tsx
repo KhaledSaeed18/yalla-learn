@@ -2,7 +2,7 @@
 
 import { useRef } from "react"
 import { motion } from "framer-motion"
-import { FileText, ImageIcon, Network, SquareMousePointer, Languages, ListChecks, ClipboardCheck, Brain, ArrowRight, MessageCircle, Mic } from "lucide-react"
+import { FileText, ImageIcon, Network, SquareMousePointer, Languages, ListChecks, ClipboardCheck, Brain, ArrowRight, MessageCircle, Mic, Search as SearchIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { FloatingIcons } from "./floating-icons"
@@ -82,6 +82,15 @@ const aiTools = [
             "Get simple, clear explanations of complex concepts across any field. Our AI breaks down difficult ideas into easy-to-understand components, provides visual descriptions, analogies, and examples. Perfect for students, lifelong learners, and anyone trying to understand challenging topics.",
         icon: <Brain className="size-8" />,
         tags: ["Visual Learning", "Simplified Concepts", "Interactive"],
+    },
+    {
+        title: "AI Web Search",
+        href: "/ai-tools/search",
+        description: "Search the web with AI and get relevant results.",
+        longDescription:
+            "Use our AI-enhanced web search to find precisely what you're looking for. Our intelligent algorithms deliver more relevant results, understand context, and filter out low-quality content. Perfect for research, academic work, and finding accurate information quickly.",
+        icon: <SearchIcon className="size-8" />,
+        tags: ["Web Research", "Information Retrieval", "AI-Enhanced Search"],
     },
 ]
 

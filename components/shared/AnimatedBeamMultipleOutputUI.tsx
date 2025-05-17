@@ -3,7 +3,7 @@
 import React, { forwardRef, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { AnimatedBeam } from "@/components/magicui/animated-beam";
-import { BrainCircuit, FileText, Image, Languages, Network, SquareMousePointer, ListChecks, ClipboardCheck, Brain } from "lucide-react";
+import { BrainCircuit, FileText, Image, Languages, Network, SquareMousePointer, ListChecks, ClipboardCheck, Brain, Search } from "lucide-react";
 
 const Circle = forwardRef<
     HTMLDivElement,
@@ -40,6 +40,7 @@ export function AnimatedBeamMultipleOutputUI({
     const div8Ref = useRef<HTMLDivElement>(null);
     const div9Ref = useRef<HTMLDivElement>(null);
     const div10Ref = useRef<HTMLDivElement>(null);
+    const div11Ref = useRef<HTMLDivElement>(null);
 
     return (
         <div
@@ -84,6 +85,9 @@ export function AnimatedBeamMultipleOutputUI({
                     </Circle>
                     <Circle ref={div10Ref}>
                         <Brain className="text-black" />
+                    </Circle>
+                    <Circle ref={div11Ref}>
+                        <Search className="text-black" />
                     </Circle>
                 </div>
             </div>
@@ -141,6 +145,12 @@ export function AnimatedBeamMultipleOutputUI({
                 containerRef={containerRef}
                 fromRef={div6Ref}
                 toRef={div7Ref}
+                duration={3}
+            />
+            <AnimatedBeam
+                containerRef={containerRef}
+                fromRef={div11Ref}
+                toRef={div6Ref}
                 duration={3}
             />
         </div>
