@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
-import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer, BrainCircuit, ListChecks, ClipboardCheck, Brain, Clock, ScanEye, Info, Headset, CircleHelp, Download } from "lucide-react"
+import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer, BrainCircuit, ListChecks, ClipboardCheck, Brain, Clock, ScanEye, Info, Headset, CircleHelp, Download, BriefcaseBusiness } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
@@ -161,6 +161,11 @@ export function Header() {
             name: "Q&A",
             href: "/qa",
             icon: <CircleHelp className="size-5 mr-2 text-primary" />
+        },
+        {
+            name: "Jobs",
+            href: "/jobs",
+            icon: <BriefcaseBusiness className="size-5 mr-2 text-primary" />
         },
         {
             name: "Download",

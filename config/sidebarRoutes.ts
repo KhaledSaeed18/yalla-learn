@@ -1,4 +1,4 @@
-import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout, FileUser, Settings, User, Users, Wallet, BarChart, CreditCard, PiggyBank, Calendar, Target, Clock, Headset, HelpCircle, Tag, FileQuestion, MessageSquare, Bot, Sparkles, MessageSquareMore } from "lucide-react";
+import { Home, FileText, PenLine, SquareStack, ChartNoAxesCombined, FileStack, Newspaper, Layout, FileUser, Settings, User, Users, Wallet, BarChart, CreditCard, PiggyBank, Calendar, Target, Clock, Headset, HelpCircle, Tag, FileQuestion, MessageSquare, Bot, Sparkles, MessageSquareMore, Briefcase, PlusCircle, ClipboardList, MessagesSquare } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type SidebarRoute = {
@@ -40,7 +40,7 @@ export const sidebarRoutes: SidebarRoute[] = [
         roles: ["USER", "ADMIN"],
         activeWhen: (pathname) => pathname.startsWith("/dashboard/kanban-board"),
     },
-    {
+        {
         id: "resume-builder",
         label: "Resume Builder",
         href: "/dashboard/resume-builder",
@@ -48,6 +48,52 @@ export const sidebarRoutes: SidebarRoute[] = [
         requiresAuth: true,
         roles: ["USER", "ADMIN"],
         activeWhen: (pathname) => pathname.startsWith("/dashboard/resume-builder"),
+    },
+    {
+        id: "jobs",
+        label: "Jobs",
+        icon: Briefcase,
+        requiresAuth: true,
+        roles: ["USER", "ADMIN"],
+        activeWhen: (pathname) => pathname.startsWith("/dashboard/jobs"),
+        children: [
+            {
+                id: "jobs-dashboard",
+                label: "Dashboard",
+                href: "/dashboard/jobs",
+                icon: BarChart,
+                requiresAuth: true,
+                roles: ["USER", "ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/jobs",
+            },
+            {
+                id: "jobs-listings",
+                label: "Job Listings",
+                href: "/dashboard/jobs/listings",
+                icon: ClipboardList,
+                requiresAuth: true,
+                roles: ["ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/jobs/listings",
+            },
+            {
+                id: "create-job",
+                label: "Create Job",
+                href: "/dashboard/jobs/create",
+                icon: PlusCircle,
+                requiresAuth: true,
+                roles: ["ADMIN"],
+                activeWhen: (pathname) => pathname === "/dashboard/jobs/create",
+            },
+            {
+                id: "my-applications",
+                label: "My Applications",
+                href: "/dashboard/jobs/applications",
+                icon: MessagesSquare,
+                requiresAuth: true,
+                roles: ["USER"],
+                activeWhen: (pathname) => pathname === "/dashboard/jobs/applications",
+            },
+        ]
     },
     {
         id: "ai",
