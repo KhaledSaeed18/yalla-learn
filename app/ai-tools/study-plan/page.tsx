@@ -154,7 +154,7 @@ export default function StudyPlanPage() {
                         </Alert>
                     )}
                     {studyPlan.length > 0 && (
-                        <div className="mt-8">
+                        <div className="">
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-xl font-semibold">Generated Study Plan</h2>
                                 <Button 

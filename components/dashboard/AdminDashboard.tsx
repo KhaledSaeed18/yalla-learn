@@ -91,6 +91,12 @@ const AdminDashboard = () => {
             description: "View blog engagement and analytics",
             icon: <ChartNoAxesCombined className="h-5 w-5" />,
             href: "/dashboard/blog/statistics"
+        },
+        {
+            title: 'Jobs',
+            description: 'Manage job listings and applications',
+            icon: <FileStack className="h-5 w-5" />,
+            href: '/dashboard/jobs'
         }
     ];
 
