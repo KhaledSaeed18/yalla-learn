@@ -53,7 +53,8 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
             ctx.font = "14px Inter, sans-serif"
             const textWidth = ctx.measureText(node.text).width
 
-            node.width = Math.max(textWidth + NODE_PADDING * 2, NODE_WIDTH)
+            // Use the actual text width plus padding as the node width to show full text
+            node.width = textWidth + NODE_PADDING * 2
             node.height = NODE_HEIGHT
 
             if (node.children) {
@@ -158,7 +159,8 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
                     drawNode(child)
                 }
             }
-            if (node.x !== undefined && node.y !== undefined) {                ctx.shadowColor = 'rgba(0, 0, 0, 0.1)'
+            if (node.x !== undefined && node.y !== undefined) {
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.1)'
                 ctx.shadowBlur = 5
                 ctx.shadowOffsetX = 2
                 ctx.shadowOffsetY = 2
@@ -193,18 +195,8 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
                 ctx.textAlign = "center"
                 ctx.textBaseline = "middle"
 
-                const maxTextWidth = (node.width || NODE_WIDTH) - NODE_PADDING * 2
-                let nodeText = node.text
-                let textWidth = ctx.measureText(nodeText).width
-
-                if (textWidth > maxTextWidth) {
-                    let ellipsis = '...'
-                    let i = nodeText.length - 1
-                    while (i > 0 && ctx.measureText(nodeText.slice(0, i) + ellipsis).width > maxTextWidth) {
-                        i--
-                    }
-                    nodeText = nodeText.slice(0, i) + ellipsis
-                }
+                // Show full text without truncation
+                const nodeText = node.text
 
                 ctx.fillText(nodeText, node.x + (node.width || NODE_WIDTH) / 2, node.y + NODE_HEIGHT / 2)
             }
@@ -315,22 +307,41 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
         const tempCtx = tempCanvas.getContext('2d')
         if (!tempCtx) return
 
-        tempCanvas.width = 1920
-        tempCanvas.height = 1080
+        const calculateBounds = (node: MindMapNode, bounds = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }) => {
+            if (node.x !== undefined && node.y !== undefined) {
+                bounds.minX = Math.min(bounds.minX, node.x)
+                bounds.minY = Math.min(bounds.minY, node.y)
+                bounds.maxX = Math.max(bounds.maxX, node.x + (node.width || NODE_WIDTH))
+                bounds.maxY = Math.max(bounds.maxY, node.y + NODE_HEIGHT)
+            }
+
+            if (node.children) {
+                for (const child of node.children) {
+                    calculateBounds(child, bounds)
+                }
+            }
+
+            return bounds
+        }
+
+        const bounds = calculateBounds(processedData)
+
+        const EXPORT_PADDING = 100
+        const mapWidth = bounds.maxX - bounds.minX + EXPORT_PADDING * 2
+        const mapHeight = bounds.maxY - bounds.minY + EXPORT_PADDING * 2
+
+        tempCanvas.width = mapWidth
+        tempCanvas.height = mapHeight
 
         tempCtx.fillStyle = '#ffffff'
         tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height)
 
         tempCtx.save()
-        const rootX = processedData.x || 0
-        const rootY = processedData.y || 0
-        const rootWidth = processedData.width || NODE_WIDTH
 
         tempCtx.translate(
-            tempCanvas.width / 2 - (rootX + rootWidth / 2) * scale,
-            tempCanvas.height / 5 - rootY * scale
+            EXPORT_PADDING - bounds.minX,
+            EXPORT_PADDING - bounds.minY
         )
-        tempCtx.scale(scale, scale)
 
         const drawNode = (node: MindMapNode) => {
             if (!tempCtx || !node) return
@@ -394,18 +405,8 @@ export default function MindMapCanvas({ data }: MindMapCanvasProps) {
                 tempCtx.textAlign = "center"
                 tempCtx.textBaseline = "middle"
 
-                const maxTextWidth = (node.width || NODE_WIDTH) - NODE_PADDING * 2
-                let nodeText = node.text
-                let textWidth = tempCtx.measureText(nodeText).width
-
-                if (textWidth > maxTextWidth) {
-                    let ellipsis = '...'
-                    let i = nodeText.length - 1
-                    while (i > 0 && tempCtx.measureText(nodeText.slice(0, i) + ellipsis).width > maxTextWidth) {
-                        i--
-                    }
-                    nodeText = nodeText.slice(0, i) + ellipsis
-                }
+                // Show full text without truncation
+                const nodeText = node.text
 
                 tempCtx.fillText(nodeText, node.x + (node.width || NODE_WIDTH) / 2, node.y + NODE_HEIGHT / 2)
             }
