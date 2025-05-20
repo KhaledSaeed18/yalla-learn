@@ -130,7 +130,7 @@ export default function DownloadPage() {
                                 <CardFooter className="flex justify-center pb-8">
                                     <Button
                                         size="lg"
-                                        className={`w-full bg-gradient-to-r ${os.color} hover:opacity-90 transition-opacity group relative overflow-hidden`}
+                                        className={`w-full bg-gradient-to-r ${os.color} hover:opacity-90 relative overflow-hidden`}
                                     >
                                         <span className="relative z-10 flex items-center justify-center">
                                             <Download className="mr-2 h-4 w-4" />

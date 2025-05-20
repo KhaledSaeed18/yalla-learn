@@ -97,7 +97,7 @@ export function AIChat() {
             value={input}
             onChange={handleInputChange}
             placeholder="Ask anything..."
-            className="min-h-12 resize-none pr-12"
+            className="resize-none pr-12"
             disabled={isLoading}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -110,7 +110,7 @@ export function AIChat() {
             type="submit"
             size="icon"
             disabled={isLoading || !input.trim()}
-            className="absolute right-2 top-2 h-8 w-8"
+            className="absolute right-2 top-4 h-8 w-8"
           >
             <Bot className="h-4 w-4" />
             <span className="sr-only">Send message</span>
