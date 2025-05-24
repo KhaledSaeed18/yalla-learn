@@ -97,7 +97,7 @@ export async function POST(req: Request) {
                         });
                     }
                 } catch (innerParseError) {
-                    // Continue to the fallback response if parsing fails
+                    console.error('Failed to parse response text as JSON:', innerParseError);
                 }
             }
 

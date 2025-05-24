@@ -22,7 +22,6 @@ import {
 
 export const userServices = {
 
-    // User Services:
     /**
      * Get the authenticated user's profile
      * @returns A promise that resolves to the user profile response
@@ -91,7 +90,6 @@ export const userServices = {
         return api.post<TwoFactorDisableResponse>('/auth/2fa/disable', data);
     },
 
-    // admin services:
 
     /**
      * Get all users with optional filtering, pagination, and sorting

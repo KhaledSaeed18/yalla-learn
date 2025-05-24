@@ -38,7 +38,6 @@ export async function POST(req: Request) {
     }
 
     try {
-        // Adding specific system instructions for the AI Assistant role
         const systemMessage = {
             role: 'system',
             content: `You are Yalla Learn AI Assistant, a helpful, conversational AI designed to assist students and users with their studies, learning, and productivity needs.
@@ -61,7 +60,6 @@ export async function POST(req: Request) {
             Keep responses concise, friendly, and focused on providing valuable assistance. Avoid any harmful, inappropriate, or off-topic content.`
         };
 
-        // Add the system message if it's not already in the messages
         const hasSystemMessage = messages.some((m: CoreMessage) => m.role === 'system');
         const messagesWithSystem = hasSystemMessage ? messages : [systemMessage, ...messages];
 

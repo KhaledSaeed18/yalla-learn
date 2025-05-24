@@ -54,7 +54,6 @@ Format the output as a JSON array, where each element is an object with the foll
         const response = result.response
         const responseText = response.text()
 
-        // Remove code block markers if present
         let cleanText = responseText.trim()
         if (cleanText.startsWith('```json')) {
             cleanText = cleanText.replace(/^```json/, '').trim()
@@ -66,11 +65,9 @@ Format the output as a JSON array, where each element is an object with the foll
             cleanText = cleanText.replace(/```$/, '').trim()
         }
 
-        // Find valid JSON in the response
         let jsonStartIndex = cleanText.indexOf('[');
         let jsonEndIndex = cleanText.lastIndexOf(']');
 
-        // If we found valid JSON array markers
         if (jsonStartIndex !== -1 && jsonEndIndex !== -1 && jsonEndIndex > jsonStartIndex) {
             cleanText = cleanText.substring(jsonStartIndex, jsonEndIndex + 1);
         }
@@ -86,23 +83,18 @@ Format the output as a JSON array, where each element is an object with the foll
             parseError = e
             console.error("JSON parse error:", e)
 
-            // Try to recover by adding missing brackets or fixing common issues
             try {
-                // If it looks like the JSON was cut off (common with large responses)
                 if (!cleanText.trim().endsWith(']')) {
                     cleanText = cleanText.trim() + ']'
                     studyPlan = JSON.parse(cleanText)
                     console.log("Recovered JSON by adding closing bracket")
                 }
             } catch (recoveryError) {
-                // If recovery attempt failed, we'll use the original error
                 console.error("Recovery attempt failed:", recoveryError)
             }
         }
 
-        // If we still have no valid study plan
         if (studyPlan.length === 0) {
-            // Try regenerating with a simpler prompt as fallback
             if (parseError) {
                 try {
                     const fallbackPrompt = `Generate a simplified day-by-day study plan for ${subject} over ${timeframe} days at ${difficulty} difficulty level. Format as a JSON array of objects with day (number), focus (string), tasks (array of strings), and tips (string). Return ONLY valid JSON without extra text.`
@@ -115,7 +107,6 @@ Format the output as a JSON array, where each element is an object with the foll
 
                     let fallbackText = fallbackResult.response.text().trim()
 
-                    // Clean up the fallback response
                     if (fallbackText.startsWith('```json')) {
                         fallbackText = fallbackText.replace(/^```json/, '').trim()
                     }
@@ -126,7 +117,6 @@ Format the output as a JSON array, where each element is an object with the foll
                         fallbackText = fallbackText.replace(/```$/, '').trim()
                     }
 
-                    // Find valid JSON in the fallback response
                     jsonStartIndex = fallbackText.indexOf('[');
                     jsonEndIndex = fallbackText.lastIndexOf(']');
 

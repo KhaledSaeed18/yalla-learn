@@ -4,14 +4,13 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       'www.krasamo.com',
-      'api.dicebear.com', // For avatar images
-      'images.unsplash.com', // Common image source
+      'api.dicebear.com',
+      'images.unsplash.com',
       'upload.wikimedia.org',
       'picsum.photos',
       'images.ctfassets.net'
     ],
   },
-  // Disable ESLint during the build process
   eslint: {
     ignoreDuringBuilds: true,
   },

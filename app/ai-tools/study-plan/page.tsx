@@ -65,17 +65,14 @@ export default function StudyPlanPage() {
 
         const doc = new jsPDF();
         
-        // Add title
         doc.setFontSize(18);
         doc.text(`Study Plan: ${subject}`, 14, 20);
         
-        // Add metadata
         doc.setFontSize(12);
         doc.text(`Difficulty: ${difficulty}`, 14, 30);
         doc.text(`Duration: ${timeframe} days`, 14, 37);
         doc.text(`Goals: ${goals}`, 14, 44);
         
-        // Add table with study plan data
         autoTable(doc, {
             startY: 55,
             head: [['Day', 'Focus', 'Tasks', 'Tips']],
@@ -95,7 +92,6 @@ export default function StudyPlanPage() {
             }
         });
         
-        // Save the PDF
         doc.save(`${subject.replace(/\s+/g, '-').toLowerCase()}-study-plan.pdf`);
     };
 

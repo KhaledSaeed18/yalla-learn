@@ -61,7 +61,6 @@ export function ResumeProvider({ children }: { children: React.ReactNode }) {
     return !hasPersonalInfo && !hasSummary && !hasExperience && !hasEducation && !hasSkills
   }, [resumeData])
 
-  // Save to localStorage whenever data changes
   useEffect(() => {
     localStorage.setItem("resumeData", JSON.stringify(resumeData))
   }, [resumeData])

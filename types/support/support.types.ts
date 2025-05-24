@@ -1,5 +1,3 @@
-// Types for the support/contact feature
-
 export interface ContactForm {
     id: string;
     name: string;

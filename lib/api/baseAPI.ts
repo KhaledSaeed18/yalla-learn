@@ -22,7 +22,6 @@ export const axiosInstance = axios.create({
     timeout: API_TIMEOUT,
 });
 
-// Process queued requests with new token or reject them
 const processQueue = (error: any, token: string | null = null) => {
     failedQueue.forEach(request => {
         if (error) {
@@ -106,13 +105,11 @@ axiosInstance.interceptors.response.use(
             }
         }
 
-        // Handle refresh token expired error directly from a request
         if (
             error.response &&
             error.response.status === 500 &&
             error.response.data?.message === "Refresh token expired"
         ) {
-            // Log out the user and terminate session
             await logout(true);
         }
 

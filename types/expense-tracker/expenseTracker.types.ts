@@ -1,9 +1,7 @@
-// Types for expense tracking feature
 export type PaymentMethod = 'CASH' | 'CREDIT_CARD' | 'DEBIT_CARD' | 'BANK_TRANSFER' | 'MOBILE_PAYMENT' | 'SCHOLARSHIP' | 'OTHER';
 export type Term = 'FALL' | 'SPRING' | 'SUMMER';
 export type PaymentType = 'TUITION' | 'HOUSING' | 'MEAL_PLAN' | 'BOOKS' | 'LAB_FEES' | 'ACTIVITY_FEES' | 'TECHNOLOGY_FEES' | 'INSURANCE' | 'PARKING' | 'OTHER';
 
-// Expense Category Type enum
 export enum ExpenseCategoryType {
     HOUSING = 'HOUSING',
     FOOD = 'FOOD',
@@ -23,14 +21,12 @@ export enum ExpenseCategoryType {
     OTHER = 'OTHER'
 }
 
-// Base response interface
 export interface ApiResponse {
     status: string;
     statusCode: number;
     message: string;
 }
 
-// Pagination interface
 export interface Pagination {
     total: number;
     page: number;
@@ -38,7 +34,6 @@ export interface Pagination {
     totalPages: number;
 }
 
-// Semester Interfaces
 export interface Semester {
     id: string;
     name: string;
@@ -101,7 +96,6 @@ export interface UpdateSemesterResponse extends ApiResponse {
 
 export interface DeleteSemesterResponse extends ApiResponse { }
 
-// Expense Interfaces
 export interface Expense {
     id: string;
     amount: string;
@@ -177,7 +171,6 @@ export interface UpdateExpenseResponse extends ApiResponse {
 
 export interface DeleteExpenseResponse extends ApiResponse { }
 
-// Payment Schedule Interfaces
 export interface PaymentSchedule {
     id: string;
     name: string;

@@ -56,7 +56,6 @@ export default function SignInPage() {
     try {
       const response = await authServices.signIn(values)
 
-      // Check if 2FA is required
       if (response.status === "pending" && 'requiresOtp' in response.data) {
         dispatch(
           setPendingTwoFactor({

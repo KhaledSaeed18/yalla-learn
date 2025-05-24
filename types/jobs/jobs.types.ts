@@ -1,4 +1,3 @@
-// We'll define JobApplicationRef here to avoid circular dependency
 export interface JobApplicationRef {
     id: string;
     jobId: string;

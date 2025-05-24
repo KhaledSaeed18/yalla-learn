@@ -61,12 +61,10 @@ export async function POST(req: Request) {
         try {
             let jsonContent: string | any = response;
 
-            // Handle response object format
             if (typeof response === 'object' && response !== null && 'text' in response) {
                 jsonContent = response.text;
             }
 
-            // Handle JSON within markdown code blocks or raw JSON
             if (typeof jsonContent === 'string') {
                 const jsonMatch = jsonContent.match(/```(?:json)?\s*([\s\S]*?)\s*```/) ||
                     jsonContent.match(/\[\s*\{[\s\S]*\}\s*\]/);
@@ -76,19 +74,16 @@ export async function POST(req: Request) {
                 }
             }
 
-            // Ensure we have a string to parse
             if (typeof jsonContent !== 'string') {
                 jsonContent = JSON.stringify(jsonContent);
             }
 
             const parsedResponse = JSON.parse(jsonContent.trim());
 
-            // Validate the response structure
             if (!Array.isArray(parsedResponse)) {
                 throw new Error("Invalid search results structure - expected array");
             }
 
-            // Validate each search result
             const validatedResults = parsedResponse.filter((item: any) =>
                 item &&
                 typeof item === 'object' &&
@@ -103,7 +98,6 @@ export async function POST(req: Request) {
         } catch (parseError) {
             console.error("Error parsing search results:", parseError);
 
-            // Attempt recovery from response object text
             if (typeof response === 'object' && response !== null &&
                 'text' in response && typeof response.text === 'string') {
                 try {
@@ -116,7 +110,7 @@ export async function POST(req: Request) {
                         });
                     }
                 } catch (innerParseError) {
-                    // Continue to fallback response
+                    console.error('Failed to parse response text as JSON:', innerParseError);
                 }
             }
 

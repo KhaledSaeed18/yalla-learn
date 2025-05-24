@@ -91,7 +91,6 @@ Only return the JSON object, without any additional commentary or code blocks.`
         const response = result.response
         const responseText = response.text()
 
-        // Clean the response text to extract valid JSON
         let cleanText = responseText.trim()
         if (cleanText.startsWith('```json')) {
             cleanText = cleanText.replace(/^```json/, '').trim()
@@ -103,7 +102,6 @@ Only return the JSON object, without any additional commentary or code blocks.`
             cleanText = cleanText.replace(/```$/, '').trim()
         }
 
-        // Try to parse the JSON response
         let explanation: ConceptExplanation
         try {
             explanation = JSON.parse(cleanText)
@@ -114,7 +112,6 @@ Only return the JSON object, without any additional commentary or code blocks.`
             }, { status: 500 })
         }
 
-        // Validate the explanation structure
         if (!explanation.concept || !explanation.summary || !explanation.sections || !explanation.examples) {
             return NextResponse.json({
                 error: "The generated explanation is incomplete. Please try again."

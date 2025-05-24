@@ -1,6 +1,5 @@
 import { JobType, JobStatus } from './jobs.types';
 
-// We'll define JobRef here to avoid circular dependency
 export interface JobRef {
     id: string;
     title: string;

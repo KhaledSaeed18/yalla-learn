@@ -105,7 +105,6 @@ export default function ConceptExplainer() {
         }
     }
 
-    // Animations
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {

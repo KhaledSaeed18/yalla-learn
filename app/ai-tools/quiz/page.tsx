@@ -70,7 +70,6 @@ export default function QuizPage() {
 
             if (data.quizQuestions && data.quizQuestions.length > 0) {
                 setQuizQuestions(data.quizQuestions)
-                // Initialize selectedAnswers array with empty strings
                 setSelectedAnswers(new Array(data.quizQuestions.length).fill(""))
             } else {
                 setError("No valid quiz questions could be generated. Please check your input.")
@@ -137,16 +136,13 @@ export default function QuizPage() {
 
         const doc = new jsPDF();
 
-        // Add title
         doc.setFontSize(18);
         doc.text(`Quiz Results: ${topic}`, 14, 20);
 
-        // Add metadata
         doc.setFontSize(12);
         doc.text(`Difficulty: ${difficulty}`, 14, 30);
         doc.text(`Score: ${score} out of ${quizQuestions.length} (${Math.round((score / quizQuestions.length) * 100)}%)`, 14, 37);
 
-        // Add table with quiz data
         autoTable(doc, {
             startY: 45,
             head: [['Question', 'Your Answer', 'Correct Answer', 'Explanation']],
@@ -174,7 +170,6 @@ export default function QuizPage() {
             }
         });
 
-        // Save the PDF
         doc.save(`${topic.replace(/\s+/g, '-').toLowerCase()}-quiz-results.pdf`);
     };
 

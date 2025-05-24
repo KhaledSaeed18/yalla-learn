@@ -1,4 +1,3 @@
-// Types for Kanban board feature
 export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
 export interface KanbanTask {
@@ -33,7 +32,6 @@ export interface KanbanBoard {
     columns: KanbanColumn[];
 }
 
-// API Request/Response types
 export interface CreateBoardRequest {
     title: string;
 }

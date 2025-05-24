@@ -63,7 +63,6 @@ Make sure the questions are challenging and appropriate for the ${difficulty} le
         const response = result.response
         const responseText = response.text()
 
-        // Remove code block markers if present
         let cleanText = responseText.trim()
         if (cleanText.startsWith('```json')) {
             cleanText = cleanText.replace(/^```json/, '').trim()
@@ -75,11 +74,9 @@ Make sure the questions are challenging and appropriate for the ${difficulty} le
             cleanText = cleanText.replace(/```$/, '').trim()
         }
 
-        // Find valid JSON in the response
         let jsonStartIndex = cleanText.indexOf('[');
         let jsonEndIndex = cleanText.lastIndexOf(']');
 
-        // If we found valid JSON array markers
         if (jsonStartIndex !== -1 && jsonEndIndex !== -1 && jsonEndIndex > jsonStartIndex) {
             cleanText = cleanText.substring(jsonStartIndex, jsonEndIndex + 1);
         }
@@ -93,7 +90,6 @@ Make sure the questions are challenging and appropriate for the ${difficulty} le
             parseError = e
             console.error("JSON parse error:", e)
 
-            // Try to recover by adding missing brackets or fixing common issues
             try {
                 if (!cleanText.trim().endsWith(']')) {
                     cleanText = cleanText.trim() + ']'
@@ -105,9 +101,7 @@ Make sure the questions are challenging and appropriate for the ${difficulty} le
             }
         }
 
-        // If we still have no valid quiz questions
         if (quizQuestions.length === 0) {
-            // Try regenerating with a simpler prompt as fallback
             if (parseError) {
                 try {
                     const fallbackPrompt = `Generate a ${difficulty} difficulty quiz with ${numQuestions} multiple-choice questions about "${topic}". Format as a JSON array of objects with properties: question (string), options (array of 4 strings), correctAnswer (string that matches one option), and explanation (string). Return ONLY valid JSON without extra text.`
@@ -120,7 +114,6 @@ Make sure the questions are challenging and appropriate for the ${difficulty} le
 
                     let fallbackText = fallbackResult.response.text().trim()
 
-                    // Clean up the fallback response
                     if (fallbackText.startsWith('```json')) {
                         fallbackText = fallbackText.replace(/^```json/, '').trim()
                     }
@@ -131,7 +124,6 @@ Make sure the questions are challenging and appropriate for the ${difficulty} le
                         fallbackText = fallbackText.replace(/```$/, '').trim()
                     }
 
-                    // Find valid JSON in the fallback response
                     jsonStartIndex = fallbackText.indexOf('[');
                     jsonEndIndex = fallbackText.lastIndexOf(']');
 
