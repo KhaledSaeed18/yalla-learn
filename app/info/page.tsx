@@ -4,6 +4,8 @@ import React from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { ModeToggle } from '@/components/theme/mode-toggle'
+import { ColorThemeToggle } from '@/components/theme/color-theme-toggle'
 import {
     Globe,
     ExternalLink,
@@ -14,7 +16,8 @@ import {
     Sparkles,
     ArrowUpRight,
     BrainCircuit,
-    Github
+    Github,
+    Headset
 } from 'lucide-react'
 
 const InfoPage = () => {
@@ -63,18 +66,39 @@ const InfoPage = () => {
                     external: true
                 }
             ]
-        }
+        },
+        {
+            category: "Support",
+            items: [
+                {
+                    title: "Support & Feedback",
+                    description: "Submit reviews, suggestions, or contact us with questions",
+                    url: "https://yalla-learn.me/support",
+                    icon: <Headset className="h-5 w-5" />,
+                    external: true
+                }
+            ]
+        },
     ]
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+        <div className="min-h-screen relative">
+            {/* Theme Toggle Controls */}
+            <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
+                <div className="border border-border/50 rounded-lg p-1 shadow-lg flex items-center gap-2 transition-all duration-300 hover:shadow-xl">
+                    <ModeToggle />
+                    <div className="w-px h-6 bg-border hidden sm:block"></div>
+                    <ColorThemeToggle />
+                </div>
+            </div>
+
             <div className="container mx-auto px-4 py-8 max-w-4xl">
                 {/* Header Section */}
                 <div className="text-center mb-12 space-y-6">
                     {/* Logo */}
                     <div className="flex justify-center mb-6">
                         <div className="relative group">
-                            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300 shadow-md shadow-primary"></div>
                             <div className="relative bg-background/80 backdrop-blur-sm rounded-full p-6 border border-border/50 shadow-lg">
                                 <BrainCircuit className='text-primary' />
                             </div>
@@ -109,6 +133,9 @@ const InfoPage = () => {
                                     )}
                                     {section.category === "GitHub Repositories" && (
                                         <Github className="h-6 w-6 text-primary" />
+                                    )}
+                                    {section.category === "Support" && (
+                                        <Headset className="h-6 w-6 text-primary" />
                                     )}
                                     <h2 className="text-2xl md:text-3xl font-semibold text-foreground">
                                         {section.category}
