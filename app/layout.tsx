@@ -21,13 +21,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Yalla Learn",
-  description: "A collaborative platform for students combining productivity and AI-powered tools for learning, organization, and teamwork with marketplace features",
+  title: "Yalla Learn - Student Collaboration & AI Learning Platform",
+  description: "Yalla Learn is the ultimate collaborative platform for students, combining powerful productivity tools, AI-powered learning assistance, marketplace features, and expense tracking to enhance your academic journey and teamwork experience.",
   keywords: ["education", "student platform", "productivity", "AI tools", "marketplace", "collaboration", "gig services", "expense tracking"],
   metadataBase: new URL('https://yalla-learn.me'),
   authors: [
     { name: 'Yalla Learn Team' }
   ],
+  verification: {
+    google: 'rBaHPDlm7xc18Wuvm0WMTizYLdpAHa8j0oxhYDEZtUc',
+  },
   creator: 'Yalla Learn',
   publisher: 'Yalla Learn',
   robots: {
@@ -38,8 +41,8 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://yalla-learn.me',
-    title: 'Yalla Learn',
-    description: 'All-in-one platform for students: productivity tools, AI learning assistance, marketplace, and expense tracking',
+    title: 'Yalla Learn - Student Collaboration & AI Learning Platform',
+    description: 'Yalla Learn is the ultimate collaborative platform for students, combining powerful productivity tools, AI-powered learning assistance, marketplace features, and expense tracking to enhance your academic journey and teamwork experience.',
     siteName: 'Yalla Learn',
     images: [
       {
@@ -52,8 +55,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Yalla Learn',
-    description: 'All-in-one platform for students: productivity tools, AI learning assistance, marketplace, and expense tracking',
+    title: 'Yalla Learn - Student Collaboration & AI Learning Platform',
+    description: 'Yalla Learn is the ultimate collaborative platform for students, combining powerful productivity tools, AI-powered learning assistance, marketplace features, and expense tracking to enhance your academic journey and teamwork experience.',
     images: ['/images/logo.png'],
     creator: '@yallalearn',
     site: '@yallalearn',
