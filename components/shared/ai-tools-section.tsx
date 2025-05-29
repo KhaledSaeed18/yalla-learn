@@ -47,15 +47,15 @@ const aiTools = [
         icon: <SquareMousePointer className="size-8" />,
         tags: ["Memorization", "Study Aid", "Spaced Repetition"],
     },
-    {
-        title: "Translation",
-        href: "/ai-tools/translation",
-        description: "Translate text into 130+ languages instantly and accurately.",
-        longDescription:
-            "Translate any text, document, or conversation into over 130 languages with high accuracy. Our AI understands context, idioms, and specialized terminology to deliver natural-sounding translations. Perfect for language learning, international communication, and content localization.",
-        icon: <Languages className="size-8" />,
-        tags: ["Language Learning", "Global Communication", "Content Localization"],
-    },
+    // {
+    //     title: "Translation",
+    //     href: "/ai-tools/translation",
+    //     description: "Translate text into 130+ languages instantly and accurately.",
+    //     longDescription:
+    //         "Translate any text, document, or conversation into over 130 languages with high accuracy. Our AI understands context, idioms, and specialized terminology to deliver natural-sounding translations. Perfect for language learning, international communication, and content localization.",
+    //     icon: <Languages className="size-8" />,
+    //     tags: ["Language Learning", "Global Communication", "Content Localization"],
+    // },
     {
         title: "AI Study Plan Generator",
         href: "/ai-tools/study-plan",

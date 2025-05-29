@@ -57,7 +57,6 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
                         <SelectItem value="this-year">This Year</SelectItem>
                         <SelectItem value="last-year">Last Year</SelectItem>
                         <SelectItem value="all-time">All Time</SelectItem>
-                        <SelectItem value="custom">Custom Range</SelectItem>
                     </SelectContent>
                 </Select>
             </div>

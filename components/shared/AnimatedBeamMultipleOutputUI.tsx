@@ -74,9 +74,9 @@ export function AnimatedBeamMultipleOutputUI({
                     <Circle ref={div4Ref}>
                         <SquareMousePointer className="text-black" />
                     </Circle>
-                    <Circle ref={div5Ref}>
+                    {/* <Circle ref={div5Ref}>
                         <Languages className="text-black" />
-                    </Circle>
+                    </Circle> */}
                     <Circle ref={div8Ref}>
                         <ListChecks className="text-black" />
                     </Circle>

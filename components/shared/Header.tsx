@@ -104,12 +104,12 @@ export function Header() {
                     description: "Generate flashcards from any text or topic for effective learning.",
                     icon: <SquareMousePointer className="size-5 mr-2 text-primary" />
                 },
-                {
-                    title: "Translation",
-                    href: "/ai-tools/translation",
-                    description: "Translate text into 130+ languages instantly and accurately.",
-                    icon: <Languages className="size-5 mr-2 text-primary" />
-                },
+                // {
+                //     title: "Translation",
+                //     href: "/ai-tools/translation",
+                //     description: "Translate text into 130+ languages instantly and accurately.",
+                //     icon: <Languages className="size-5 mr-2 text-primary" />
+                // },
                 {
                     title: "AI Study Plan Generator",
                     href: "/ai-tools/study-plan",

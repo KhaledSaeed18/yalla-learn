@@ -38,14 +38,14 @@ const AIToolsPage = () => {
             color: "from-primary/20 to-primary/5",
             iconColor: "text-primary",
         },
-        {
-            title: "Translation",
-            href: "/ai-tools/translation",
-            description: "Translate text into 130+ languages instantly and accurately.",
-            icon: Languages,
-            color: "from-primary/20 to-primary/5",
-            iconColor: "text-primary",
-        },
+        // {
+        //     title: "Translation",
+        //     href: "/ai-tools/translation",
+        //     description: "Translate text into 130+ languages instantly and accurately.",
+        //     icon: Languages,
+        //     color: "from-primary/20 to-primary/5",
+        //     iconColor: "text-primary",
+        // },
         {
             title: "AI Study Plan Generator",
             href: "/ai-tools/study-plan",

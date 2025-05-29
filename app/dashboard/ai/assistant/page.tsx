@@ -64,24 +64,49 @@ export default function YallaLearnAssistant() {
 
                 const apiKey = process.env.NEXT_PUBLIC_VAPI_API_KEY || ""
 
-                if (!apiKey) {
-                    setErrorMessage("API key is missing. Please check your environment variables.")
+                // Debug logging for Vercel deployment
+                console.log("Environment check:", {
+                    hasApiKey: !!apiKey,
+                    apiKeyLength: apiKey.length,
+                    nodeEnv: process.env.NODE_ENV,
+                    // Don't log the actual key for security
+                })
+
+                if (!apiKey || apiKey.trim() === "") {
+                    console.error("API key validation failed:", {
+                        envVar: process.env.NEXT_PUBLIC_VAPI_API_KEY,
+                        isEmpty: !process.env.NEXT_PUBLIC_VAPI_API_KEY,
+                        isWhitespace: process.env.NEXT_PUBLIC_VAPI_API_KEY?.trim() === ""
+                    })
+                    setErrorMessage("API key is missing or empty. Please check your environment variables in Vercel dashboard.")
                     setStatus("Error")
                     setIsApiKeyValid(false)
                     return
                 }
 
-                // Initialize Vapi
-                const vapiInstance = new Vapi(apiKey)
-                setVapi(vapiInstance)
-                setIsApiKeyValid(true)
+                try {
+                    // Initialize Vapi
+                    const vapiInstance = new Vapi(apiKey.trim())
+                    setVapi(vapiInstance)
+                    setIsApiKeyValid(true)
+                    setStatus("Ready")
 
-                vapiInstance
-                    .on("call-start", handleCallStart)
-                    .on("call-end", handleCallEnd)
-                    .on("speech-start", handleSpeechStart)
-                    .on("speech-end", handleSpeechEnd)
-                    .on("error", handleError)
+                    vapiInstance
+                        .on("call-start", handleCallStart)
+                        .on("call-end", handleCallEnd)
+                        .on("speech-start", handleSpeechStart)
+                        .on("speech-end", handleSpeechEnd)
+                        .on("error", handleError)
+                } catch (initError) {
+                    console.error("Vapi initialization error:", initError)
+                    setErrorMessage("Failed to initialize Vapi. Please check your API key.")
+                    setStatus("Error")
+                    setIsApiKeyValid(false)
+                }
+            }).catch((importError) => {
+                console.error("Failed to import Vapi:", importError)
+                setErrorMessage("Failed to load Vapi library.")
+                setStatus("Error")
             })
         }
 
