@@ -137,7 +137,7 @@ export default function JobDetailPage() {
     };
 
     return (
-        <div className="container mx-auto py-12">
+        <div className="container px-4 mx-auto py-12">
             <Button variant="outline" className="mb-6" asChild>
                 <Link href="/jobs"><ArrowLeft className="mr-2 h-4 w-4" /> Back to Jobs</Link>
             </Button>

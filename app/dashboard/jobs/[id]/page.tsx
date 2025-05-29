@@ -218,7 +218,7 @@ export default function JobDetailsPage({ params }: { params: Promise<{ id: strin
                                         <Card key={application.id}>
                                             <CardContent className="p-4">
                                                 <div className="flex justify-between items-center">
-                                                    <div className="flex items-center gap-2">
+                                                    <div className="flex items-center gap-2 flex-col md:flex-row">
                                                         {application.applicant && (
                                                             <>
                                                                 <div className="font-medium">{`${application.applicant.firstName} ${application.applicant.lastName}`}</div>

@@ -185,8 +185,6 @@ export default function AccountPage() {
     function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
         if (e.target.files && e.target.files[0]) {
             setAvatarFile(e.target.files[0])
-            // Here you would typically upload the avatar to your backend
-            // This is a placeholder for that functionality
             toast.info("Avatar uploading is not fully implemented yet")
         }
     }
@@ -250,8 +248,8 @@ export default function AccountPage() {
 
     return (
         <div className="container mx-auto p-4">
-            <Tabs defaultValue="general" className="w-full max-w-4xl mx-auto">
-                <TabsList className="grid w-full grid-cols-4 cursor-pointer">
+            <Tabs defaultValue="general" className="w-full mx-auto">
+                <TabsList className="w-full cursor-pointer overflow-x-auto">
                     <TabsTrigger value="general" className="cursor-pointer">
                         General
                     </TabsTrigger>

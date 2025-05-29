@@ -55,7 +55,7 @@ export default function JobsPage() {
     ];
 
     return (
-        <div className="container mx-auto py-12">
+        <div className="container mx-auto px-4 py-12">
             <h1 className="text-4xl font-bold mb-8">Find Your Next Opportunity</h1>
 
             <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4 mb-8">

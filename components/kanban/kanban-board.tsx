@@ -71,9 +71,6 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
     }
   }, [boardId, boards])
 
-  // Update URL only when user explicitly selects a board
-  // We removed the automatic URL update on component load
-
   // Helper to find the selected column
   const selectedColumn = activeBoard?.columns.find(column => column.id === selectedColumnId) || null
 
@@ -379,7 +376,7 @@ export default function KanbanBoard({ boardId }: { boardId?: string }) {
           <>
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-2xl font-bold">{activeBoard.title}</h1>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-col md:flex-row">
                 <Button variant="outline" size="sm" onClick={() => setShowCreateColumn(true)}>
                   <Plus className="h-4 w-4 mr-1" />
                   Add Column
