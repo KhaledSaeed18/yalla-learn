@@ -62,14 +62,13 @@ export default function YallaLearnAssistant() {
             import("@vapi-ai/web").then((module) => {
                 const Vapi = module.default
 
-                const apiKey = process.env.NEXT_PUBLIC_VAPI_API_KEY || ""
+                const apiKey = process.env.NEXT_PUBLIC_VAPI_API_KEY || "f2a3405f-ae8a-46a6-a591-a1ecd6dc5a95"
 
                 // Debug logging for Vercel deployment
                 console.log("Environment check:", {
                     hasApiKey: !!apiKey,
                     apiKeyLength: apiKey.length,
                     nodeEnv: process.env.NODE_ENV,
-                    // Don't log the actual key for security
                 })
 
                 if (!apiKey || apiKey.trim() === "") {
