@@ -18,6 +18,11 @@
 
 ---
 
+> **⚠️ This project is no longer actively maintained ⚠️**
+> It was developed as a **Senior Project / Final Year Project (FYP)** for a Bachelor of Science in Computer Engineering degree. Some system functions may be broken or unavailable. No further updates or bug fixes are planned.
+
+---
+
 ## 📋 Table of Contents
 
 - [✨ Features](#-features)

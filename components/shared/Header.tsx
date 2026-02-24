@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
-import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer, BrainCircuit, ListChecks, ClipboardCheck, Brain, Clock, ScanEye, Info, Headset, CircleHelp, Download, BriefcaseBusiness, Search as SearchIcon } from "lucide-react"
+import { Menu, LogOut, LayoutDashboard, ChevronDown, Image, Network, Languages, Sparkles, FileText, SquareMousePointer, BrainCircuit, ListChecks, ClipboardCheck, Brain, Clock, ScanEye, Info, Headset, CircleHelp, Download, BriefcaseBusiness, Search as SearchIcon, TriangleAlert } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu"
@@ -192,6 +192,18 @@ export function Header() {
 
     return (
         <header className="sticky top-0 z-40 w-full border-b bg-background">
+            <div className="w-full bg-red-600 text-white text-center text-xs sm:text-sm py-2 px-4 font-bold flex items-center justify-center gap-2">
+                <TriangleAlert className="size-4 shrink-0" />
+                This project is currently not maintained! Some system functions may be broken or unavailable.{" "}
+                <a
+                    href="https://github.com/KhaledSaeed18/yalla-learn#readme"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline underline-offset-2 hover:opacity-80 transition-opacity"
+                >
+                    Learn more
+                </a>
+            </div>
             <div className="container mx-auto px-4 flex h-16 items-center">
                 {/* Logo */}
                 <Link
